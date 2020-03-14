@@ -4,3 +4,4 @@ obj/
 LocationConnection/google-services.json
 LocationConnection/LocationConnection.csproj
 LocationConnection/LocationConnection.csproj.user
+AndroidManifest.xml
