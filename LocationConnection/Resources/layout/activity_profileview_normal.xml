@@ -125,14 +125,7 @@
 				android:theme="@style/BlackTextSmallNormal"
 				android:id="@+id/RegisterDate" />
 		</android.support.constraint.ConstraintLayout>
-        
-		<!--<View
-			android:layout_width="match_parent"
-			android:layout_height="0px"
-			app:layout_constraintTop_toBottomOf="@+id/HeaderBackground"
-			app:layout_constraintBottom_toTopOf="@+id/ProfileImageScroll"
-            android:background="@color/ContentDarkBackground"
-			android:id="@+id/SpacerTop" />-->
+
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
     		android:layout_height="0px"
@@ -149,14 +142,6 @@
                 android:clickable="true"
     			android:id="@+id/ProfileImageScroll" />
         </android.support.constraint.ConstraintLayout>
-		
-		<!--<View
-			android:layout_width="match_parent"
-			android:layout_height="0px"
-			app:layout_constraintTop_toBottomOf="@+id/ProfileImageScroll"
-			app:layout_constraintBottom_toTopOf="@+id/FooterBackground"
-            android:background="@color/ContentDarkBackground"
-			android:id="@+id/SpacerBottom" />-->
         
         <View
             android:layout_width="match_parent"
@@ -262,7 +247,7 @@
         	android:layout_width="match_parent"
         	android:layout_height="60dp"
         	app:layout_constraintTop_toBottomOf="@+id/MapContainer"
-        	android:id="@+id/NavigationSpacer" />	
+        	android:id="@+id/NavigationSpacer" />		
 	</android.support.constraint.ConstraintLayout>
 	<View
 		android:layout_width="match_parent"

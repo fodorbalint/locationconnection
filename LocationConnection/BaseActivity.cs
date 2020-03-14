@@ -46,6 +46,8 @@ namespace LocationConnection
 		protected static float XDpPerIn;
 		protected static float DpWidth;
 
+		bool initializeError = false;
+
 		protected override void OnCreate(Bundle savedInstanceState)
 		{
 			base.OnCreate(savedInstanceState);
@@ -66,7 +68,11 @@ namespace LocationConnection
 
 			if (!(this is ListActivity) && !ListActivity.initialized)
 			{
+				initializeError = true;
 				c.LogActivity(LocalClassName.Split(".")[1] + " Not initialized");
+
+				c.ReportErrorSilent("Initialization error");
+
 				Intent i = new Intent(this, typeof(ListActivity));
 				i.SetFlags(ActivityFlags.ReorderToFront); //ListActivity must be recreated.
 				StartActivity(i);
@@ -88,9 +94,12 @@ namespace LocationConnection
 			c.LogActivity(LocalClassName.Split(".")[1] + " OnResume");
 
 			//When opening app, Android sometimes resumes an Activity while the static variables are cleared out, resulting in error
-			if (!ListActivity.initialized)
+			if (!ListActivity.initialized && !initializeError)
 			{
 				c.LogActivity(LocalClassName.Split(".")[1] + " Not initialized");
+
+				c.ReportErrorSilent("Initialization error");
+				
 				Intent i = new Intent(this, typeof(ListActivity));
 				i.SetFlags(ActivityFlags.ReorderToFront); //ListActivity must be recreated.
 				StartActivity(i);
@@ -314,8 +323,15 @@ namespace LocationConnection
 						newLines.Add(line);
 					}
 				}
-				File.WriteAllLines(c.locationLogFile, newLines);
-			}			
+				if (newLines.Count != 0)
+				{
+					File.WriteAllLines(c.locationLogFile, newLines);
+				}
+				else //it would write an empty string into the file, and lines[0] would throw an error
+				{
+					File.Delete(c.locationLogFile);
+				}
+			}
 		}
 
 		public void TruncateSystemLog()

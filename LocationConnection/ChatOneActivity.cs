@@ -396,11 +396,16 @@ namespace LocationConnection
 			messageItems = new List<MessageItem>();
 			if (Session.CurrentMatch.Chat.Length != 0)
 			{
+				System.Diagnostics.Stopwatch stw = new System.Diagnostics.Stopwatch();
+				stw.Start();
+
 				NoMessages.Visibility = ViewStates.Gone;
 				foreach (string item in Session.CurrentMatch.Chat)
 				{
 					AddMessageItem(item);
 				}
+
+				c.CW(Session.CurrentMatch.Chat.Length + " item created in " + stw.ElapsedMilliseconds); // 213 item created in 646 ms / 385 ms on subsequent loading
 				SetScrollTimer();
 			}
 			else

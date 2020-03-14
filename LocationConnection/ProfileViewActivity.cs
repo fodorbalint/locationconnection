@@ -1,12 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Timers;
 using Android.Animation;
 using Android.App;
 using Android.Content;
@@ -14,14 +5,17 @@ using Android.Gms.Maps;
 using Android.Gms.Maps.Model;
 using Android.Graphics;
 using Android.OS;
-using Android.Runtime;
 using Android.Support.Constraints;
-using Android.Support.V4.Content;
-using Android.Support.V7.App;
 using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Widget;
 using FFImageLoading;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.Threading.Tasks;
+using System.Timers;
 
 namespace LocationConnection
 {
@@ -113,6 +107,8 @@ namespace LocationConnection
 		int counterCircleSelected;
 
 		LocationReceiver locationReceiver;
+
+		int footerHeight;
 
 		protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -396,11 +392,6 @@ namespace LocationConnection
 			}
 		}
 
-		private void Footer_LayoutChange(object sender, View.LayoutChangeEventArgs e)
-		{
-			SetHeight();
-		}
-
 		private void ShowEditSpacer()
 		{
 			EditSpacer.Visibility = ViewStates.Visible;
@@ -442,8 +433,18 @@ namespace LocationConnection
 			MapBottomSeparator.Visibility = ViewStates.Gone;
 		}
 
+		private void Footer_LayoutChange(object sender, View.LayoutChangeEventArgs e)
+		{
+			if (footerHeight != Footer.Height)
+			{
+				SetHeight();
+				footerHeight = Footer.Height;
+			}
+		}
+
 		private void SetHeight()
 		{
+			c.CW("Setting height");
 			int currentScrollHeight = GetScrollHeight();
 			totalScrollHeight = currentScrollHeight - MainLayout.Height;
 			if (totalScrollHeight < 0)
@@ -459,17 +460,14 @@ namespace LocationConnection
 				CastShadows(ScrollLayout.ScrollY);
 			}
 
-			if (currentScrollHeight < ScrollLayout.Height)
+			if (currentScrollHeight < MainLayout.Height)
 			{
-				ProfileImageContainer.LayoutParameters.Height = ProfileImageScroll.Height + ScrollLayout.Height - currentScrollHeight;
+				ProfileImageContainer.LayoutParameters.Height = ProfileImageScroll.Height + MainLayout.Height - currentScrollHeight;
 			}
 			else
 			{
 				ProfileImageContainer.LayoutParameters.Height = ProfileImageScroll.Height;
 			}
-
-			ProfileImageContainer.Invalidate();
-			ProfileImageContainer.RequestLayout();
 		}
 
 		private int GetScrollHeight() {

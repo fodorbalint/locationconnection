@@ -23,7 +23,7 @@ namespace LocationConnection
 		ImageButton MenuList;
 		TextView NoofMatches, NoMatch;
 		public ListView ChatUserList;
-		View RippleMain;
+		View RippleMain, MenuListBg;
 
 		Android.Content.Res.Resources res;
 
@@ -33,6 +33,8 @@ namespace LocationConnection
 		bool rippleRunning;
 		int tweenTime = 300;
 		Timer rippleTimer;
+
+		int statusRoundBackground;
 
 		protected override void OnCreate(Bundle savedInstanceState)
 		{
@@ -44,18 +46,28 @@ namespace LocationConnection
 				if (Settings.DisplaySize == 1)
 				{
 					SetContentView(Resource.Layout.activity_chatlist_normal);
+
+					statusRoundBackground = Resource.Drawable.status_round_background_normal;
 				}
 				else
 				{
 					SetContentView(Resource.Layout.activity_chatlist_small);
+
+					statusRoundBackground = Resource.Drawable.status_round_background_small;
 				}
 
 				MainLayout = FindViewById<ConstraintLayout>(Resource.Id.MainLayout);
-				NoofMatches = FindViewById<TextView>(Resource.Id.NoofMatches);
 				NoMatch = FindViewById<TextView>(Resource.Id.NoMatch);
-				ChatUserList = FindViewById<ListView>(Resource.Id.ChatUserList);
+				ChatUserList = FindViewById<ListView>(Resource.Id.ChatUserList); 
+				MenuListBg = FindViewById<View>(Resource.Id.MenuListBg);
+				NoofMatches = FindViewById<TextView>(Resource.Id.NoofMatches);
 				RippleMain = FindViewById<View>(Resource.Id.RippleMain);
 				MenuList = FindViewById<ImageButton>(Resource.Id.MenuList);
+
+				if (Build.VERSION.SdkInt >= BuildVersionCodes.N)
+				{
+					MenuListBg.SetBackgroundResource(statusRoundBackground);
+				}
 
 				c.view = MainLayout;
 				res = Resources;

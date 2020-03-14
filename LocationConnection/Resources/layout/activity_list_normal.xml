@@ -6,6 +6,7 @@
     android:background="@color/ContentBackground"
     android:focusable="true"
     android:focusableInTouchMode="true"
+    android:animateLayoutChanges="true"
     android:id="@+id/MainLayout">
 	<android.support.v7.widget.Toolbar
         android:layout_width="match_parent"

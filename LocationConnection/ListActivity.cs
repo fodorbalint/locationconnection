@@ -1,8 +1,9 @@
 /*
  * Fixed:
  * Chat gets updated from other person's conversation
+ * Circle on map does not fit in visible area
  * 
- * Correct truncatelocationlog
+ * 
  * List for chatone
 Location service restart on reboot
 Upload Loadlist, if location permission needs to be requested, the map does not update afterwards. Database OK. List loads while the dialog is shown.
@@ -145,6 +146,7 @@ namespace LocationConnection
 		private int icDescending;
 		private int iconBackgroundLight;
 		private int iconBackgroundDark;
+		private int statusRoundBackground;
 
 
 		protected override void OnCreate(Bundle savedInstanceState)
@@ -382,6 +384,7 @@ namespace LocationConnection
 					icDescending = Resource.Drawable.ic_descending_normal;
 					iconBackgroundLight = Resource.Drawable.icon_background_light_normal;
 					iconBackgroundDark = Resource.Drawable.icon_background_dark_normal;
+					statusRoundBackground = Resource.Drawable.status_round_background_normal;
 
 					loaderHeight = float.Parse(Resources.GetString(Resource.String.loaderHeightNormal), CultureInfo.InvariantCulture);
 					maxY = float.Parse(Resources.GetString(Resource.String.maxYNormal), CultureInfo.InvariantCulture);
@@ -397,6 +400,7 @@ namespace LocationConnection
 					icDescending = Resource.Drawable.ic_descending_small;
 					iconBackgroundLight = Resource.Drawable.icon_background_light_small;
 					iconBackgroundDark = Resource.Drawable.icon_background_dark_small;
+					statusRoundBackground = Resource.Drawable.status_round_background_small;
 
 					loaderHeight = float.Parse(Resources.GetString(Resource.String.loaderHeightSmall), CultureInfo.InvariantCulture);
 					maxY = float.Parse(Resources.GetString(Resource.String.maxYSmall), CultureInfo.InvariantCulture);
@@ -452,6 +456,12 @@ namespace LocationConnection
 				MenuChatListBgCorner = FindViewById<View>(Resource.Id.MenuChatListBgCorner);
 				RippleMain = FindViewById<View>(Resource.Id.RippleMain);
 				MenuChatList = FindViewById<ImageButton>(Resource.Id.MenuChatList);
+
+				if (Build.VERSION.SdkInt >= BuildVersionCodes.N)
+				{
+					//ReloadPulldown looks pixelated when rotated, so so xml is used.
+					MenuChatListBg.SetBackgroundResource(statusRoundBackground);
+				}
 
 				mapFragment.GetMapAsync(this);
 				imm = (InputMethodManager)GetSystemService(Context.InputMethodService);
@@ -864,7 +874,7 @@ namespace LocationConnection
 			if (!(bool)Settings.IsMapView || (Session.UseLocation is null || !(bool)Session.UseLocation) && !((bool)Session.GeoFilter && (bool)Session.GeoSourceOther))
 			{
 				UserSearchList.Visibility = ViewStates.Visible;
-				MapContainer.Visibility = ViewStates.Gone;
+				MapContainer.Visibility = ViewStates.Invisible;
 				MapStreet.Visibility = ViewStates.Gone;
 				MapSatellite.Visibility = ViewStates.Gone;
 				ListView.SetBackgroundResource(iconBackgroundLight);
@@ -1406,7 +1416,7 @@ namespace LocationConnection
 			MapView.SetBackgroundResource(0);
 
 			UserSearchList.Visibility = ViewStates.Visible;
-			MapContainer.Visibility = ViewStates.Gone;
+			MapContainer.Visibility = ViewStates.Invisible;
 			MapStreet.Visibility = ViewStates.Gone;
 			MapSatellite.Visibility = ViewStates.Gone;
 			Settings.IsMapView = false;
@@ -2629,7 +2639,7 @@ namespace LocationConnection
 							circleOptions.InvokeRadius((double)Session.DistanceLimit * 1000);
 							circleOptions.InvokeStrokeColor(Color.Black);
 							circleOptions.InvokeFillColor(Color.Argb(18, 0, 205, 0));
-							circleOptions.InvokeStrokeWidth(3);
+							circleOptions.InvokeStrokeWidth(2); // is in pixels, and floored to int. No anti-aliasing.
 							circle = thisMap.AddCircle(circleOptions);
 						}
 
@@ -2649,7 +2659,7 @@ namespace LocationConnection
 						circleOptions.InvokeRadius((double)Session.DistanceLimit * 1000);
 						circleOptions.InvokeStrokeColor(Color.Black);
 						circleOptions.InvokeFillColor(Color.Argb(18, 0, 205, 0));
-						circleOptions.InvokeStrokeWidth(3);
+						circleOptions.InvokeStrokeWidth(2);
 						circle = thisMap.AddCircle(circleOptions);
 					}
 				});
@@ -2668,8 +2678,10 @@ namespace LocationConnection
 			float ratio = (float) 360 / 220; // 360 / 220 would result in 1 without cast.
 
 			float circleDpZoom8 = (float)(ratio * Session.DistanceLimit * 2 / Math.Sin(Math.PI / 180 * (90 - latitude)));
-			float zoomOutRatio = circleDpZoom8 / screenWidth;
-			float zoomLevel = (float)(8 - Math.Log(zoomOutRatio) / Math.Log(2));//(int)Math.Floor
+			int area = (MapContainer.Width < MapContainer.Height) ? MapContainer.Width : MapContainer.Height;
+			float zoomOutRatio = circleDpZoom8 / area * pixelDensity;
+			float zoomLevel = (float)(8 - Math.Log(zoomOutRatio) / Math.Log(2));
+
 			return zoomLevel;
 		}
 	}
