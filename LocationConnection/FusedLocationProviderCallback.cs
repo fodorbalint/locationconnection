@@ -42,8 +42,6 @@ namespace LocationConnection
 				Session.Longitude = location.Longitude;
 				Session.LocationTime = unixTimestamp;
 
-				c.LogActivity("OnLocationResult LocationTime " + Session.LocationTime);
-
 				c.LogLocation(unixTimestamp + "|" + ((double)Session.Latitude).ToString(CultureInfo.InvariantCulture) + "|" + ((double)Session.Longitude).ToString(CultureInfo.InvariantCulture) + "|" + (BaseActivity.isAppForeground?1:0));
 
 				Intent intent = new Intent("balintfodor.locationconnection.LocationReceiver");

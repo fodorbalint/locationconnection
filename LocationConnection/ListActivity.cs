@@ -1,10 +1,11 @@
 /*
+ * Fixed:
+ * Chat gets updated from other person's conversation
  * 
-Add google-services.json to gitignore
-
+ * Correct truncatelocationlog
+ * List for chatone
 Location service restart on reboot
 Upload Loadlist, if location permission needs to be requested, the map does not update afterwards. Database OK. List loads while the dialog is shown.
-Save search settings in database
 */
 using System;
 using System.Collections.Generic;
@@ -1653,7 +1654,7 @@ namespace LocationConnection
 			{
 				Session.ResultsFrom = 1;
 				recenterMap = true;
-				Task.Run(() => LoadList());
+				await Task.Run(() => LoadList());
 			}
 		}
 

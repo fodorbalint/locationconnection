@@ -27,21 +27,22 @@ namespace LocationConnection
 			int sep1Pos;
 			int sep2Pos;
 			int sep3Pos;
-			int senderID;
+			int sep4Pos;
 			int matchID;
 			string senderName;
 			string text;
 
 			this.context = context;
-			//int senderID = int.Parse()
+			int senderID = int.Parse(intent.GetStringExtra("fromuser"));
 			string type = intent.GetStringExtra("type");
 			string meta = intent.GetStringExtra("meta");
 			bool inApp = intent.GetBooleanExtra("inapp", false);
-			
+
+			Console.WriteLine("ChatReceiver senderID " + senderID + " type " + type + " meta " +  meta + " inApp " + inApp);
+			((BaseActivity)context).c.LogActivity("ChatReceiver senderID " + senderID + " type " + type + " meta " + meta + " inApp " + inApp);
+
 			try
 			{
-				((BaseActivity)context).c.LogActivity("ChatReceiver OnReceive " + type);
-				
 				switch (type)
 				{
 					case "sendMessage":
@@ -58,31 +59,28 @@ namespace LocationConnection
 							sep3Pos = meta.IndexOf('|', sep2Pos + 1);
 
 							int messageID = int.Parse(meta.Substring(0, sep1Pos));
-							senderID = int.Parse(meta.Substring(sep1Pos + 1, sep2Pos - sep1Pos - 1));
 							long sentTime = long.Parse(meta.Substring(sep2Pos + 1, sep3Pos - sep2Pos - 1));
 							long seenTime = unixTimestamp;
 							long readTime = unixTimestamp;
 
 							meta = messageID + "|" + senderID + "|" + sentTime + "|" + seenTime + "|" + readTime + "|";
 
-							if (senderID != Session.ID) //for tests, you can use 2 accounts from the same device, and a sent message would appear duplicate.
+							if (senderID != Session.ID && senderID == Session.CurrentMatch.TargetID) //for tests, you can use 2 accounts from the same device, and a sent message would appear duplicate.
 							{
 								((ChatOneActivity)context).NoMessages.Visibility = ViewStates.Gone;
 								((ChatOneActivity)context).AddMessageItem(meta + body);
 								((ChatOneActivity)context).SetScrollTimer();
 								((ChatOneActivity)context).c.MakeRequest("action=messagedelivered&ID=" + Session.ID + "&SessionID=" + Session.SessionID + "&MatchID=" + Session.CurrentMatch.MatchID + "&MessageID=" + messageID + "&Status=Read");
 							}
+							else if (inApp && senderID != Session.ID)
+							{
+								((BaseActivity)context).c.SnackAction(title, Resource.String.ShowReceived, new Action<View>(delegate (View obj) { GoToChatNoOpen(senderID); }));
+							}
 						}
 						else
 						{
 							if (inApp)
 							{
-								sep1Pos = meta.IndexOf('|');
-								sep2Pos = meta.IndexOf('|', sep1Pos + 1);
-
-								int messageID = int.Parse(meta.Substring(0, sep1Pos));
-								senderID = int.Parse(meta.Substring(sep1Pos + 1, sep2Pos - sep1Pos - 1));
-
 								((BaseActivity)context).c.SnackAction(title, Resource.String.ShowReceived, new Action<View>(delegate (View obj) { GoToChat(senderID); }));
 							}
 
@@ -97,37 +95,40 @@ namespace LocationConnection
 					case "messageDelivered":
 					case "loadMessages":
 					case "loadMessageList":
-						if (context is ChatOneActivity)
+						if (context is ChatOneActivity && senderID == Session.CurrentMatch.TargetID)
 						{
 							string[] updateItems = meta.Substring(1, meta.Length - 2).Split("}{");
 							foreach (string item in updateItems)
 							{
 								((ChatOneActivity)context).UpdateMessageItem(item);
-
 							}
 						}
 						break;
 
 					case "matchProfile":
-						sep1Pos = meta.IndexOf('|');
-						senderID = int.Parse(meta.Substring(0, sep1Pos));
-
-						if (inApp)
+						if (inApp) //it is impossible to stand in that chat if wasn't previously a match
 						{
 							title = intent.GetStringExtra("title");
-							((BaseActivity)context).c.SnackAction(title, Resource.String.ShowReceived, new Action<View>(delegate (View obj) { GoToChat(senderID); }));
+							if (context is ChatOneActivity)
+							{
+								((BaseActivity)context).c.SnackAction(title, Resource.String.ShowReceived, new Action<View>(delegate (View obj) { GoToChatNoOpen(senderID); }));
+							}
+							else
+							{
+								((BaseActivity)context).c.SnackAction(title, Resource.String.ShowReceived, new Action<View>(delegate (View obj) { GoToChat(senderID); }));
+							}
 						}
 
 						if (context is ChatListActivity)
 						{
-							string matchItem = meta.Substring(sep1Pos + 1);
+							string matchItem = meta;
 							ServerParser<MatchItem> parser = new ServerParser<MatchItem>(matchItem);
 							((ChatListActivity)context).AddMatchItem(parser.returnCollection[0]);
 						}
 
 						if (context is ProfileViewActivity)
 						{
-							string matchItem = meta.Substring(sep1Pos + 1);
+							string matchItem = meta;
 							ServerParser<MatchItem> parser = new ServerParser<MatchItem>(matchItem);
 							((ProfileViewActivity)context).AddNewMatch(senderID, parser.returnCollection[0]);
 						}
@@ -139,16 +140,25 @@ namespace LocationConnection
 
 					case "rematchProfile":
 						sep1Pos = meta.IndexOf('|');
-						sep2Pos = meta.IndexOf('|', sep1Pos + 1);
 
-						senderID = int.Parse(meta.Substring(0, sep1Pos));
-						matchID = int.Parse(meta.Substring(sep1Pos + 1, sep2Pos - sep1Pos - 1));
-						bool active = bool.Parse(meta.Substring(sep2Pos + 1));
+						matchID = int.Parse(meta.Substring(0, sep1Pos));
+						bool active = bool.Parse(meta.Substring(sep1Pos + 1));
 
 						if (inApp)
 						{
 							title = intent.GetStringExtra("title");
-							((BaseActivity)context).c.SnackAction(title, Resource.String.ShowReceived, new Action<View>(delegate (View obj) { GoToChat(senderID); }));
+							if (context is ChatOneActivity && Session.CurrentMatch.TargetID == senderID)
+							{
+								((BaseActivity)context).c.SnackStr(title, null);
+							}
+							else if (context is ChatOneActivity)
+							{
+								((BaseActivity)context).c.SnackAction(title, Resource.String.ShowReceived, new Action<View>(delegate (View obj) { GoToChatNoOpen(senderID); }));
+							}
+							else
+							{
+								((BaseActivity)context).c.SnackAction(title, Resource.String.ShowReceived, new Action<View>(delegate (View obj) { GoToChat(senderID); }));
+							}
 						}
 
 						if (context is ChatListActivity)
@@ -172,14 +182,10 @@ namespace LocationConnection
 						break;
 
 					case "unmatchProfile":
-						((BaseActivity)context).c.LogActivity("ChatReceiver meta " + meta);
-
 						sep1Pos = meta.IndexOf('|');
-						sep2Pos = meta.IndexOf('|', sep1Pos + 1);
 
-						senderID = int.Parse(meta.Substring(0, sep1Pos));
-						matchID = int.Parse(meta.Substring(sep1Pos + 1, sep2Pos - sep1Pos - 1));
-						long unmatchDate = long.Parse(meta.Substring(sep2Pos + 1));
+						matchID = int.Parse(meta.Substring(0, sep1Pos));
+						long unmatchDate = long.Parse(meta.Substring(sep1Pos + 1));
 
 						if (((BaseActivity)context).IsUpdatingFrom(senderID))
 						{
@@ -189,7 +195,18 @@ namespace LocationConnection
 						if (inApp)
 						{
 							title = intent.GetStringExtra("title");
-							((BaseActivity)context).c.SnackAction(title, Resource.String.ShowReceived, new Action<View>(delegate (View obj) { GoToChat(senderID); }));
+							if (context is ChatOneActivity && Session.CurrentMatch.TargetID == senderID)
+							{
+								((BaseActivity)context).c.SnackStr(title, null);
+							}
+							else if (context is ChatOneActivity)
+							{
+								((BaseActivity)context).c.SnackAction(title, Resource.String.ShowReceived, new Action<View>(delegate (View obj) { GoToChatNoOpen(senderID); }));
+							}
+							else
+							{
+								((BaseActivity)context).c.SnackAction(title, Resource.String.ShowReceived, new Action<View>(delegate (View obj) { GoToChat(senderID); }));
+							}
 						}
 
 						if (context is ChatListActivity)
@@ -214,11 +231,9 @@ namespace LocationConnection
 					case "locationUpdate":
 						sep1Pos = meta.IndexOf('|');
 						sep2Pos = meta.IndexOf('|', sep1Pos + 1);
-						sep3Pos = meta.IndexOf('|', sep2Pos + 1);
 
-						senderID = int.Parse(meta.Substring(0, sep1Pos));
-						senderName = meta.Substring(sep1Pos + 1, sep2Pos - sep1Pos - 1);
-						int frequency = int.Parse(content.Substring(sep2Pos + 1, sep3Pos - sep2Pos - 1));
+						senderName = meta.Substring(0, sep1Pos);
+						int frequency = int.Parse(meta.Substring(sep1Pos + 1, sep2Pos - sep1Pos - 1));
 
 						if (!((BaseActivity)context).IsUpdatingFrom(senderID))
 						{
@@ -235,12 +250,12 @@ namespace LocationConnection
 							}
 						}
 
-						int sep4Pos = content.IndexOf('|', sep3Pos + 1);
-						int sep5Pos = content.IndexOf('|', sep4Pos + 1);
+						sep3Pos = meta.IndexOf('|', sep2Pos + 1);
+						sep4Pos = meta.IndexOf('|', sep3Pos + 1);
 
-						long time = long.Parse(content.Substring(sep3Pos + 1, sep4Pos - sep3Pos - 1));
-						double latitude = double.Parse(content.Substring(sep4Pos + 1, sep5Pos - sep4Pos - 1), CultureInfo.InvariantCulture);
-						double longitude = double.Parse(content.Substring(sep5Pos + 1), CultureInfo.InvariantCulture);
+						long time = long.Parse(meta.Substring(sep2Pos + 1, sep3Pos - sep2Pos - 1));
+						double latitude = double.Parse(meta.Substring(sep3Pos + 1, sep4Pos - sep3Pos - 1), CultureInfo.InvariantCulture);
+						double longitude = double.Parse(meta.Substring(sep4Pos + 1), CultureInfo.InvariantCulture);
 
 						if (!(ListActivity.listProfiles is null))
 						{
@@ -273,9 +288,7 @@ namespace LocationConnection
 						break;
 
 					case "locationUpdateEnd":
-						sep1Pos = content.IndexOf('|');
-						senderID = int.Parse(content.Substring(0, sep1Pos));
-						senderName = content.Substring(sep1Pos + 1);
+						senderName = meta;
 
 						if (((BaseActivity)context).IsUpdatingFrom(senderID)) //user could have gone to the background, clearing out the list of people to receive updates from.
 						{
@@ -301,13 +314,18 @@ namespace LocationConnection
 			context.StartActivity(i);
 		}
 
+		private void GoToChatNoOpen(int senderID)
+		{
+			IntentData.senderID = senderID;
+			((ChatOneActivity)context).RefreshPage();
+		}
+
 		private void GoToProfile(int targetID)
 		{
 			Intent i = new Intent(context, typeof(ProfileViewActivity));
 			i.SetFlags(ActivityFlags.ReorderToFront);
 			IntentData.pageType = "standalone";
 			IntentData.targetID = targetID;
-			((BaseActivity)context).c.LogActivity("GoToProfile");
 			context.StartActivity(i);
 		}
 

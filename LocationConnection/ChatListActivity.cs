@@ -89,6 +89,7 @@ namespace LocationConnection
 					responseString = responseString.Substring(3);
 					if (responseString != "")
 					{
+						c.LogActivity("ChatOne OnResume NoMatch " + NoMatch + " ChatUserList " + ChatUserList + " NoofMatches " + NoofMatches + " res " + res);
 						NoMatch.Visibility = ViewStates.Gone;
 						ServerParser<MatchItem> parser = new ServerParser<MatchItem>(responseString);
 						matchList = parser.returnCollection;

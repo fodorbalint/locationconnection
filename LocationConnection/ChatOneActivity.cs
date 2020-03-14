@@ -175,6 +175,30 @@ namespace LocationConnection
 			}
 		}
 
+		public async void RefreshPage()
+		{
+			MainLayout.RequestFocus();
+			ChatEditMessage.Text = "";
+
+			string responseString = await c.MakeRequest("action=loadmessages&ID=" + Session.ID + "&SessionID=" + Session.SessionID + "&TargetID=" + (int)IntentData.senderID);
+
+			IntentData.senderID = null;
+
+			if (responseString.Substring(0, 2) == "OK")
+			{
+				LoadMessages(responseString, false);
+			}
+			else if (responseString == "ERROR_MatchNotFound")
+			{
+				Session.SnackMessage = Resource.String.MatchNotFound;
+				OnBackPressed();
+			}
+			else
+			{
+				c.ReportError(responseString);
+			}
+		}
+
 		public override bool OnCreateOptionsMenu(IMenu menu)
 		{
 			MenuInflater.Inflate(Resource.Menu.menu_chatone, menu);

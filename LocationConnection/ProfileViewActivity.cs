@@ -30,7 +30,7 @@ namespace LocationConnection
 	{
 		public ConstraintLayout ScrollLayout, ProfileImageContainer, Footer;
 		LinearLayout MapContainer;
-		View EditSpacer, HeaderBackground, PercentProgress, SpacerTop, SpacerBottom, FooterBackground, MapTopSeparator, MapBottomSeparator, NavigationSpacer,
+		View EditSpacer, HeaderBackground, PercentProgress, MapTopSeparator, MapBottomSeparator, NavigationSpacer,
 			EditSelfHeader, RippleImage, RippleImageNext, RippleImagePrev;
 		TextView Name, Username, ResponseRate, LastActiveDate, RegisterDate, Description, LocationTime, DistanceText;
 		public TouchConstraintLayout ProfileImageScroll;
