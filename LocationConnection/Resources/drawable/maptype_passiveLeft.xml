@@ -1,0 +1,5 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+       android:shape="rectangle">
+	<solid android:color="@color/MapPassiveButton" />
+	<corners android:topLeftRadius="2dp" android:bottomLeftRadius="2dp" />
+</shape>

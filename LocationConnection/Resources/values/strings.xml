@@ -1,0 +1,430 @@
+<resources>
+    <string name="app_name">Location Connection</string>
+	<string name="app_name_short">Connection</string>
+    <string name="versionInfo">Version: 31. December 2019\n\nCreated by Balint Fodor\n\nContact: fodorbalint@gmail.com\nlocationconnection.me</string>
+
+	<!-- General -->
+
+	<string name="alertTextSizeNormal">16</string>
+	<string name="alertTextSizeSmall">13.71</string>
+	<string name="logAlertTextSizeNormal">12</string>
+	<string name="logAlertTextSizeSmall">10.3</string>
+	<string name="alertPaddingNormal">15</string>
+	<string name="alertPaddingSmall">12.86</string>
+	<string name="logAlertPaddingNormal">7</string>
+	<string name="logAlertPaddingSmall">6</string>
+	
+	<string name="GooglePlayNotAvailable">Since Google Play is not installed, instant messaging will not work.</string>
+
+    <string name="NoNetwork">No Internet connection.</string>
+    <string name="NetworkTimeout">Internet connection timed out.</string>
+	<string name="ErrorEncountered">Error encountered</string>
+	<string name="ErrorNotificationSent">Developer has been notified.</string>
+	<string name="ErrorNotificationToSend">Developer will be notified on app restart.</string>
+
+	<string name="Back">Back</string>
+    <string name="Previous">Previous</string>
+    <string name="Next">Next</string>
+
+	<string name="ShowReceived">Show</string>
+    <string name="LocationUpdatesFromStart">is now sending you location updates every</string>
+    <string name="LocationUpdatesFromEnd">has stopped the location updates.</string>
+    
+    <string name="MapStreet">Street</string>
+    <string name="MapSatellite">Satellite</string>
+	
+	<string name="ConfirmAction">Confirm action</string>
+    <string name="DialogOK">OK</string>
+	<string name="DialogCancel">Cancel</string>
+	<string name="DialogYes">Yes</string>
+	<string name="DialogNo">No</string>
+
+	<!-- Bottom navigation bar -->
+
+	<string name="MenuChatList">Matches</string>
+    <string name="MenuList">List</string>
+
+	<!-- Main page, Login -->	
+  
+	<string name="LoginEmail">Email/username:</string>
+    <string name="LoginPassword">Password:</string>
+    <string name="LoginDone">Login</string>  
+    <string name="LoginResetPassword">Forgot your password?</string>
+	<string name="LoginResetEmail">Enter your email:</string>
+	<string name="LoginResetSend">Send reset link</string>
+    <string name="RegisterButton">Register</string>
+    <string name="ListButton">See people nearby</string>
+
+	<string name="ResetEmailSent">If the address has an account, email has been sent.</string>
+    <string name="LoginEmailEmpty">Username must be filled in.</string>
+    <string name="LoginPasswordShort">Password must be at least 6 characters long.</string>
+
+	<!-- User-fault error messages from server -->
+	
+	<string name="LoginFailed">Login failed.</string>
+	<string name="LoggedOut">You logged in on another device.</string>
+	<string name="UsernameExists">Username already exists.</string>
+	<string name="EmailExists">Email already exists.</string>
+	<string name="WrongImageExtension">Only jpg, jpeg and png files are allowed.</string>
+	<string name="NotAnImage">The uploaded file is not an image.</string>
+	<string name="PictureTooLarge">The uploaded image exceeds the 20 MB limit.</string>
+	<string name="PasswordMismatch">Incorrect password. Log out to reset it.</string>
+	<string name="UserPassive">[name] is not active.</string>
+
+	<!-- Registration / Profile Edit-->
+	
+	<string name="Sex">I am a:</string>
+	<string-array name="SexEntries">
+		<item>Please select...</item>
+		<item>Woman</item>
+		<item>Man</item>
+	</string-array>
+	<string name="Email">Email:</string>
+    <string name="Password">Password:</string>
+    <string name="ConfirmPassword">Confirm password:</string>
+    <string name="Username">Username:</string>
+    <string name="CheckAvailability">Check availability</string>
+    <string name="Name">Name:</string>
+    <string name="Images">Select images</string>    
+	<string name="StorageRationale">Accessing storage is needed for uploading pictures.</string>
+	<string name="StorageNotGranted">Storage read permission was not granted.</string>
+	<string name="ImagesUploading">Wait until the picture finished uploading.</string>
+	<string name="UploadImagePathNotFound">File cannot be accessed. Try uploading from your local storage.</string>
+	<string name="ImagesProgressText">Uploading... (This may take up to a minute.)</string>
+    <string name="ImagesProgressTextPercent">Uploading:</string>    
+    <string name="ImagesRearrange">Press and hold an image to rearrange.</string>
+    <string name="DeleteImage">Delete</string>
+    <string name="Description">Introduction:</string>	
+	
+	<string name="Location">Use location</string>
+	<string name="LocationExplanation">Location enables you to find people in your area.</string>
+	<string name="LocationRationale">Location enables you to find people in your area.</string>
+	<string name="LocationNotGranted">Location permission was not granted.</string>
+	<string name="LocationEnable">Enable location access or change your settings.</string>
+	
+	<string name="LocationShare">Share my location with:</string>
+	<string name="LocationShareAll">Everyone</string>
+	<string name="LocationShareLike">People I liked</string>
+	<string name="LocationShareMatch">People I matched with</string>
+	<string name="LocationShareFriend">My friends</string>
+	<string name="LocationShareNone">No one</string>
+	
+	<string name="DistanceShare">Share my distance with:</string>
+	<string name="DistanceShareAll">Everyone</string>
+	<string name="DistanceShareLike">People I liked</string>
+	<string name="DistanceShareMatch">People I matched with</string>
+	<string name="DistanceShareFriend">My friends</string>
+	<string name="DistanceShareNone">No one</string>
+
+	<string name="Done">Register</string>
+	<string name="Reset">Reset</string>
+	<string name="Cancel">Cancel</string>
+
+	<string name="UsernameAvailable">Username available.</string>
+	<string name="MaxNumImages">The maximum number of pictures is</string>
+	<string name="ImageExists">This image already exists.</string>
+	<string name="SexEmpty">Please specify your sex.</string>
+	<string name="EmailEmpty">Email must be filled in.</string>
+	<string name="EmailWrong">Wrong email format</string>
+	<string name="PasswordShort">Password must be at least 6 characters long.</string>
+	<string name="ConfirmPasswordNoMatch">Passwords do not match.</string>
+	<string name="UsernameEmpty">Username must be filled in.</string>
+	<string name="NameEmpty">Name must be filled in.</string>
+	<string name="ImagesEmpty">At least one image must be uploaded.</string>
+	<string name="DescriptionEmpty">Introduction must be filled in.</string>
+
+	<!-- Profile Edit only -->
+
+	<string name="EditSex">I want to find</string>
+	<string name="Women">Women</string>
+	<string name="Men">Men</string>
+	
+	<string name="EditAccountData">Edit account details</string>
+	<string name="EditChangePassword">Change password</string>
+	<string name="EditLocationSettings">Change location settings</string>
+	<string name="EditMoreOptions">More options</string>
+	
+	<string name="EditOldPassword">Current password:</string>
+	<string name="EditNewPassword">New password:</string>
+	<string name="EditConfirmPassword">Confirm new password:</string>   
+	
+    <string name="EditDone">Save</string>
+	<string name="DeactivateAccount">Deactivate your account</string>
+    <string name="ActivateAccount">Activate your account</string>    
+	<string name="DeleteAccount">Delete your account</string>
+
+	<string name="LastImageToDelete">Last picture cannot be deleted.</string>
+    <string name="UsernameSame">Username not changed.</string>
+	<string name="PasswordNotChanged">New password is same as old.</string>
+	<string name="SettingsUpdated">Update successful.</string>
+    
+    <string name="DialogDeactivate">
+		Are you sure you want to deactivate your account?\n\nIt will no longer be visible and searchable.\nYour matches will still see your name and your small picture, but they neither can go into your page.\nYou can still like or hide people, and get a match.\n\nYour account can be activated again anytime. 
+	</string>
+    <string name="DialogDelete">
+		Are you sure you want to delete your account?\nThis cannot be undone.
+	</string>
+	<string name="Deactivated">Your account is now inactive.</string>
+    <string name="Activated">Your account is now active.</string>
+
+	<!-- List -->
+
+	<string name="loaderHeightNormal">50</string>
+	<string name="maxYNormal">146</string>
+	<string name="bottomSeparatorMarginNormal">62</string> 
+
+	<string name="loaderHeightSmall">42.86</string>
+	<string name="maxYSmall">125.14</string>
+	<string name="bottomSeparatorMarginSmall">53.14</string>
+	
+    <string name="BackPressedInfo">Next press of back button will exit the app.</string>
+    <string name="MapViewNoLocation">Showing map requires location access, or you need to set an address.\n\nDo you want to turn on location now?</string>
+    <string name="MapViewNoUseLocation">Do you want to enable location?</string>
+	<string name="LocationNoUpdate">Location could not be updated.</string>
+    <string name="LocationTimeout">Location could not be acquired.\nIf the problem persists, try turning off own location and setting an address for filtering.</string>
+    <string name="LocationDisabledButUsingLocation">Your setting to use location is on, but permission is not granted.\nLocation is not acquired.</string>
+	
+	<string name="NotLoggedIn">Not logged in.</string>
+	<string name="OpenSearch">Search</string>
+	<string name="OpenFilters">Filters</string>
+	<string name="ListView">List</string>
+	<string name="MapView">Map</string>
+
+	<string name="MenuLogOut">Log out</string>
+    <string name="MenuLogIn">Log in</string>
+    <string name="MenuRegister">Register</string>	
+	<string name="MenuSettings">Settings</string>
+	<string name="MenuLocation">Location history</string>
+	<string name="MenuHelpCenter">Help Center</string>
+    <string name="MenuAbout">About</string>
+
+    <string name="LoggingIn">Logging in...</string>
+	<string name="GettingLocation">Getting location...</string>
+	<string name="LoadingList">Loading...</string>
+    <string name="SettingMap">Setting map...</string>
+	<string name="CouldNotGetLocation">Could not get location.</string>
+	<string name="LocationDisabled">Location permission is not granted.</string>
+    <string name="LocationNotInUse">Location is not in use.</string>
+	<string name="NoLocationSet">Location was not set or acquired.</string>
+    <string name="YourLocation">Your location</string>
+	<string name="ConvertingAddress">Converting address...</string>
+
+	<string name="Search">Search</string>
+	<string-array name="SearchInEntries">
+		<item>All</item>
+		<item>Username</item>
+		<item>Name</item>
+		<item>Introduction</item>
+	</string-array>
+    <string-array name="SearchInEntries_values">
+		<item>all</item>
+		<item>username</item>
+		<item>name</item>
+		<item>bio</item>
+	</string-array>
+	<string name="SearchOK">Search</string>
+	
+	<string name="ListType">List:</string>	
+	<string-array name="ListTypeEntries">
+		<item>All</item>
+		<item>Undecided</item>
+		<item>Friends</item>
+		<item>Matches</item>
+		<item>Liked</item>
+		<item>Liked by</item>
+		<item>Hid</item>
+		<item>Hid by</item>
+	</string-array>
+	<string-array name="ListTypeEntries_values" translatable="false">
+		<item>public</item>
+		<item>undecided</item>
+		<item>friends</item>
+		<item>matches</item>
+		<item>liked</item>
+		<item>likedby</item>
+		<item>hid</item>
+		<item>hidby</item>
+	</string-array>
+    <string-array name="ListTypeEntriesNotLoggedIn">
+		<item>All</item>
+		<item>Women</item>
+		<item>Men</item>
+    </string-array>
+    <string-array name="ListTypeEntriesNotLoggedIn_values">
+		<item>public</item>
+		<item>women</item>
+		<item>men</item>
+    </string-array>
+
+	<string name="SortBy">Sort by:</string>
+	<string name="LastActiveDate">Last active</string>
+	<string name="ResponseRate">Response rate</string>
+	<string name="RegisterDate">Registered</string>
+	
+	<string name="Ascending">Ascending</string>
+	<string name="Descending">Descending</string>
+	
+	<string name="DistanceFiltersOpen">Expand</string>
+	<string name="DistanceFiltersClose">Collapse</string>
+	<string name="UseGeoNo">No location filter</string>
+	<string name="UseGeoYes">Within distance from:</string>
+	<string name="DistanceSourceCurrent">Current location</string>
+	<string name="DistanceSourceAddress">Address/coordinates</string>
+	<string name="RefreshDistance">Refresh</string>
+	<string name="AddressOK">Set</string>	
+	<string name="DistanceUnit">km</string>
+    <string name="MinDistanceMessage">Distance must be at least 1 km.</string>
+	<string name="MaxDistanceMessage">The maximum distance is 20015 km.</string>
+
+	<string name="AddressNoResult">Address not found.</string>
+	<string name="OverQueryLimit">Query limit reached.\nConverting address to coordinates is a paid service, read about current limitations in the Help Center.\nTry again later, or enter coordinates.</string>
+    <string name="GeoFilterNoLocation">No location was set.\nTurn off geographic filtering, acquire current location, or set an address.</string>
+
+	<string name="NoResult">Nobody matched your search criteria.</string>
+	<string name="ResultCount">1 result.</string>
+	<string name="ResultsCount">[num] results.</string>
+	<string name="ResultSetInterval">[start] - [end] of</string>
+	<string name="LoadPrevious">Previous</string>
+	<string name="LoadNext">Next</string>
+
+	<!-- Profile View -->
+	
+	<string name="navigationSpacerHeightNormal">60</string>
+	<string name="paddingSelfPageNormal">10</string>
+	<string name="paddingProfilePageNormal">64</string>
+	<string name="percentProgressWidthNormal">75</string>
+	<string name="buttonElevationNormal">7</string>
+	<string name="counterCircleSizeNormal">9</string>
+
+	<string name="navigationSpacerHeightSmall">51.43</string>
+	<string name="paddingSelfPageSmall">8.57</string>
+	<string name="paddingProfilePageSmall">54.86</string>
+	<string name="percentProgressWidthSmall">64.29</string>
+	<string name="buttonElevationSmall">6</string>
+	<string name="counterCircleSizeSmall">7.71</string>
+	
+	<string name="EditSelf">Edit profile</string>
+    
+    <string name="ShortSecond">sec</string>
+    <string name="ShortSeconds">sec</string>
+    <string name="Second">second</string>
+	<string name="Seconds">seconds</string>
+    <string name="ShortMinute">min</string>
+	<string name="ShortMinutes">min</string>
+	<string name="Minute">minute</string>
+	<string name="Minutes">minutes</string>
+	<string name="Hour">hour</string>
+	<string name="Hours">hours</string>
+	<string name="Day">day</string>
+	<string name="Days">days</string>
+	<string name="Ago">ago</string>
+	<string name="Now">Now</string>
+	<string name="NowSmall">now</string>
+	
+	<string name="ProfileViewLocation">Location</string>
+	<string name="ProfileViewDistance">Distance</string>
+	<string name="ProfileViewAway">away</string>
+    
+    <string name="Like">Like</string>
+    <string name="Hide">Hide</string>     
+    <string name="Reinstate">Unhide</string>
+    <string name="Liked">Liked</string>
+    <string name="Match">It is a match - Chat</string>
+	<string name="IsAMatch">To hide [name], unmatch [sex] first.</string>
+	<string name="SexHim">him</string>
+	<string name="SexHer">her</string>	
+	<string name="DialogMatch">
+		It is a match!
+		Chat now?
+	</string>
+
+	<!-- Chat list -->
+
+	<string name="ChatListBack">Back</string>
+	<string name="ChatListMatch">match.</string>
+	<string name="ChatListMatches">matches.</string>
+	<string name="NoMatch">You don\'t have any matches.</string>
+	<string name="Matched">Matched</string>
+	<string name="Unmatched">Unmatched</string>
+	
+	<!-- Notification list -->
+
+	<string name="NotificationBack">Back</string>
+	
+	<!-- Chat one -->
+
+    <string name="MatchNotFound">Match not found.</string>
+    <string name="ChatOneDataLoading">Wait until data is loaded.</string>
+    <string name="ChangeUpdateCriteria">For real-time updates, location refresh frequency must be at most 60 seconds, with accuracy set to precise. Apply these settings now?</string>
+    <string name="LocationUpdatesToStart">Location updates started.</string>
+    <string name="LocationUpdatesToEnd">Location updates stopped.</string>
+    
+    <string name="MenuStartLocationUpdates">Start sending location updates</string>
+    <string name="MenuStopLocationUpdates">Stop sending location updates</string>
+	<string name="MenuAddFriend">Add to friends</string>
+	<string name="MenuRemoveFriend">Remove from friends</string>    
+	<string name="MenuUnmatch">Unmatch</string>
+	<string name="FriendAdded">Friend added.</string>
+	<string name="FriendRemoved">Friend removed.</string>
+	<string name="DialogUnmatchMatched">
+		Are you sure you want to unmatch from [name]? If [sex] unmatches you, your conversations will not be recoverable.
+	</string>
+	<string name="DialogUnmatchUnmatched">
+		Are you sure you want to unmatch from [name]? Since [sex] already unmatched you, your conversation history will be deleted.
+	</string>
+	<string name="DialogUnmatchDeleted">
+		Are you sure you want to unmatch? Your conversation history will be deleted.
+	</string>
+	<string name="SexHe">he</string>
+	<string name="SexShe">she</string>
+    <string name="NoMessages">No messages yet.</string>
+	<string name="MessageStatusSent">Sent</string>
+	<string name="MessageStatusSeen">Seen</string>
+	<string name="MessageStatusRead">Read</string>
+    
+    <string name="EnableLocationLevelMatch">To send location to [name], enable location sharing with matches, or add [sex] to your friends.</string>
+    <string name="EnableLocationLevelFriend">To send location to [name], enable location sharing with friends.</string>    
+
+	<!-- Settings -->
+    
+    <string name="NotificationsText">Notifications</string>
+	<string name="NotificationsInApp">App in use</string>
+	<string name="NotificationsBackground">Background</string>
+	<string name="NotificationsNewMatchText">New match</string>
+	<string name="NotificationsNewMessageText">New message</string>
+	<string name="NotificationsUnmatchText">Unmatch</string>
+	<string name="NotificationsRematchText">Re-match</string>
+    
+    <string name="DisplaySection">Display</string>
+    <string name="DisplaySizeText">Layout size</string>
+    <string name="SmallDisplaySize">Small</string>
+    <string name="NormalDisplaySize">Normal</string>
+    <string name="MapIconSizeText">Profile icon size on map</string>
+    <string name="MapRatioText">Map height on profile page</string>
+	<string name="LocationText">Location</string>	
+	<string name="LocationAccuracy">Accuracy</string>
+	<string name="LocationAccuracyPrecise">Precise</string>
+	<string name="LocationAccuracyBalanced">Power saving</string>
+	<string name="BackgroundLocation">Update in background</string>
+	<string name="InAppLocationRate">In-app refresh frequency</string>
+	<string name="BackgroundLocationRate">Background refresh frequency</string>
+	
+    <string name="LocationHistory">See your 24-hour location history</string>
+    
+    <string name="SettingsFormCaption">Report an error</string>
+    <string name="SettingsFormSend">Send</string>
+    <string name="ProgramLogIncluded">System log attached.</string>
+    <string name="SeeProgramLog">See log</string>
+    <string name="SettingsSent">Message sent.</string>
+    
+    <!-- Location history -->
+    
+    <string name="NoLocationRecords">No records yet.</string>
+
+	<!-- Help center -->
+
+	<string name="HelpCenterBack">Back</string>
+	<string name="HelpCenterFormCaption">Ask a question or send feedback</string>
+	<string name="HelpCenterFormSend">Send</string>
+    <string name="HelpCenterSent">Message sent.</string>
+</resources>

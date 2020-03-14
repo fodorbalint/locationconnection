@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/ContentBackground"
+    android:id="@+id/MainLayout">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="@string/NoMatch"
+		android:theme="@style/BlackTextSmallNormal"
+        android:visibility="gone"          
+        android:gravity="center_horizontal"
+        android:padding="10dp"
+        android:id="@+id/NoMatch" />
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="0px"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/NoofMatches">
+        <ListView
+    		android:layout_width="match_parent"
+    		android:layout_height="wrap_content"
+            android:background="@color/ListBackground"
+            android:fadeScrollbars="false"
+    		android:id="@+id/ChatUserList" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            app:layout_constraintTop_toBottomOf="@+id/ChatUserList"
+            android:background="@drawable/separator_top_transparent" />
+    </android.support.constraint.ConstraintLayout>
+    <View
+        android:layout_width="0px"
+        android:layout_height="2dp"
+        app:layout_constraintBottom_toTopOf="@+id/NoofMatches"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginRight="62dp"
+        android:background="@drawable/separator_bottom_transparent"
+        android:id="@+id/BottomSeparator" />
+    <View
+		android:layout_width="64dp"
+		android:layout_height="64dp"
+        app:layout_constraintTop_toTopOf="@+id/NoofMatches"
+        app:layout_constraintBottom_toTopOf="@+id/NoofMatches"
+        app:layout_constraintRight_toRightOf="parent"        
+        android:layout_marginRight="0px"
+        android:translationX="2dp"
+        android:background="@drawable/status_round_background"
+        android:id="@+id/MenuChatListBg" />
+    <View
+		android:layout_width="2dp"
+		android:layout_height="2dp"
+        app:layout_constraintLeft_toRightOf="@+id/BottomSeparator"
+        app:layout_constraintBottom_toTopOf="@+id/NoofMatches"
+        android:background="@drawable/status_round_background_corner"
+        android:id="@+id/MenuChatListBgCorner" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="29dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:gravity="center_horizontal|center_vertical"
+        android:background="@color/ContentDarkBackground"
+        android:theme="@style/BlackTextSmallNormal"
+        android:id="@+id/NoofMatches" />
+    <View
+        android:layout_width="30dp"		
+		android:layout_height="30dp"
+        app:layout_constraintTop_toTopOf="@+id/MenuList"
+        app:layout_constraintBottom_toBottomOf="@+id/MenuList"
+        app:layout_constraintLeft_toLeftOf="@+id/MenuList"
+        app:layout_constraintRight_toRightOf="@+id/MenuList"
+        android:alpha="0"
+        android:id="@+id/RippleMain"
+        android:background="@drawable/ripple_main" />
+    <ImageButton
+		android:layout_width="60dp"
+		android:layout_height="60dp"
+        app:layout_constraintTop_toTopOf="@+id/NoofMatches"
+        app:layout_constraintBottom_toTopOf="@+id/NoofMatches"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginRight="0px"
+        android:src="@drawable/ic_grid_normal"
+        android:background="@null"        
+        android:tooltipText="@string/MenuList"
+        android:id="@+id/MenuList" />    
+</android.support.constraint.ConstraintLayout>

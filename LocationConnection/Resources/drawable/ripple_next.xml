@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ripple not working, creates a grey rectangle with a few pixels of padding when set as foreground. Better make my own animation -->
+<!--<ripple xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval" android:color="#FF0000">	
+    <item android:id="@android:id/background">
+        <shape android:shape="oval" android:color="#00FF00" />
+    </item>		
+</ripple>-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
+	<solid android:color="@color/RippleNext" />
+</shape>

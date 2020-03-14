@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--For all properties see: http://developer.android.com/guide/topics/resources/menu-resource.html-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:id="@+id/MenuLogIn"
+		android:showAsAction="always"
+		android:title="@string/MenuLogIn" />
+        
+	<item android:id="@+id/MenuRegister"
+		android:showAsAction="always"
+        android:title="@string/MenuRegister" />
+        
+	<item android:id="@+id/MenuSettings"
+		android:showAsAction="always"
+		android:title="@string/MenuSettings" />
+
+	<item android:id="@+id/MenuLocation"
+		android:showAsAction="always"
+		android:title="@string/MenuLocation" />
+        
+	<item android:id="@+id/MenuHelpCenter"
+		android:showAsAction="always"
+		android:title="@string/MenuHelpCenter" />
+        
+    <item android:id="@+id/MenuAbout"
+		android:showAsAction="always"
+		android:title="@string/MenuAbout" />	
+</menu>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--For all properties see: http://developer.android.com/guide/topics/resources/menu-resource.html-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title=""
+		android:showAsAction="always"
+		android:id="@+id/MenuLocationUpdates" />
+	<item android:title=""
+		android:showAsAction="always"
+		android:id="@+id/MenuFriend" />
+	<item android:title="@string/MenuUnmatch" 
+		android:showAsAction="always"
+		android:id="@+id/MenuUnmatch" />	
+</menu>

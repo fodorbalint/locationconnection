@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--  not supported prior to API level 24: startX, endX, startY, endY and offset. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="64dp"
+    android:height="64dp"
+    android:viewportWidth="64"
+    android:viewportHeight="64">
+  <path
+      android:pathData="M32,32m-32,0a32,32 0,1 1,64 0a32,32 0,1 1,-64 0">
+    <aapt:attr name="android:fillColor">
+      <gradient
+          android:centerX="32"
+          android:centerY="32"
+          android:type="radial"
+          android:gradientRadius="32">
+        <item android:color="#50000000"
+            android:offset="0.94" />
+        <item android:color="#00000000"
+            android:offset="1" />
+      </gradient>
+    </aapt:attr>
+  </path>
+</vector>

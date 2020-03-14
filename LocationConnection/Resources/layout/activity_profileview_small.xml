@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LocationConnection.ProfileViewConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+    android:layout_height="match_parent"
+	android:id="@+id/MainLayout">
+	<android.support.constraint.ConstraintLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+		android:background="@color/ContentBackground"
+        android:scrollbars="vertical"	
+		android:id="@+id/ScrollLayout">
+		<View
+			android:layout_width="match_parent"
+			android:layout_height="36dp"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintBottom_toTopOf="@+id/HeaderBackground"
+			android:id="@+id/EditSpacer" />
+		<View
+			android:layout_width="match_parent"
+			android:layout_height="75.43dp"		
+			app:layout_constraintTop_toBottomOf="@+id/EditSpacer"
+			app:layout_constraintBottom_toTopOf="@+id/ProfileImageContainer"
+            android:background="@color/ContentBackground"				
+			android:id="@+id/HeaderBackground" />
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			app:layout_constraintTop_toTopOf="@+id/HeaderBackground"
+			app:layout_constraintLeft_toLeftOf="parent"
+			android:layout_marginTop="12.86dp"
+			android:layout_marginLeft="54.86dp"
+			android:layout_marginRight="8.57dp"
+			android:singleLine="true"
+			android:textStyle="bold"		
+			android:theme="@style/BlackTextMediumSmall"
+			android:id="@+id/Name" />
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			app:layout_constraintTop_toBottomOf="@+id/Name"
+			app:layout_constraintLeft_toLeftOf="parent"
+			android:layout_marginLeft="54.86dp"
+			android:layout_marginRight="8.57dp"
+			android:singleLine="true"
+			android:theme="@style/BlackTextMediumSmall"
+			android:id="@+id/Username" />
+		<android.support.constraint.ConstraintLayout
+			android:layout_width="wrap_content"
+			android:layout_height="0px"
+			app:layout_constraintTop_toTopOf="@+id/HeaderBackground"
+			app:layout_constraintBottom_toBottomOf="@+id/HeaderBackground"
+			app:layout_constraintRight_toRightOf="@+id/HeaderBackground"
+			android:layout_marginRight="8.57dp">
+			<ImageView
+				android:layout_width="20.57dp"
+				android:layout_height="20.57dp"
+				app:layout_constraintTop_toTopOf="parent"
+				app:layout_constraintLeft_toLeftOf="parent"
+				android:layout_marginTop="6.86dp"
+				android:tooltipText="@string/ResponseRate"
+				android:src="@drawable/ic_chat_two_small"
+				android:id="@+id/ResponseRateIcon" />
+			<View
+				android:layout_width="64.29dp"
+				android:layout_height="8.57dp"
+				app:layout_constraintTop_toTopOf="parent"
+				app:layout_constraintLeft_toRightOf="@+id/ResponseRateIcon"
+				android:layout_marginTop="12.86dp"
+				android:layout_marginLeft="8.57dp"
+				android:background="#C0C0C0"
+				android:id="@+id/PercentProgressBase" />
+			<View
+				android:layout_width="64.29dp"
+				android:layout_height="8.57dp"
+				app:layout_constraintTop_toTopOf="@+id/PercentProgressBase"
+				app:layout_constraintLeft_toLeftOf="@+id/PercentProgressBase"
+				android:id="@+id/PercentProgress" />
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				app:layout_constraintTop_toTopOf="@+id/ResponseRateIcon"
+				app:layout_constraintBottom_toBottomOf="@+id/ResponseRateIcon"
+				app:layout_constraintLeft_toRightOf="@+id/PercentProgressBase"
+				android:layout_marginLeft="8.57dp"
+				android:theme="@style/BlackTextSmallSmall"
+				android:id="@+id/ResponseRate" />
+			<ImageView
+				android:layout_width="20.57dp"
+				android:layout_height="20.57dp"
+				app:layout_constraintLeft_toLeftOf="parent"
+				app:layout_constraintTop_toBottomOf="@+id/ResponseRateIcon"
+				android:tooltipText="@string/LastActiveDate"
+				android:src="@drawable/ic_lightning_small"
+				android:id="@+id/LastActiveDateIcon" />
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"						
+				app:layout_constraintTop_toTopOf="@+id/LastActiveDateIcon"
+				app:layout_constraintBottom_toBottomOf="@+id/LastActiveDateIcon"
+				app:layout_constraintLeft_toRightOf="@+id/LastActiveDateIcon"
+				android:layout_marginLeft="8.57dp"
+                android:theme="@style/BlackTextSmallSmall"
+				android:textStyle="bold"
+				android:id="@+id/LastActiveDate" />
+			<ImageView
+				android:layout_width="20.57dp"
+				android:layout_height="20.57dp"
+				app:layout_constraintLeft_toLeftOf="parent"
+				app:layout_constraintTop_toBottomOf="@+id/LastActiveDateIcon"
+				android:tooltipText="@string/RegisterDate"
+				android:src="@drawable/ic_registered_small"
+				android:id="@+id/RegisterDateIcon" />
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				app:layout_constraintTop_toTopOf="@+id/RegisterDateIcon"
+				app:layout_constraintBottom_toBottomOf="@+id/RegisterDateIcon"
+				app:layout_constraintLeft_toRightOf="@+id/RegisterDateIcon"
+				android:layout_marginLeft="8.57dp"
+				android:theme="@style/BlackTextSmallSmall"
+				android:id="@+id/RegisterDate" />
+		</android.support.constraint.ConstraintLayout>
+        
+		<!--<View
+			android:layout_width="match_parent"
+			android:layout_height="0px"
+			app:layout_constraintTop_toBottomOf="@+id/HeaderBackground"
+			app:layout_constraintBottom_toTopOf="@+id/ProfileImageScroll"
+            android:background="@color/ContentDarkBackground"
+			android:id="@+id/SpacerTop" />-->
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+    		android:layout_height="0px"
+            app:layout_constraintTop_toBottomOf="@+id/HeaderBackground"
+			app:layout_constraintBottom_toTopOf="@+id/Footer"
+            android:background="@color/ContentDarkBackground"
+            android:id="@+id/ProfileImageContainer">
+            <LocationConnection.TouchConstraintLayout
+    			android:layout_width="match_parent"
+    			android:layout_height="0px"
+                app:layout_constraintTop_toTopOf="parent"
+			    app:layout_constraintBottom_toBottomOf="parent"
+    			app:layout_constraintDimensionRatio="1:1"                 
+                android:clickable="true"
+    			android:id="@+id/ProfileImageScroll" />
+        </android.support.constraint.ConstraintLayout>
+		
+		<!--<View
+			android:layout_width="match_parent"
+			android:layout_height="0px"
+			app:layout_constraintTop_toBottomOf="@+id/ProfileImageScroll"
+			app:layout_constraintBottom_toTopOf="@+id/FooterBackground"
+            android:background="@color/ContentDarkBackground"
+			android:id="@+id/SpacerBottom" />-->
+        
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1.71dp"
+            app:layout_constraintTop_toBottomOf="@+id/HeaderBackground"
+            android:background="@drawable/separator_top_transparent" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1.71dp"
+            app:layout_constraintBottom_toTopOf="@+id/Footer"
+            android:background="@drawable/separator_bottom_transparent" />    
+            	
+        <android.support.constraint.ConstraintLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/ProfileImageContainer"
+            app:layout_constraintBottom_toTopOf="@+id/MapContainer"
+            android:paddingTop="8.57dp"
+            android:paddingBottom="8.57dp" 
+            android:background="@color/ContentBackground"                        
+            android:id="@+id/Footer">
+            <TextView
+    			android:layout_width="match_parent"
+    			android:layout_height="wrap_content"
+    			app:layout_constraintTop_toTopOf="parent"
+    			android:paddingLeft="8.57dp"
+    			android:theme="@style/BlackTextSmallSmall"
+    			android:id="@+id/Description" />
+            <TextView
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content"
+    			app:layout_constraintTop_toBottomOf="@+id/Description"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:paddingTop="8.57dp"
+    			android:layout_marginLeft="8.57dp"
+    			android:theme="@style/BlackTextSmallSmall"
+    			android:id="@+id/LocationTime" />
+    		<TextView
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/Description"
+    			app:layout_constraintRight_toRightOf="parent"
+                android:paddingTop="8.57dp"
+    			android:layout_marginRight="8.57dp"
+    			android:theme="@style/BlackTextSmallSmall"
+    			android:id="@+id/DistanceText" />            
+        </android.support.constraint.ConstraintLayout>
+		<LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0px"
+			app:layout_constraintTop_toBottomOf="@+id/Footer"
+			app:layout_constraintBottom_toTopOf="@+id/NavigationSpacer"
+			android:clipChildren="true"
+            android:id="@+id/MapContainer">
+			<fragment 
+				android:layout_width="match_parent"
+				android:layout_height="match_parent" 
+				class="com.google.android.gms.maps.SupportMapFragment"
+				android:id="@+id/ProfileViewMap" />
+		</LinearLayout>
+        <Button
+            android:layout_width="68.57dp"
+        	android:layout_height="22.29dp"
+            app:layout_constraintTop_toTopOf="@+id/MapContainer"
+            app:layout_constraintRight_toLeftOf="@+id/MapSatellite"
+    		android:layout_marginTop="12dp"
+            android:padding="0px"
+    		android:elevation="18dp"
+            android:textAllCaps="false"
+            android:visibility="gone"
+            android:theme="@style/ButtonSmall"
+            android:text="@string/MapStreet"
+            android:id="@+id/MapStreet" />
+        <Button
+            android:layout_width="68.57dp"
+        	android:layout_height="22.29dp"
+            app:layout_constraintTop_toTopOf="@+id/MapContainer"
+            app:layout_constraintRight_toRightOf="@+id/MapContainer"
+    		android:layout_marginTop="12dp"
+            android:layout_marginRight="62dp"
+    		android:padding="0px"
+    		android:elevation="18dp"
+            android:visibility="gone"
+            android:textAllCaps="false"
+            android:theme="@style/ButtonSmall"
+            android:text="@string/MapSatellite"
+            android:id="@+id/MapSatellite" />
+            
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1.71dp"
+            app:layout_constraintTop_toBottomOf="@+id/Footer"
+            android:background="@drawable/separator_top_transparent"
+            android:id="@+id/MapTopSeparator" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1.71dp"
+            app:layout_constraintBottom_toTopOf="@+id/NavigationSpacer"
+            android:background="@drawable/separator_bottom_transparent"
+            android:id="@+id/MapBottomSeparator" />
+                        
+        <View
+        	android:layout_width="match_parent"
+        	android:layout_height="51.43dp"
+        	app:layout_constraintTop_toBottomOf="@+id/MapContainer"
+        	android:id="@+id/NavigationSpacer" />	
+	</android.support.constraint.ConstraintLayout>
+	<View
+		android:layout_width="match_parent"
+		android:layout_height="38.57dp"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintLeft_toLeftOf="parent"
+        android:background="@color/ContentBackground"
+        android:alpha="0.9"        
+		android:id="@+id/EditSelfHeader" />
+        
+	<ImageButton
+		android:src="@drawable/ic_back_small"
+		android:layout_width="30dp"
+		android:layout_height="30dp"
+		app:layout_constraintTop_toTopOf="@+id/EditSelfHeader"
+        app:layout_constraintBottom_toBottomOf="@+id/EditSelfHeader"
+		app:layout_constraintLeft_toLeftOf="@+id/EditSelfHeader"
+		android:layout_marginLeft="17.14dp"
+		android:tooltipText="@string/Back"
+		android:background="@null"
+		android:id="@+id/EditSelfBack" />
+	<Button
+		android:layout_width="0px"
+		android:layout_height="38.57dp"
+		app:layout_constraintTop_toTopOf="@+id/EditSelfHeader"
+        app:layout_constraintBottom_toBottomOf="@+id/EditSelfHeader"
+		app:layout_constraintLeft_toRightOf="@+id/EditSelfBack"
+		app:layout_constraintRight_toRightOf="@+id/EditSelfHeader"
+        android:layout_marginLeft="17.14dp"
+        android:textAllCaps="false"
+        android:backgroundTint="@color/ButtonOnContent"
+        android:theme="@style/ButtonSmall"
+		android:text="@string/EditSelf"
+		android:id="@+id/EditSelf" />
+    
+    <View
+        android:layout_width="25.71dp"		
+		android:layout_height="25.71dp"
+        android:alpha="0"
+        android:id="@+id/RippleImageNext"
+        android:background="@drawable/ripple_next" />
+    <View
+        android:layout_width="25.71dp"		
+		android:layout_height="25.71dp"
+        android:alpha="0"
+        android:id="@+id/RippleImagePrev"
+        android:background="@drawable/ripple_prev" />    
+	<ImageButton
+		android:src="@drawable/ic_profile_back_small"
+		android:layout_width="51.43dp"
+		android:layout_height="51.43dp"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintLeft_toLeftOf="parent"
+		android:layout_marginTop="8.57dp"
+		android:tooltipText="@string/Back"
+        android:background="@drawable/icon_background_round"
+        android:id="@+id/BackButton" />
+	<ImageButton
+		android:src="@drawable/ic_previous_small"
+        android:layout_width="51.43dp"
+        android:layout_height="51.43dp"
+		app:layout_constraintLeft_toLeftOf="parent"
+		app:layout_constraintRight_toLeftOf="@+id/BottomSpacerLeft"
+		app:layout_constraintBottom_toBottomOf="parent"
+		android:layout_marginRight="8.57dp"
+        android:elevation="6dp"
+		android:tooltipText="@string/Previous"
+        android:background="@drawable/icon_background_round"
+        android:id="@+id/PreviousButton" />
+	<View
+		android:layout_width="0px"		
+		android:layout_height="0px"
+		app:layout_constraintLeft_toRightOf="@+id/PreviousButton"
+		app:layout_constraintRight_toLeftOf="@+id/HideButton"
+		app:layout_constraintBottom_toBottomOf="parent"
+		android:id="@+id/BottomSpacerLeft" />
+	<ImageButton
+		android:src="@drawable/ic_hide_small"
+        android:layout_width="51.43dp"
+        android:layout_height="51.43dp"
+		app:layout_constraintLeft_toRightOf="@+id/BottomSpacerLeft"
+		app:layout_constraintRight_toLeftOf="@+id/LikeButton"
+		app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginLeft="8.57dp"
+        android:layout_marginRight="8.57dp"
+        android:elevation="6dp"
+        android:background="@drawable/icon_background_round"
+        android:id="@+id/HideButton" />
+	<ImageButton
+		android:src="@drawable/ic_like_small"
+        android:layout_width="51.43dp"
+        android:layout_height="51.43dp"
+		app:layout_constraintLeft_toRightOf="@+id/HideButton"
+		app:layout_constraintRight_toLeftOf="@+id/BottomSpacerRight"
+		app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginLeft="8.57dp"
+        android:layout_marginRight="8.57dp"
+        android:elevation="6dp"
+        android:background="@drawable/icon_background_round" 
+        android:id="@+id/LikeButton" />
+	<View
+		android:layout_width="0px"		
+		android:layout_height="0px"
+		app:layout_constraintLeft_toRightOf="@+id/LikeButton"
+		app:layout_constraintRight_toLeftOf="@id/NextButton"
+		app:layout_constraintBottom_toBottomOf="parent"
+		android:id="@+id/BottomSpacerRight" />
+	<ImageButton
+		android:src="@drawable/ic_next_small"
+        android:layout_width="51.43dp"
+        android:layout_height="51.43dp"		
+		app:layout_constraintLeft_toRightOf="@+id/BottomSpacerRight"
+		app:layout_constraintRight_toRightOf="parent"
+		app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginLeft="8.57dp"
+        android:elevation="6dp"
+		android:tooltipText="@string/Next"
+        android:background="@drawable/icon_background_round"
+        android:id="@+id/NextButton" />
+</LocationConnection.ProfileViewConstraintLayout>
+

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/ItemMainLayout">
+    <ImageView
+		android:layout_width="85.71dp"
+		android:layout_height="85.71dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+		android:id="@+id/Image" />
+    <TextView
+		android:layout_width="0px"
+		android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/Image"
+        app:layout_constraintRight_toRightOf="parent"
+        android:paddingTop="1.71dp"
+        android:paddingBottom="1.71dp"
+        android:paddingLeft="5.14dp"
+        android:theme="@style/BlackTextMediumSmall"
+		android:textStyle="bold"
+		android:singleLine="true"
+		android:ellipsize="end"
+        android:background="@color/ChatHeader"
+		android:id="@+id/Name" />
+    <LinearLayout
+		android:layout_width="0px"
+		android:layout_height="0px"
+		app:layout_constraintTop_toBottomOf="@+id/Name"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/Image"
+        app:layout_constraintRight_toRightOf="parent"
+        android:orientation="vertical"
+		android:id="@+id/ChatItems">
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="0px"
+			android:layout_weight="1"
+			android:paddingLeft="5.14dp"
+			android:gravity="center_vertical" />
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="0px"
+			android:layout_weight="1"
+			android:paddingLeft="5.14dp"
+			android:gravity="center_vertical" />
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="0px"
+			android:layout_weight="1"
+			android:paddingLeft="5.14dp"
+			android:gravity="center_vertical" />
+	</LinearLayout>
+</android.support.constraint.ConstraintLayout>

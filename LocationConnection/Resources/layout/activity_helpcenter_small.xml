@@ -1,0 +1,106 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+	android:background="@android:color/white"
+    android:id="@+id/MainLayout">
+	<ImageButton
+		android:src="@drawable/ic_back_small"
+		android:layout_width="30dp"
+    	android:layout_height="30dp"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/HeaderSpacer"
+		android:layout_marginTop="8.57dp"
+		android:layout_marginLeft="8.57dp"
+		android:tooltipText="@string/Back"
+		android:background="?attr/selectableItemBackgroundBorderless"
+		android:id="@+id/HelpCenterBack" />
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		app:layout_constraintTop_toTopOf="@+id/HelpCenterBack"
+		app:layout_constraintBottom_toBottomOf="@+id/HelpCenterBack"
+		app:layout_constraintRight_toRightOf="parent"
+		android:layout_marginRight="17.14dp"
+		android:theme="@style/BlackText20Small"
+		android:text="@string/MenuHelpCenter"
+		android:id="@+id/HelpCenterHeaderText" />    
+    <View android:layout_width="match_parent"
+		android:layout_height="8.57dp"
+        app:layout_constraintTop_toBottomOf="@+id/HelpCenterBack"
+        app:layout_constraintBottom_toTopOf="@+id/QuestionsScroll"
+        android:id="@+id/HeaderSpacer" />
+        
+	<ScrollView
+		android:layout_width="match_parent"
+		android:layout_height="0px"
+		app:layout_constraintTop_toBottomOf="@+id/HeaderSpacer"
+		app:layout_constraintBottom_toTopOf="@+id/HelpCenterFormCaption"
+        android:fadeScrollbars="false"
+        android:id="@+id/QuestionsScroll">
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical"
+            android:paddingTop="8.57dp" 
+            android:paddingBottom="8.57dp"
+            android:paddingLeft="8.57dp"
+            android:paddingRight="8.57dp"
+			android:id="@+id/QuestionsContainer" />
+	</ScrollView>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1.71dp"
+        app:layout_constraintTop_toTopOf="@+id/QuestionsScroll"
+        android:background="@drawable/separator_top_transparent" /> 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1.71dp"
+        app:layout_constraintBottom_toTopOf="@+id/HelpCenterFormCaption"
+        android:background="@drawable/separator_bottom_transparent" /> 
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		app:layout_constraintTop_toBottomOf="@+id/QuestionsScroll"
+		app:layout_constraintBottom_toTopOf="@+id/MessageEdit"
+		android:text="@string/HelpCenterFormCaption"
+		android:theme="@style/BlackTextMediumSmall"
+		android:textStyle="bold"		
+		android:padding="8.57dp"
+        android:background="@color/ContentBackground"
+		android:id="@+id/HelpCenterFormCaption" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1.71dp"
+        app:layout_constraintTop_toBottomOf="@+id/HelpCenterFormCaption"
+        android:background="@drawable/separator_top_transparent" /> 
+	<EditText
+		android:layout_width="match_parent"
+		android:layout_height="0px"
+		app:layout_constraintTop_toBottomOf="@+id/HelpCenterFormCaption"
+		app:layout_constraintBottom_toTopOf="@+id/MessageSend"
+		android:layout_marginLeft="8.57dp"
+		android:layout_marginRight="8.57dp"
+		android:layout_marginTop="8.57dp"		
+		android:gravity="top"
+        style="@android:style/Widget.EditText"	
+        android:theme="@style/EditSmall"		
+		android:id="@+id/MessageEdit" />
+	<Button
+		android:layout_width="85.71dp"
+		android:layout_height="38.57dp"
+		app:layout_constraintTop_toBottomOf="@+id/MessageEdit"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintLeft_toLeftOf="parent"
+		android:layout_marginLeft="8.57dp"
+		android:layout_marginBottom="8.57dp"
+        android:textAllCaps="false"
+        android:backgroundTint="@color/ButtonOnWhite"
+        android:theme="@style/ButtonSmall"
+        android:text="@string/HelpCenterFormSend"
+		android:id="@+id/MessageSend" />
+</android.support.constraint.ConstraintLayout>
