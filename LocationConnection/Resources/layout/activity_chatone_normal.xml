@@ -71,8 +71,17 @@
                 android:singleLine="true"
 				android:id="@+id/UnmatchDate" />
 		</android.support.constraint.ConstraintLayout>   
-	</android.support.v7.widget.Toolbar>	
-	<ScrollView
+	</android.support.v7.widget.Toolbar>
+    <ListView
+    	android:layout_width="match_parent"
+		android:layout_height="0px"
+        app:layout_constraintTop_toBottomOf="@+id/PageToolbar"
+        app:layout_constraintBottom_toTopOf="@+id/ChatEditMessageContainer"
+        android:fadeScrollbars="false"
+        android:divider="@null"
+        android:listSelector="@android:color/transparent"
+    	android:id="@+id/ChatMessageWindow" />	
+	<!--<ScrollView
 		android:layout_width="match_parent"
 		android:layout_height="0px"
         app:layout_constraintTop_toBottomOf="@+id/PageToolbar"
@@ -87,7 +96,7 @@
             android:padding="10dp"
 			android:id="@+id/ChatMessageWindow">
 		</LinearLayout>
-	</ScrollView>
+	</ScrollView>-->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -101,17 +110,17 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        app:layout_constraintTop_toTopOf="@+id/ChatMessageWindowScroll"
+        app:layout_constraintTop_toTopOf="@+id/ChatMessageWindow"
         android:background="@drawable/separator_top_transparent" />
     <View
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        app:layout_constraintBottom_toBottomOf="@+id/ChatMessageWindowScroll"
+        app:layout_constraintBottom_toBottomOf="@+id/ChatMessageWindow"
         android:background="@drawable/separator_bottom_transparent" />
 	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/ChatMessageWindowScroll"
+        app:layout_constraintTop_toBottomOf="@+id/ChatMessageWindow"
         app:layout_constraintBottom_toBottomOf="parent"
         android:padding="7dp"
         android:background="@android:color/white"

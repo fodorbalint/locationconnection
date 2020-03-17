@@ -14,6 +14,7 @@ using Android.Widget;
 using Android.Support.Design.Widget;
 using Android.Support.Constraints;
 using System.Timers;
+using System.Reflection;
 
 namespace LocationConnection
 {
@@ -101,7 +102,6 @@ namespace LocationConnection
 					responseString = responseString.Substring(3);
 					if (responseString != "")
 					{
-						c.LogActivity("ChatOne OnResume NoMatch " + NoMatch + " ChatUserList " + ChatUserList + " NoofMatches " + NoofMatches + " res " + res);
 						NoMatch.Visibility = ViewStates.Gone;
 						ServerParser<MatchItem> parser = new ServerParser<MatchItem>(responseString);
 						matchList = parser.returnCollection;
@@ -111,7 +111,8 @@ namespace LocationConnection
 					}
 					else
 					{
-						adapter = new ChatUserListAdapter(this, new List<MatchItem>());
+						matchList = new List<MatchItem>();
+						adapter = new ChatUserListAdapter(this, matchList);
 						ChatUserList.Adapter = adapter;
 						NoMatch.Visibility = ViewStates.Visible;
 						NoofMatches.Text = "";
@@ -121,6 +122,7 @@ namespace LocationConnection
 				{
 					c.ReportError(responseString);
 				}
+				
 			}
 			catch (Exception ex)
 			{
@@ -146,7 +148,6 @@ namespace LocationConnection
 			{
 				if (matchList[i].TargetID == senderID)
 				{
-					c.LogActivity("InsertMessage i " + i + " matchList.Count" + matchList.Count);
 					if (matchList[i].Chat.Length == 3)
 					{
 						matchList[i].Chat[0] = matchList[i].Chat[1];
@@ -160,8 +161,7 @@ namespace LocationConnection
 						matchList[i].Chat = chatList.ToArray();
 					}
 
-					ChatUserListAdapter adapter = new ChatUserListAdapter(this, matchList);
-					ChatUserList.Adapter = adapter;
+					adapter.NotifyDataSetChanged();
 					c.MakeRequest("action=messagedelivered&ID=" + Session.ID + "&SessionID=" + Session.SessionID + "&MatchID=" + matchList[i].MatchID + "&MessageID=" + messageID + "&Status=Seen");
 				}
 			}
@@ -171,6 +171,9 @@ namespace LocationConnection
 		{
 			matchList.Insert(0, item);
 			adapter.NotifyDataSetChanged();
+
+			NoMatch.Visibility = ViewStates.Gone;
+			NoofMatches.Text = (matchList.Count == 1) ? "1 " + res.GetString(Resource.String.ChatListMatch) : matchList.Count + " " + res.GetString(Resource.String.ChatListMatches);
 		}
 
 		public void UpdateMatchItem(int matchID, bool active, long? unmatchDate)
@@ -235,7 +238,21 @@ namespace LocationConnection
 
 		public void ClickListItem(int index)
 		{
-			Session.CurrentMatch = matchList[index];
+			//if writing Session.CurrentMatch = matchList[index], changes in Session when loading Chat One would also apply to matchList
+			MatchItem clickedMatch = matchList[index];
+			MatchItem sessionMatchItem = Session.CurrentMatch = new MatchItem();
+
+			Type type = typeof(MatchItem);
+			FieldInfo[] fieldInfos = type.GetFields();
+			foreach (FieldInfo field in fieldInfos)
+			{
+				object value = field.GetValue(clickedMatch);
+				if (value != null)
+				{
+					field.SetValue(sessionMatchItem, value);
+				}
+			};
+
 			Intent i = new Intent(this, typeof(ChatOneActivity));
 			i.SetFlags(ActivityFlags.ReorderToFront);
 			StartActivity(i);

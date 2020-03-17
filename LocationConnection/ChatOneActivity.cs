@@ -1,6 +1,3 @@
-//menu: share location, unmatch
-//read status update when partner loads messages?
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,33 +22,35 @@ using Android.Util;
 using Android.Views.InputMethods;
 using Android.Support.Constraints;
 using System.Globalization;
+using Java.Interop;
 
 namespace LocationConnection
 {
 	[Activity(MainLauncher = false, ConfigurationChanges = Android.Content.PM.ConfigChanges.Orientation | Android.Content.PM.ConfigChanges.ScreenSize)]
-	public class ChatOneActivity : BaseActivity
+	public class ChatOneActivity : BaseActivity, AbsListView.IOnScrollListener
 	{
+		public new View MainLayout;
 		Android.Support.V7.Widget.Toolbar PageToolbar;
 		ConstraintLayout ChatViewProfile;
-		LinearLayout ChatMessageWindow;		
+		public ListView ChatMessageWindow;		
 		IMenuItem MenuFriend, MenuLocationUpdates;
 		ImageButton ChatOneBack, ChatSendMessage;
 		ImageView ChatTargetImage;
 		TextView TargetName, MatchDate, UnmatchDate;
 		public TextView NoMessages;
-		ScrollView ChatMessageWindowScroll;
 		public EditText ChatEditMessage;
 
 		public Resources res;
 		InputMethodManager imm;
+		ChatMessageWindowAdapter adapter;
 		List<MessageItem> messageItems;
 		string earlyDelivery;
 
-		int messageItemLayout;
-		int messageOwn;
-		int messageTarget;
+		public int messageOwn;
+		public int messageTarget;
 		bool menuCreated;
 		bool dataLoadStarted;
+		public int currentLastVisibleItem;
 
 		protected override void OnCreate(Bundle savedInstanceState)
 		{
@@ -63,14 +62,12 @@ namespace LocationConnection
 				if (Settings.DisplaySize == 1)
 				{
 					SetContentView(Resource.Layout.activity_chatone_normal);
-					messageItemLayout = Resource.Layout.message_item_normal;
 					messageOwn = Resource.Drawable.message_own_normal;
 					messageTarget = Resource.Drawable.message_target_normal;
 				}
 				else
 				{
 					SetContentView(Resource.Layout.activity_chatone_small);
-					messageItemLayout = Resource.Layout.message_item_small;
 					messageOwn = Resource.Drawable.message_own_small;
 					messageTarget = Resource.Drawable.message_target_small;
 				}
@@ -83,8 +80,7 @@ namespace LocationConnection
 				TargetName = FindViewById<TextView>(Resource.Id.TargetName);
 				MatchDate = FindViewById<TextView>(Resource.Id.MatchDate);
 				UnmatchDate = FindViewById<TextView>(Resource.Id.UnmatchDate);
-				ChatMessageWindowScroll = FindViewById<ScrollView>(Resource.Id.ChatMessageWindowScroll);
-				ChatMessageWindow = FindViewById<LinearLayout>(Resource.Id.ChatMessageWindow);
+				ChatMessageWindow = FindViewById<ListView>(Resource.Id.ChatMessageWindow);
 				NoMessages = FindViewById<TextView>(Resource.Id.NoMessages);
 				ChatEditMessage = FindViewById<EditText>(Resource.Id.ChatEditMessage);
 				ChatSendMessage = FindViewById<ImageButton>(Resource.Id.ChatSendMessage);
@@ -98,12 +94,26 @@ namespace LocationConnection
 
 				ChatOneBack.Click += ChatOneBack_Click;
 				ChatViewProfile.Click += ChatViewProfile_Click;
-				ChatEditMessage.FocusChange += ChatEditMessage_FocusChange;
 				ChatSendMessage.Click += ChatSendMessage_Click;
+
+				ChatMessageWindow.SetOnScrollListener(this);
+				MainLayout.ViewTreeObserver.AddOnGlobalLayoutListener(new KeyboardListener(this));
 			}
 			catch (Exception ex)
 			{
 				c.ReportError(ex.Message + System.Environment.NewLine + ex.StackTrace);
+			}
+		}
+
+		public void OnScroll(AbsListView lw, int firstVisibleItem, int visibleItemCount, int totalItemCount)
+		{
+		}
+
+		public void OnScrollStateChanged(AbsListView view, [GeneratedEnum] ScrollState scrollState) //called when users starts or stops scrolling, and when scolling animation stops
+		{
+			if (scrollState == ScrollState.Idle)
+			{
+				currentLastVisibleItem = ChatMessageWindow.LastVisiblePosition;
 			}
 		}
 
@@ -311,8 +321,6 @@ namespace LocationConnection
 
 		private void LoadMessages(string responseString, bool merge)
 		{
-			ChatMessageWindow.RemoveAllViews(); //could request only the new chat items, but it will not work if the activity is recreated.			
-
 			responseString = responseString.Substring(3);
 
 			if (!merge)
@@ -370,14 +378,6 @@ namespace LocationConnection
 			}
 			else
 			{
-				if (!(bool)Session.CurrentMatch.ActiveAccount) //target deactivated their account
-				{
-					ChatViewProfile.Click -= ChatViewProfile_Click;
-				}
-				else //target unmatched
-				{
-					ChatViewProfile.Click += ChatViewProfile_Click;
-				}
 				MenuLocationUpdates.SetVisible(false);
 				ChatEditMessage.Enabled = false;
 				ChatSendMessage.Enabled = false;
@@ -396,22 +396,92 @@ namespace LocationConnection
 			messageItems = new List<MessageItem>();
 			if (Session.CurrentMatch.Chat.Length != 0)
 			{
-				System.Diagnostics.Stopwatch stw = new System.Diagnostics.Stopwatch();
-				stw.Start();
-
 				NoMessages.Visibility = ViewStates.Gone;
 				foreach (string item in Session.CurrentMatch.Chat)
 				{
 					AddMessageItem(item);
 				}
-
-				c.CW(Session.CurrentMatch.Chat.Length + " item created in " + stw.ElapsedMilliseconds); // 213 item created in 646 ms / 385 ms on subsequent loading
-				SetScrollTimer();
 			}
 			else
 			{
 				NoMessages.Visibility = ViewStates.Visible;
 			}
+			adapter = new ChatMessageWindowAdapter(this, messageItems);
+			ChatMessageWindow.Adapter = adapter; //Without using list, 213 item created in 646 ms / 385 ms on subsequent loading
+			ScrollToBottom(false);
+		}
+
+		public void AddMessageItem(string messageItem)
+		{
+			int sep1Pos = messageItem.IndexOf('|');
+			int sep2Pos = messageItem.IndexOf('|', sep1Pos + 1);
+			int sep3Pos = messageItem.IndexOf('|', sep2Pos + 1);
+			int sep4Pos = messageItem.IndexOf('|', sep3Pos + 1);
+			int sep5Pos = messageItem.IndexOf('|', sep4Pos + 1);
+
+			MessageItem item = new MessageItem
+			{
+				MessageID = int.Parse(messageItem.Substring(0, sep1Pos)),
+				SenderID = int.Parse(messageItem.Substring(sep1Pos + 1, sep2Pos - sep1Pos - 1)),
+				SentTime = long.Parse(messageItem.Substring(sep2Pos + 1, sep3Pos - sep2Pos - 1)),
+				SeenTime = long.Parse(messageItem.Substring(sep3Pos + 1, sep4Pos - sep3Pos - 1)),
+				ReadTime = long.Parse(messageItem.Substring(sep4Pos + 1, sep5Pos - sep4Pos - 1)),
+				Content = c.UnescapeBraces(messageItem.Substring(sep5Pos + 1))
+			};
+			messageItems.Add(item);
+		}
+
+		public void AddMessageItemOne(string messageItem)
+		{
+			NoMessages.Visibility = ViewStates.Gone;
+			AddMessageItem(messageItem);
+			adapter.NotifyDataSetChanged();
+			ScrollToBottom(true);
+		}
+
+		public void UpdateMessageItem(string meta) // MessageID|SentTime|SeenTime|ReadTime 
+		{
+			//situation: sending two chats at the same time.
+			//both parties will be their message first (it is faster to get a response from a server than the server sending a cloud message to the recipient)
+			//but for one person their message is actually the second.
+			//if someone sends 2 messages within 2 seconds, the tags may be the same. What are the consequences? In practice it is not a situation we have to deal with.
+
+			int sep1Pos = meta.IndexOf('|');
+			int sep2Pos = meta.IndexOf('|', sep1Pos + 1);
+			int sep3Pos = meta.IndexOf('|', sep2Pos + 1);
+
+			int messageID = int.Parse(meta.Substring(0, sep1Pos));
+			long sentTime = long.Parse(meta.Substring(sep1Pos + 1, sep2Pos - sep1Pos - 1));
+			long seenTime = long.Parse(meta.Substring(sep2Pos + 1, sep3Pos - sep2Pos - 1));
+			long readTime = long.Parse(meta.Substring(sep3Pos + 1));
+
+			int messageIndex = messageID - 1;
+
+			if (messageIndex >= messageItems.Count) //message exists
+			{
+				earlyDelivery = meta;
+				return;
+			}
+			MessageItem item = messageItems[messageIndex];
+
+			if (item.MessageID == messageID) //normal case
+			{
+				item.SentTime = sentTime;
+				item.SeenTime = seenTime;
+				item.ReadTime = readTime;
+			}
+			else //two messages were sent at the same time from both parties, and for one, the order of the two messages may be the other way, if the server response was faster than google cloud.
+			{
+				messageIndex = messageIndex - 1;
+				item = messageItems[messageIndex];
+				if (item.MessageID == messageID)
+				{
+					item.SentTime = sentTime;
+					item.SeenTime = seenTime;
+					item.ReadTime = readTime;
+				}
+			}
+			adapter.NotifyDataSetChanged();
 		}
 
 		public void UpdateStatus(int senderID, bool active, long? unmatchDate)
@@ -445,6 +515,55 @@ namespace LocationConnection
 					ChatSendMessage.Enabled = false;
 					ChatSendMessage.ImageAlpha = 128;
 				}
+			}
+		}
+
+		private async void ChatSendMessage_Click(object sender, EventArgs e)
+		{
+			string message = ChatEditMessage.Text;
+			imm.HideSoftInputFromWindow(ChatEditMessage.WindowToken, 0);
+
+			if (message.Length != 0)
+			{
+				ChatSendMessage.Enabled = false; //to prevent mulitple clicks			
+				string responseString = await c.MakeRequest("action=sendmessage&ID=" + Session.ID + "&SessionID=" + Session.SessionID + "&MatchID=" + Session.CurrentMatch.MatchID + "&message=" + c.UrlEncode(message));
+				if (responseString.Substring(0, 2) == "OK")
+				{
+					ChatEditMessage.Text = "";
+					MainLayout.RequestFocus();
+
+					string messageItem;
+					if (earlyDelivery is null)
+					{
+						responseString = responseString.Substring(3);
+						int sep1Pos = responseString.IndexOf("|");
+						int sep2Pos = responseString.IndexOf("|", sep1Pos + 1);
+						int messageID = int.Parse(responseString.Substring(0, sep1Pos));
+						long sentTime = long.Parse(responseString.Substring(sep1Pos + 1, sep2Pos - sep1Pos - 1));
+						string newRate = responseString.Substring(sep2Pos + 1);
+						messageItem = messageID + "|" + Session.ID + "|" + sentTime + "|0|0|" + message;
+						if (newRate != "")
+						{
+							Session.ResponseRate = float.Parse(newRate, CultureInfo.InvariantCulture);
+						}
+					}
+					else
+					{
+						messageItem = earlyDelivery + "|" + message;
+						earlyDelivery = null;
+					}
+
+					AddMessageItemOne(messageItem);
+				}
+				else if (responseString.Substring(0, 6) == "ERROR_")
+				{
+					c.SnackStr(res.GetString(Resources.GetIdentifier(responseString.Substring(6), "string", PackageName)).Replace("[name]", Session.CurrentMatch.TargetName), null);
+				}
+				else
+				{
+					c.ReportError(responseString);
+				}
+				ChatSendMessage.Enabled = true;
 			}
 		}
 
@@ -624,246 +743,46 @@ namespace LocationConnection
 			OnBackPressed();
 		}
 
-		private void ChatEditMessage_FocusChange(object sender, View.FocusChangeEventArgs e)
+		public bool IsBottom()
 		{
-			if (e.HasFocus)
-			{
-				Timer t = new Timer();
-				t.Interval = 200;
-				t.Elapsed += T_Elapsed;
-				t.Start();
-			}
+			return currentLastVisibleItem == adapter.Count - 1;
 		}
 
-		private void T_Elapsed(object sender, ElapsedEventArgs e)
+		public void ScrollToBottom(bool animated)
 		{
-			((Timer)sender).Stop();
-			this.RunOnUiThread(() => { ChatMessageWindowScroll.FullScroll(FocusSearchDirection.Down); });
-		}
-
-		private async void ChatSendMessage_Click(object sender, EventArgs e)
-		{
-			string message = ChatEditMessage.Text;
-			imm.HideSoftInputFromWindow(ChatEditMessage.WindowToken, 0);
-
-			if (message.Length != 0)
+			if (animated)
 			{
-				ChatSendMessage.Enabled = false; //to prevent mulitple clicks			
-				string responseString = await c.MakeRequest("action=sendmessage&ID=" + Session.ID + "&SessionID=" + Session.SessionID + "&MatchID=" + Session.CurrentMatch.MatchID + "&message=" + c.UrlEncode(message));
-				if (responseString.Substring(0, 2) == "OK")
-				{
-					ChatEditMessage.Text = "";
-					MainLayout.RequestFocus();
-
-					string messageItem;
-					if (earlyDelivery is null)
-					{
-						responseString = responseString.Substring(3);
-						int sep1Pos = responseString.IndexOf("|");
-						int sep2Pos = responseString.IndexOf("|", sep1Pos + 1);
-						int messageID = int.Parse(responseString.Substring(0, sep1Pos));
-						long sentTime = long.Parse(responseString.Substring(sep1Pos + 1, sep2Pos - sep1Pos - 1));
-						string newRate = responseString.Substring(sep2Pos + 1);
-						messageItem = messageID + "|" + Session.ID + "|" + sentTime + "|0|0|" + message;
-						if (newRate != "")
-						{
-							Session.ResponseRate = float.Parse(newRate, CultureInfo.InvariantCulture);
-						}
-					}
-					else
-					{
-						messageItem = earlyDelivery + "|" + message;
-						earlyDelivery = null;
-					}
-
-					NoMessages.Visibility = ViewStates.Gone;
-					AddMessageItem(messageItem);
-					SetScrollTimer();
-				}
-				else if (responseString.Substring(0, 6) == "ERROR_")
-				{
-					c.SnackStr(res.GetString(Resources.GetIdentifier(responseString.Substring(6), "string", PackageName)).Replace("[name]", Session.CurrentMatch.TargetName), null);
-				}
-				else
-				{
-					c.ReportError(responseString);
-				}
-				ChatSendMessage.Enabled = true;
-			}
-		}
-
-		public void AddMessageItem(string messageItem)
-		{
-			int sep1Pos = messageItem.IndexOf('|');
-			int sep2Pos = messageItem.IndexOf('|', sep1Pos + 1);
-			int sep3Pos = messageItem.IndexOf('|', sep2Pos + 1);
-			int sep4Pos = messageItem.IndexOf('|', sep3Pos + 1);
-			int sep5Pos = messageItem.IndexOf('|', sep4Pos + 1);
-
-			MessageItem item = new MessageItem
-			{
-				MessageID = int.Parse(messageItem.Substring(0, sep1Pos)),
-				SenderID = int.Parse(messageItem.Substring(sep1Pos + 1, sep2Pos - sep1Pos - 1)),
-				SentTime = long.Parse(messageItem.Substring(sep2Pos + 1, sep3Pos - sep2Pos - 1)),
-				SeenTime = long.Parse(messageItem.Substring(sep3Pos + 1, sep4Pos - sep3Pos - 1)),
-				ReadTime = long.Parse(messageItem.Substring(sep4Pos + 1, sep5Pos - sep4Pos - 1)),
-				Content = c.UnescapeBraces(messageItem.Substring(sep5Pos + 1))
-			};
-
-			View view;
-			view = LayoutInflater.Inflate(messageItemLayout, ChatMessageWindow, false);
-			
-			LinearLayout MessageTextContainer = view.FindViewById<LinearLayout>(Resource.Id.MessageTextContainer);
-			TextView MessageText = view.FindViewById<TextView>(Resource.Id.MessageText);			
-			View SpacerLeft = view.FindViewById<View>(Resource.Id.SpacerLeft);
-			View SpacerRight = view.FindViewById<View>(Resource.Id.SpacerRight);
-			if (item.SenderID == Session.ID)
-			{
-				MessageTextContainer.SetHorizontalGravity(GravityFlags.Right);
-				SpacerRight.Visibility = ViewStates.Gone;
-				MessageText.SetBackgroundResource(messageOwn);
+				ChatMessageWindow.SmoothScrollToPosition(adapter.Count - 1);
 			}
 			else
 			{
-				MessageTextContainer.SetHorizontalGravity(GravityFlags.Left);
-				SpacerLeft.Visibility = ViewStates.Gone;
-				MessageText.SetBackgroundResource(messageTarget);
-			}
-			MessageText.Text = item.Content;
-
-			SetMessageTime(view, item.SentTime, item.SeenTime, item.ReadTime);
-
-			messageItems.Add(item);
-			ChatMessageWindow.AddView(view);			
-		}
-
-		public void SetMessageTime(View view, long sentTime, long seenTime, long readTime)
-		{
-			TextView TimeText = view.FindViewById<TextView>(Resource.Id.TimeText);
-
-			DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
-			DateTime sentDate = dateTime.AddSeconds(sentTime).ToLocalTime();
-			if (sentDate.Date == DateTime.Today)
-			{
-				TimeText.Text = res.GetString(Resource.String.MessageStatusSent) + " " + sentDate.ToString("HH:mm");
-			}
-			else
-			{
-				if (sentDate.Year == DateTime.Now.Year)
-				{
-					TimeText.Text = res.GetString(Resource.String.MessageStatusSent) + " " + sentDate.ToString("dd MMM HH:mm");
-				}
-				else
-				{
-					TimeText.Text = res.GetString(Resource.String.MessageStatusSent) + " " + sentDate.ToString("dd MMM yyyy HH:mm");
-				}
-
-			}
-
-			if (readTime != 0)
-			{
-				DateTime readDate = dateTime.AddSeconds(readTime).ToLocalTime();
-				if (readTime < sentTime + 60)
-				{
-					TimeText.Text += " - " + res.GetString(Resource.String.MessageStatusRead);
-				}
-				else if (readDate.Date == sentDate.Date)
-				{
-					TimeText.Text += " - " + res.GetString(Resource.String.MessageStatusRead) + " " + readDate.ToString("HH:mm");
-				}
-				else
-				{
-					if (readDate.Year == sentDate.Year)
-					{
-						TimeText.Text += " - " + res.GetString(Resource.String.MessageStatusRead) + " " + readDate.ToString("dd MMM HH:mm");
-					}
-					else
-					{
-						TimeText.Text += " - " + res.GetString(Resource.String.MessageStatusRead) + " " + readDate.ToString("dd MMM yyyy HH:mm");
-					}
-
-				}
-			}
-			else if (seenTime != 0)
-			{
-				DateTime seenDate = dateTime.AddSeconds(seenTime).ToLocalTime();
-				if (seenTime < sentTime + 60)
-				{
-					TimeText.Text += " - " + res.GetString(Resource.String.MessageStatusSeen);
-				}
-				else if (seenDate.Date == sentDate.Date)
-				{
-					TimeText.Text += " - " + res.GetString(Resource.String.MessageStatusSeen) + " " + seenDate.ToString("HH:mm");
-				}
-				else
-				{
-					if (seenDate.Year == sentDate.Year)
-					{
-						TimeText.Text += " - " + res.GetString(Resource.String.MessageStatusSeen) + " " + seenDate.ToString("dd MMM HH:mm");
-					}
-					else
-					{
-						TimeText.Text += " - " + res.GetString(Resource.String.MessageStatusSeen) + " " + seenDate.ToString("dd MMM yyyy HH:mm");
-					}
-				}
+				ChatMessageWindow.SetSelection(adapter.Count - 1);
+				currentLastVisibleItem = adapter.Count - 1;
 			}
 		}
+	}
 
-		public void UpdateMessageItem(string meta) // MessageID|SentTime|SeenTime|ReadTime 
+	public class KeyboardListener : Java.Lang.Object, ViewTreeObserver.IOnGlobalLayoutListener
+	{
+		ChatOneActivity context;
+
+		public KeyboardListener(ChatOneActivity context)
 		{
-			//situation: sending two chats at the same time.
-			//both parties will be their message first (it is faster to get a response from a server than the server sending a cloud message to the recipient)
-			//but for one person their message is actually the second.
-			//if someone sends 2 messages within 2 seconds, the tags may be the same. What are the consequences? In practice it is not a situation we have to deal with.
-
-			int sep1Pos = meta.IndexOf('|');
-			int sep2Pos = meta.IndexOf('|', sep1Pos + 1);
-			int sep3Pos = meta.IndexOf('|', sep2Pos + 1);
-
-			int messageID = int.Parse(meta.Substring(0, sep1Pos));
-			long sentTime = long.Parse(meta.Substring(sep1Pos + 1, sep2Pos - sep1Pos - 1));
-			long seenTime = long.Parse(meta.Substring(sep2Pos + 1, sep3Pos - sep2Pos - 1));
-			long readTime = long.Parse(meta.Substring(sep3Pos + 1));
-
-			int messageIndex = messageID - 1;
-
-			if (messageIndex >= messageItems.Count) //message exists
-			{
-				earlyDelivery = meta;
-				return;
-			}
-			MessageItem item = messageItems[messageIndex];
-
-			if (item.MessageID == messageID) //normal case
-			{
-				View view = ChatMessageWindow.GetChildAt(messageIndex);
-				SetMessageTime(view, sentTime, seenTime, readTime);
-			}
-			else //two messages were sent at the same time from both parties, and for one, the order of the two messages may be the other way, if the server response was faster than google cloud.
-			{
-				messageIndex = messageIndex - 1;
-				item = messageItems[messageIndex];
-				if (item.MessageID == messageID)
-				{
-					View view = ChatMessageWindow.GetChildAt(messageIndex);
-					SetMessageTime(view, sentTime, seenTime, readTime);
-				}
-			}
+			this.context = context;
 		}
-
-		public void SetScrollTimer()
+		public void OnGlobalLayout()
 		{
-			Timer t = new Timer(); //scrollview does not scroll to new bottom even after calling ChatMessageWindow.Invalidate();
-			t.Interval = 1;
-			t.Elapsed += Timer_Elapsed;
-			t.Start();
-		}
+			Rect r = new Rect();
+			context.MainLayout.GetWindowVisibleDisplayFrame(r);
+			int screenHeight = context.MainLayout.RootView.Height;
+			int keyboardHeight = screenHeight - r.Bottom;
 
-		private void Timer_Elapsed(object sender, ElapsedEventArgs e)
-		{
-			((Timer)sender).Stop();
-			RunOnUiThread(() => { ChatMessageWindowScroll.FullScroll(FocusSearchDirection.Down); });
+			if (keyboardHeight > screenHeight * 0.15 && context.IsBottom())
+			{
+				context.ScrollToBottom(true); //list is no longer scrollable if no animation is used.
+			}
+
+			context.currentLastVisibleItem = context.ChatMessageWindow.LastVisiblePosition; //enables to change it by scrolling when keyboard is open
 		}
 	}
 }

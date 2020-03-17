@@ -482,7 +482,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             android:theme="@style/BlackTextSmallNormal"
-            android:visibility="gone" 			
+            android:visibility="gone"
     		android:id="@+id/ResultSet" />
         <ImageButton
             android:layout_width="35dp"

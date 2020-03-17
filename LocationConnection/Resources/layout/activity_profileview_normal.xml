@@ -257,7 +257,17 @@
         android:background="@color/ContentBackground"
         android:alpha="0.9"        
 		android:id="@+id/EditSelfHeader" />
-        
+
+	<View
+        android:layout_width="25dp"		
+		android:layout_height="25dp"
+        app:layout_constraintTop_toTopOf="@+id/EditSelfBack"
+        app:layout_constraintBottom_toBottomOf="@+id/EditSelfBack"
+        app:layout_constraintLeft_toLeftOf="@+id/EditSelfBack"
+        app:layout_constraintRight_toRightOf="@+id/EditSelfBack"
+        android:alpha="0"
+        android:background="@drawable/ripple_location"
+        android:id="@+id/RippleImageEditBack" />    
 	<ImageButton
 		android:src="@drawable/ic_back_normal"
 		android:layout_width="35dp"

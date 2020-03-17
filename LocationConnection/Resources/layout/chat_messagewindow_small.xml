@@ -3,7 +3,7 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingRight="1.71dp">
+    android:paddingRight="2dp">
 	<View
 		android:layout_width="0px"
 		android:layout_height="0px"
@@ -18,14 +18,14 @@
 		<TextView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:padding="8.57dp"
-			android:theme="@style/BlackTextSmallSmall"
+			android:padding="10dp"
+			android:theme="@style/BlackTextSmallNormal"
             android:id="@+id/MessageText" />
         <TextView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:padding="2.57dp"
-            android:theme="@style/GrayTextXSmallSmall"
+			android:padding="3dp"
+            android:theme="@style/GrayTextXSmallNormal"
 			android:id="@+id/TimeText" />
 	</LinearLayout>
 	<View

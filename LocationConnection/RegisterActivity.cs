@@ -583,24 +583,35 @@ namespace LocationConnection
 
 		private async void Reset_Click(object sender, EventArgs e)
 		{
-			string responseString = await c.MakeRequest("action=deletetemp&imageName=&regsessionid="+regsessionid); //deleting images from server
-			if (responseString == "OK" || responseString == "INVALID_TOKEN")
+			Reset.Enabled = false;
+
+			if (regsessionid != "")
 			{
-				if (File.Exists(regSessionFile))
+				string responseString = await c.MakeRequest("action=deletetemp&imageName=&regsessionid=" + regsessionid); //deleting images from server
+				if (responseString == "OK" || responseString == "INVALID_TOKEN")
 				{
-					File.Delete(regSessionFile);
+					if (File.Exists(regSessionFile))
+					{
+						File.Delete(regSessionFile);
+					}
+					regsessionid = "";
+					if (File.Exists(regSaveFile))
+					{
+						File.Delete(regSaveFile);
+					}
+					ResetForm();
 				}
-				regsessionid = "";
-				if (File.Exists(regSaveFile))
+				else
 				{
-					File.Delete(regSaveFile);
+					c.ReportError(responseString);
 				}
-				ResetForm();				
 			}
 			else
 			{
-				c.ReportError(responseString);
+				ResetForm();
 			}
+
+			Reset.Enabled = true;
 		}
 
 		private void Cancel_Click(object sender, System.EventArgs e)

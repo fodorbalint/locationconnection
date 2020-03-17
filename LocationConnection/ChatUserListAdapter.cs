@@ -17,7 +17,6 @@ namespace LocationConnection
 {
 	class ChatUserListAdapter : BaseAdapter<string>
 	{
-
 		ChatListActivity context;
 		List<MatchItem> items;		
 

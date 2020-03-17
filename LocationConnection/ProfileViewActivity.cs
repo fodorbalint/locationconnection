@@ -25,7 +25,7 @@ namespace LocationConnection
 		public ConstraintLayout ScrollLayout, ProfileImageContainer, Footer;
 		LinearLayout MapContainer;
 		View EditSpacer, HeaderBackground, PercentProgress, MapTopSeparator, MapBottomSeparator, NavigationSpacer,
-			EditSelfHeader, RippleImage, RippleImageNext, RippleImagePrev;
+			EditSelfHeader, RippleImageEditBack, RippleImage, RippleImageNext, RippleImagePrev;
 		TextView Name, Username, ResponseRate, LastActiveDate, RegisterDate, Description, LocationTime, DistanceText;
 		public TouchConstraintLayout ProfileImageScroll;
 		SupportMapFragment ProfileViewMap;
@@ -108,7 +108,7 @@ namespace LocationConnection
 
 		LocationReceiver locationReceiver;
 
-		int footerHeight;
+		int footerHeight, mapHeight;
 
 		protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -185,6 +185,7 @@ namespace LocationConnection
 				HideButton = FindViewById<ImageButton>(Resource.Id.HideButton);
 				LikeButton = FindViewById<ImageButton>(Resource.Id.LikeButton);
 				NextButton = FindViewById<ImageButton>(Resource.Id.NextButton);
+				RippleImageEditBack = FindViewById<View>(Resource.Id.RippleImageEditBack);
 				RippleImageNext = FindViewById<View>(Resource.Id.RippleImageNext);
 				RippleImagePrev = FindViewById<View>(Resource.Id.RippleImagePrev);
 
@@ -198,6 +199,9 @@ namespace LocationConnection
 				MapSatellite.Click += MapSatellite_Click;
 				ScrollLayout.Touch += ScrollLayout_Touch;
 				Footer.LayoutChange += Footer_LayoutChange;
+				MapContainer.LayoutChange += MapContainer_LayoutChange;
+				ScrollLayout.LayoutChange += ScrollLayout_LayoutChange;
+				
 				EditSelfBack.Click += EditSelfBack_Click;
 				EditSelf.Click += EditSelf_Click;
 				BackButton.Click += BackButton_Click;
@@ -206,7 +210,7 @@ namespace LocationConnection
 				HideButton.Click += HideButton_Click;
 				LikeButton.Click += LikeButton_Click;
 
-				EditSelfBack.Touch += Button_Touch;
+				EditSelfBack.Touch += EditSelfBack_Touch;
 				BackButton.Touch += Button_Touch;
 				NextButton.Touch += Button_Touch;
 				LikeButton.Touch += Button_Touch;
@@ -319,8 +323,7 @@ namespace LocationConnection
 						break;
 				}
 
-				int currentScrollHeight = GetScrollHeight();
-				totalScrollHeight = currentScrollHeight - MainLayout.Height;
+				c.CW("OnResume ended");
 				
 				refreshTimer = new Timer();
 				refreshTimer.Interval = refreshFrequency;
@@ -437,16 +440,38 @@ namespace LocationConnection
 		{
 			if (footerHeight != Footer.Height)
 			{
+				c.CW("Footer_LayoutChange");
 				SetHeight();
 				footerHeight = Footer.Height;
 			}
 		}
 
+		private void MapContainer_LayoutChange(object sender, View.LayoutChangeEventArgs e)
+		{
+			if (mapHeight != MapContainer.Height)
+			{
+				c.CW("MapContainer_LayoutChange");
+				SetHeight();
+				mapHeight = MapContainer.Height;
+			}
+		}
+
+		private void ScrollLayout_LayoutChange(object sender, View.LayoutChangeEventArgs e)
+		{
+			if (footerHeight != Footer.Height || mapHeight != MapContainer.Height)
+			{
+				c.CW("ScrollLayout_LayoutChange");
+				SetHeight();
+				footerHeight = Footer.Height;
+				mapHeight = MapContainer.Height;
+			}
+		}
+
 		private void SetHeight()
 		{
-			c.CW("Setting height");
 			int currentScrollHeight = GetScrollHeight();
 			totalScrollHeight = currentScrollHeight - MainLayout.Height;
+
 			if (totalScrollHeight < 0)
 			{
 				totalScrollHeight = 0;
@@ -462,11 +487,19 @@ namespace LocationConnection
 
 			if (currentScrollHeight < MainLayout.Height)
 			{
-				ProfileImageContainer.LayoutParameters.Height = ProfileImageScroll.Height + MainLayout.Height - currentScrollHeight;
+				int value = ProfileImageScroll.Height + MainLayout.Height - currentScrollHeight;
+
+				var p = new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, value);
+				p.TopToBottom = Resource.Id.HeaderBackground;
+				p.BottomToTop = Resource.Id.Footer;
+				ProfileImageContainer.LayoutParameters = p;
+
+				//Does not work when activity is only resumed (only refreshtimer makes it work):
+				//ProfileImageContainer.LayoutParameters.Height = ProfileImageScroll.Height + MainLayout.Height - currentScrollHeight;
 			}
 			else
 			{
-				ProfileImageContainer.LayoutParameters.Height = ProfileImageScroll.Height;
+				ProfileImageContainer.LayoutParameters.Height = screenWidth;
 			}
 		}
 
@@ -475,12 +508,49 @@ namespace LocationConnection
 				+ Footer.Height + ((MapContainer.Visibility == ViewStates.Visible) ? MapContainer.LayoutParameters.Height : 0) + NavigationSpacer.LayoutParameters.Height;
 		}
 
+		private void EditSelfBack_Touch(object sender, View.TouchEventArgs e)
+		{
+			if (e.Event.Action == MotionEventActions.Down && !rippleRunning)
+			{
+				RippleImageEditBack.Alpha = 1;
+
+				RippleImageEditBack.Animate().ScaleX(2f).ScaleY(2f).SetDuration(tweenTime / 2).Start();
+				rippleTimer = new Timer();
+				rippleTimer.Interval = tweenTime / 2;
+				rippleTimer.Elapsed += T_Elapsed01;
+				rippleTimer.Start();
+				rippleRunning = true;
+			}
+			e.Handled = false;
+		}
+
+		private void T_Elapsed01(object sender, ElapsedEventArgs e)
+		{
+			rippleTimer.Stop();
+			RunOnUiThread(() => {
+				RippleImageEditBack.Animate().Alpha(0).SetDuration(tweenTime / 2).Start();
+			});
+			rippleTimer.Interval = tweenTime / 2;
+			rippleTimer.Elapsed += T_Elapsed02;
+			rippleTimer.Start();
+		}
+
+		private void T_Elapsed02(object sender, ElapsedEventArgs e)
+		{
+			rippleTimer.Stop();
+			RunOnUiThread(() => {
+				RippleImageEditBack.ScaleX = 1;
+				RippleImageEditBack.ScaleY = 1;
+			});
+			rippleRunning = false;
+		}
+
 		private void Button_Touch(object sender, View.TouchEventArgs e)
 		{
 			if (e.Event.Action == MotionEventActions.Down && !rippleRunning)
 			{
 				pressTarget = (ImageButton)sender;
-				if (pressTarget==EditSelfBack || pressTarget==BackButton || pressTarget == PreviousButton || pressTarget==HideButton)
+				if (pressTarget==BackButton || pressTarget == PreviousButton || pressTarget==HideButton)
 				{
 					AnimateRipple(pressTarget.GetX(), pressTarget.GetY(), pressTarget.Width, pressTarget.Height, false);
 				}

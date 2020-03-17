@@ -3,10 +3,19 @@
  * Chat gets updated from other person's conversation
  * Circle on map does not fit in visible area
  * 
+ *
+ * test app on LGG3
+ * small layout before release
+ * disable all clicked buttons
+ * new logo, for start icon too
  * 
- * List for chatone
+ * 
+ * 
 Location service restart on reboot
 Upload Loadlist, if location permission needs to be requested, the map does not update afterwards. Database OK. List loads while the dialog is shown.
+
+Can't solve: after Logging in.... text, Getting loca shown for a moment, since textbox is not resizing. Manual resize using Paint did not help.
+
 */
 using System;
 using System.Collections.Generic;
@@ -60,7 +69,7 @@ namespace LocationConnection
 
 		IMenu pageMenu;
 
-		ConstraintLayout FilterLayout, DistanceFilters, UseGeoContainer;
+		ConstraintLayout FilterLayout, DistanceFilters, UseGeoContainer, StatusBar;
 		LinearLayout SearchLayout, MapContainer;
 		Android.Support.V7.Widget.Toolbar MainPageToolbar;
 		TextView StatusText, NoResult, ResultSet;
@@ -261,7 +270,9 @@ namespace LocationConnection
 									}
 									else if (Session.LocationTime is null || c.Now() - Session.LocationTime > Session.InAppLocationRate)
 									{
-										var task = UpdateLocationLast(false);
+										c.CW("Logged in getting last location");
+										c.LogActivity("Logged in getting last location");
+										var task = UpdateLocationLast();
 										Stopwatch stw = new Stopwatch();
 										stw.Start();
 										if (await Task.WhenAny(task, Task.Delay(Constants.LocationTimeout)) != task)
@@ -269,7 +280,10 @@ namespace LocationConnection
 											stw.Stop();
 											RunOnUiThread(() =>
 											{
-												c.SnackIndefStr(res.GetString(Resource.String.LocationTimeout), 4);
+												if (c.snackPermanentText != Resource.String.LocationTimeout) //prevents duplicate apperance
+												{
+													c.SnackIndef(Resource.String.LocationTimeout, 4);
+												}
 											});
 										}
 										else
@@ -447,6 +461,7 @@ namespace LocationConnection
 				MapSatellite = FindViewById<Button>(Resource.Id.MapSatellite);
 				UserSearchList = FindViewById<GridView>(Resource.Id.UserSearchList);
 				ReloadPulldown = FindViewById<ImageView>(Resource.Id.ReloadPulldown);
+				StatusBar = FindViewById<ConstraintLayout>(Resource.Id.StatusBar);
 				ResultSet = FindViewById<TextView>(Resource.Id.ResultSet);
 				LoadPrevious = FindViewById<ImageButton>(Resource.Id.LoadPrevious);
 				LoadNext = FindViewById<ImageButton>(Resource.Id.LoadNext);
@@ -684,14 +699,21 @@ namespace LocationConnection
 				if ((bool)Session.UseLocation && c.IsLocationEnabled() && (Session.LocationTime is null || unixTimestamp - Session.LocationTime > inAppLocationRate))
 				{
 					//usually 70 - 800 ms, but sometimes exceeds the 5 seconds.
-					c.LogActivity("OnResume getting location");
-					var task = UpdateLocationLast(false);
+					c.CW("OnResume getting last location");
+					c.LogActivity("OnResume getting last location");
+					var task = UpdateLocationLast();
 					Stopwatch stw = new Stopwatch();
 					stw.Start();
 					if (await Task.WhenAny(task, Task.Delay(Constants.LocationTimeout)) != task)
 					{
 						stw.Stop();
-						c.SnackIndefStr(res.GetString(Resource.String.LocationTimeout), 4);
+						RunOnUiThread(() =>
+						{
+							if (c.snackPermanentText != Resource.String.LocationTimeout) //prevents duplicate apperance
+							{
+								c.SnackIndef(Resource.String.LocationTimeout, 4);
+							}
+						});
 					}
 					else
 					{
@@ -740,6 +762,7 @@ namespace LocationConnection
 				{
 					ListView_Click(null, null);
 				}
+				c.CW("Onresume end");
 				c.LogActivity("ListActivity OnResume end");
 				//ListType_ItemSelected get called here if container is visible
 			}
@@ -1292,27 +1315,14 @@ namespace LocationConnection
 			}
 		}
 
-		public async Task UpdateLocationLast(bool showResults)
+		public async Task UpdateLocationLast()
 		{
 			RunOnUiThread(() => {
-				try
-				{
-					ResultSet.Visibility = ViewStates.Visible;
-					ResultSet.Text = res.GetString(Resource.String.GettingLocation);
-				}
-				catch
-				{
-					return;
-				}
+				ResultSet.Visibility = ViewStates.Visible;
+				ResultSet.Text = res.GetString(Resource.String.GettingLocation);
 			});
 
 			Android.Locations.Location location = await fusedLocationProviderClient.GetLastLocationAsync();
-			if (showResults)
-			{
-				RunOnUiThread(() => {
-					SetResultStatus();
-				});
-			}
 
 			if (!(location is null) && (bool)Session.UseLocation) //user with location setting off could have logged in by the time we got the not-logged-in location.
 			{
@@ -2277,8 +2287,8 @@ namespace LocationConnection
 
 				RunOnUiThread(() => {
 					StartLoaderAnim();
+					ResultSet.Visibility = ViewStates.Visible; 
 					ResultSet.Text = res.GetString(Resource.String.LoadingList);
-					ResultSet.Visibility = ViewStates.Visible;
 					LoadNext.Visibility = ViewStates.Gone;
 					LoadPrevious.Visibility = ViewStates.Gone;
 				});
@@ -2324,8 +2334,8 @@ namespace LocationConnection
 				RunOnUiThread(() =>
 				{
 					StartLoaderAnim();
+					ResultSet.Visibility = ViewStates.Visible; 
 					ResultSet.Text = res.GetString(Resource.String.LoadingList);
-					ResultSet.Visibility = ViewStates.Visible;
 					LoadNext.Visibility = ViewStates.Gone;
 					LoadPrevious.Visibility = ViewStates.Gone;
 				});
@@ -2537,8 +2547,8 @@ namespace LocationConnection
 
 			RunOnUiThread(() =>
 			{
+				ResultSet.Visibility = ViewStates.Visible; 
 				ResultSet.Text = res.GetString(Resource.String.SettingMap);
-				ResultSet.Visibility = ViewStates.Visible;
 				mapSetting = true;
 			});
 
