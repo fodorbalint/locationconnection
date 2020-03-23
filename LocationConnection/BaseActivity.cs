@@ -38,6 +38,7 @@ namespace LocationConnection
 		private static int currentLocationRate;
 		public static string locationUpdatesTo;
 		public static string locationUpdatesFrom;
+		public static List<UserLocationData> locationUpdatesFromData;
 
 		public static int screenWidth;
 		public static int screenHeight;
@@ -240,6 +241,7 @@ namespace LocationConnection
 
 				locationUpdatesTo = null; //stop real-time location updates when app goes to background
 				locationUpdatesFrom = null;
+				locationUpdatesFromData = null;
 				isAppForeground = false;
 				if (!c.IsLoggedIn() || !(bool)Session.UseLocation || !(bool)Session.BackgroundLocation || !c.IsLocationEnabled())
 				{
@@ -480,6 +482,72 @@ namespace LocationConnection
 				returnStr = returnStr.Substring(0, returnStr.Length - 1);
 			}
 			locationUpdatesFrom = returnStr;
+		}
+
+		public void AddLocationData(int ID, double Latitude, double Longitude, long LocationTime)
+        {
+            if (locationUpdatesFromData is null)
+            {
+				locationUpdatesFromData = new List<UserLocationData>();
+            }
+
+			bool found = false;
+            foreach (UserLocationData data in locationUpdatesFromData)
+            {
+                if (data.ID == ID)
+                {
+					found = true;
+					data.Latitude = Latitude;
+					data.Longitude = Longitude;
+					data.LocationTime = LocationTime;
+					break;
+				}
+            }
+            if (!found)
+            {
+				locationUpdatesFromData.Add(new UserLocationData
+				{
+					ID = ID,
+                    Latitude = Latitude,
+                    Longitude = Longitude,
+                    LocationTime = LocationTime
+				});
+            }
+        }
+
+        public void RemoveLocationData(int ID)
+        {
+            if (!(locationUpdatesFromData is null))
+            {
+				for (int i= 0; i < locationUpdatesFromData.Count; i++)
+                {
+                    if (locationUpdatesFromData[i].ID == ID)
+                    {
+						locationUpdatesFromData.RemoveAt(i);
+						break;
+                    }
+                }
+            }
+        }
+
+        public UserLocationData GetLocationData(int ID)
+        {
+			if (!(locationUpdatesFromData is null))
+			{
+				foreach (UserLocationData data in locationUpdatesFromData)
+				{
+					if (data.ID == ID)
+					{
+						return data;
+					}
+				}
+				return null;
+			}
+            else
+            {
+				return null;
+            }
+
 		}
 	}
 }

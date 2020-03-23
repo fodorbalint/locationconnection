@@ -892,10 +892,27 @@ namespace LocationConnection
 			}			
 		}
 
-		public string UnescapeBraces(string input)
+		public static string UnescapeBraces(string input)
 		{
 			return input.Replace(@"\{", "{").Replace(@"\}", "}").Replace(@"\""", @"""");
 		}
+
+        public static object Clone(object obj)
+        {
+			Type type = obj.GetType();
+			object newObj = Activator.CreateInstance(type);
+
+            FieldInfo[] fieldInfos = type.GetFields();
+            foreach (FieldInfo field in fieldInfos)
+            {
+				object value = field.GetValue(obj);
+                if (value != null)
+                {
+					field.SetValue(newObj, value);
+                }
+            }
+			return newObj;
+        }
 
 		/*
 		protected void CreateLocationRequest()

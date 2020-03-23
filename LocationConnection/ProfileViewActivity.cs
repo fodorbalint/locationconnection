@@ -381,6 +381,20 @@ namespace LocationConnection
 				responseString = responseString.Substring(3);
 				ServerParser<Profile> parser = new ServerParser<Profile>(responseString);
 				displayUser = parser.returnCollection[0];
+
+				UserLocationData data = GetLocationData(targetID);
+                if (data != null)
+                {
+					displayUser.Latitude = data.Latitude;
+					displayUser.Longitude = data.Longitude;
+					displayUser.LocationTime = data.LocationTime;
+					if (!(displayUser.Distance is null))
+					{
+						float distance = CalculateDistance((double)Session.Latitude, (double)Session.Longitude, data.Latitude, data.Longitude);
+						displayUser.Distance = distance;
+					}
+				}
+				
 				userLoaded = true;
 				LoadUser();
 			}
@@ -1860,9 +1874,17 @@ namespace LocationConnection
 					if (Session.ListType != "hid")
 					{
 						ListActivity.viewProfiles.RemoveAt(ListActivity.viewIndex);
+						if (ListActivity.viewIndex >= 0 && ListActivity.viewIndex < ListActivity.listProfiles.Count)
+                        {
+							ListActivity.listProfiles.RemoveAt(ListActivity.viewIndex);
+                        }
 						ListActivity.viewIndex--;
 						NextButton_Click(null, null);
 					}
+                    else
+                    {
+						Session.LastDataRefresh = null;
+                    }
 				}
 				else if (responseString.Substring(0, 6) == "ERROR_") //IsAMatch
 				{
@@ -1888,8 +1910,12 @@ namespace LocationConnection
 					TooltipCompat.SetTooltipText(HideButton, res.GetString(Resource.String.Hide));
 					//HideButton.TooltipText = res.GetString(Resource.String.Hide);
 					HideButton.SetImageResource(icHide);
-
-					Session.LastDataRefresh = null; //remove item from the hidden people list, list will refresh with the new data.
+					
+					//Session.ListType = hid
+					if (ListActivity.viewIndex >= 0 && ListActivity.viewIndex < ListActivity.listProfiles.Count)
+					{
+						ListActivity.listProfiles.RemoveAt(ListActivity.viewIndex);
+					}
 				}
 				else
 				{

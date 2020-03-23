@@ -255,6 +255,8 @@ namespace LocationConnection
 						double latitude = double.Parse(meta.Substring(sep3Pos + 1, sep4Pos - sep3Pos - 1), CultureInfo.InvariantCulture);
 						double longitude = double.Parse(meta.Substring(sep4Pos + 1), CultureInfo.InvariantCulture);
 
+						((BaseActivity)context).AddLocationData(senderID, latitude, longitude, time);
+
 						if (!(ListActivity.listProfiles is null))
 						{
 							foreach (Profile user in ListActivity.listProfiles)
@@ -291,6 +293,7 @@ namespace LocationConnection
 						if (((BaseActivity)context).IsUpdatingFrom(senderID)) //user could have gone to the background, clearing out the list of people to receive updates from.
 						{
 							((BaseActivity)context).RemoveUpdatesFrom(senderID);
+							((BaseActivity)context).RemoveLocationData(senderID);
 
 							text = senderName + " " + context.Resources.GetString(Resource.String.LocationUpdatesFromEnd);
 							((BaseActivity)context).c.SnackStr(text, null);
@@ -343,6 +346,7 @@ namespace LocationConnection
 						{
 							ListActivity.viewProfiles[i].UserRelation = 2;
 						}
+						break;
 					}
 				}
 			}

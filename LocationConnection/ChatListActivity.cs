@@ -239,20 +239,8 @@ namespace LocationConnection
 		public void ClickListItem(int index)
 		{
 			//if writing Session.CurrentMatch = matchList[index], changes in Session when loading Chat One would also apply to matchList
-			MatchItem clickedMatch = matchList[index];
-			MatchItem sessionMatchItem = Session.CurrentMatch = new MatchItem();
-
-			Type type = typeof(MatchItem);
-			FieldInfo[] fieldInfos = type.GetFields();
-			foreach (FieldInfo field in fieldInfos)
-			{
-				object value = field.GetValue(clickedMatch);
-				if (value != null)
-				{
-					field.SetValue(sessionMatchItem, value);
-				}
-			};
-
+			Session.CurrentMatch = (MatchItem)CommonMethods.Clone(matchList[index]);
+			
 			Intent i = new Intent(this, typeof(ChatOneActivity));
 			i.SetFlags(ActivityFlags.ReorderToFront);
 			StartActivity(i);

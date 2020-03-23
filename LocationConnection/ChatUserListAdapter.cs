@@ -88,7 +88,7 @@ namespace LocationConnection
 				t.SetSingleLine();
 				t.Ellipsize = Android.Text.TextUtils.TruncateAt.End;
 				t.LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent);
-				t.Text = UnescapeAll(message.Replace(System.Environment.NewLine, " "));
+				t.Text = CommonMethods.UnescapeBraces(message.Replace(System.Environment.NewLine, " "));
 				LinearLayout lin = (LinearLayout)ChatItems.GetChildAt(j);
 				j++;
 				t.SetTextColor(Color.Black);
@@ -111,11 +111,6 @@ namespace LocationConnection
 			im.LoadUrl(url).LoadingPlaceholder(Constants.loadingImage, FFImageLoading.Work.ImageSource.CompiledResource).ErrorPlaceholder(Constants.noImage, FFImageLoading.Work.ImageSource.CompiledResource).Into(Image);
 
 			return view;
-		}
-
-		private string UnescapeAll(string input)
-		{
-			return input.Replace(@"\{", "{").Replace(@"\}", "}").Replace(@"\""", @"""");
 		}
 	}
 }

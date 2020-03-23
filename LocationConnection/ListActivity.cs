@@ -11,6 +11,7 @@
  * 
  * 
  * 
+ * One time MainActivity opened twice
 Location service restart on reboot
 Upload Loadlist, if location permission needs to be requested, the map does not update afterwards. Database OK. List loads while the dialog is shown.
 
