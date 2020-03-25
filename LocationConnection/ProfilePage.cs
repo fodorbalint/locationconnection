@@ -25,7 +25,7 @@ namespace LocationConnection
 		public TextView ImagesProgressText;
 		public ImageView LoaderCircle;
 		public ProgressBar ImagesProgress;
-		public Switch LocationSwitch, LocationShareAll, LocationShareLike, LocationShareMatch, LocationShareFriend, LocationShareNone;
+		public Switch UseLocationSwitch, LocationShareAll, LocationShareLike, LocationShareMatch, LocationShareFriend, LocationShareNone;
 		public Switch DistanceShareAll, DistanceShareLike, DistanceShareMatch, DistanceShareFriend, DistanceShareNone;
 
 		public List<string> uploadedImages;		

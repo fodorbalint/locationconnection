@@ -144,7 +144,7 @@ namespace LocationConnection
 				+ " XPxPerIn " + XPxPerIn + " XDpPerIn " + XDpPerIn + " DpWidth " + DpWidth);
 		}
 
-		protected void CheckIntent()
+		protected void CheckIntent() //logged in
 		{
 			/*
 			Key: google.delivered_priority, Value: high
@@ -156,36 +156,23 @@ namespace LocationConnection
 			Key: content, Value: 33|6|1575318929|0|0|
 			Key: collapse_key, Value: balintfodor.locationconnection
 			*/
-			if (c.IsLoggedIn())
+			
+			if (!(Intent.Extras is null) && !(Intent.Extras.GetString("google.message_id") is null))
 			{
-				if (!(Intent.Extras is null) && !(Intent.Extras.GetString("google.message_id") is null))
+				int senderID = int.Parse(Intent.Extras.GetString("fromuser"));
+				int targetID = int.Parse(Intent.Extras.GetString("touser"));
+
+				c.LogActivity("Intent received from " + senderID);
+
+				if (targetID != Session.ID)
 				{
-					int sep1Pos;
-					int senderID = 0;
-
-					string type = Intent.Extras.GetString("type");
-					string content = Intent.Extras.GetString("content");
-					c.LogActivity("Intent received: " + type);
-					switch (type)
-					{
-						case "sendMessage":
-							sep1Pos = content.IndexOf('|');
-							int sep2Pos = content.IndexOf('|', sep1Pos + 1);
-							senderID = int.Parse(content.Substring(sep1Pos + 1, sep2Pos - sep1Pos - 1));
-							break;
-						case "matchProfile":
-						case "rematchProfile":
-						case "unmatchProfile":
-							sep1Pos = content.IndexOf('|');
-							senderID = int.Parse(content.Substring(0, sep1Pos));
-							break;
-					}
-
-					Intent i = new Intent(this, typeof(ChatOneActivity));
-					i.SetFlags(ActivityFlags.ReorderToFront);
-					IntentData.senderID = senderID;
-					StartActivity(i);
+					return;
 				}
+
+				Intent i = new Intent(this, typeof(ChatOneActivity));
+				i.SetFlags(ActivityFlags.ReorderToFront);
+				IntentData.senderID = senderID;
+				StartActivity(i);
 			}
 		}
 

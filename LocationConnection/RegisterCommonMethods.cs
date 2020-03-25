@@ -219,13 +219,13 @@ namespace LocationConnection
 			}
 		}
 
-		public void LocationSwitch_Click(object sender, EventArgs e)
+		public void UseLocationSwitch_Click(object sender, EventArgs e)
 		{
-			if (context.LocationSwitch.Checked)
+			if (context.UseLocationSwitch.Checked)
 			{
 				if (ContextCompat.CheckSelfPermission(context, Manifest.Permission.AccessFineLocation) != (int)Permission.Granted)
 				{
-					context.LocationSwitch.Checked = false;
+					context.UseLocationSwitch.Checked = false;
 					if (ActivityCompat.ShouldShowRequestPermissionRationale(context, Manifest.Permission.AccessFineLocation)) //shows when the user has once denied the permission, and now requesting it again.
 					{
 						var requiredPermissions = new String[] { Manifest.Permission.AccessFineLocation };

@@ -26,6 +26,7 @@ namespace LocationConnection
 		{
 			Intent intent = new Intent("balintfodor.locationconnection.ChatReceiver");
 			intent.PutExtra("fromuser", message.Data["fromuser"]);
+			intent.PutExtra("touser", message.Data["touser"]);
 			intent.PutExtra("type", message.Data["type"]);
 			intent.PutExtra("meta", message.Data["meta"]);
 			intent.PutExtra("inapp", (int.Parse(message.Data["inapp"]) == 0) ? false : true);

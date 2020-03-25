@@ -22,6 +22,7 @@ using Android.Support.Design.Widget;
 using Android.Support.V4.App;
 using Android.Support.V4.Content;
 using Android.Support.V7.App;
+using Android.Text;
 using Android.Views;
 using Android.Views.Animations;
 using Android.Widget;
@@ -47,6 +48,7 @@ namespace LocationConnection
 		Spinner Sex;
         public EditText Password, ConfirmPassword;
 		Button Done, Reset, Cancel;
+		EditText EulaText;
 
 		RegisterCommonMethods<RegisterActivity> rc;
 		public BaseAdapter adapter;
@@ -91,7 +93,7 @@ namespace LocationConnection
 				ImagesProgress = FindViewById<ProgressBar>(Resource.Id.ImagesProgress);
 				Description = FindViewById<EditText>(Resource.Id.Description);
 
-				LocationSwitch = FindViewById<Switch>(Resource.Id.LocationSwitch);
+				UseLocationSwitch = FindViewById<Switch>(Resource.Id.UseLocationSwitch);
 				LocationShareAll = FindViewById<Switch>(Resource.Id.LocationShareAll);
 				LocationShareLike = FindViewById<Switch>(Resource.Id.LocationShareLike);
 				LocationShareMatch = FindViewById<Switch>(Resource.Id.LocationShareMatch);
@@ -103,6 +105,8 @@ namespace LocationConnection
 				DistanceShareMatch = FindViewById<Switch>(Resource.Id.DistanceShareMatch);
 				DistanceShareFriend = FindViewById<Switch>(Resource.Id.DistanceShareFriend);
 				DistanceShareNone = FindViewById<Switch>(Resource.Id.DistanceShareNone);
+
+				EulaText = FindViewById<EditText>(Resource.Id.EulaText);
 
 				//Interface end
 
@@ -140,7 +144,7 @@ namespace LocationConnection
 				Images.Click += rc.Images_Click;
 				Description.Touch += Description_Touch;
 
-				LocationSwitch.Click += rc.LocationSwitch_Click;
+				UseLocationSwitch.Click += rc.UseLocationSwitch_Click;
 				LocationShareAll.Click += rc.LocationShareAll_Click;
 				LocationShareLike.Click += rc.LocationShareLike_Click;
 				LocationShareMatch.Click += rc.LocationShareMatch_Click;
@@ -153,6 +157,8 @@ namespace LocationConnection
 				DistanceShareFriend.Click += rc.DistanceShareFriend_Click;
 				DistanceShareNone.Click += rc.DistanceShareNone_Click;
 
+				EulaText.Touch += EulaText_Touch;
+
 				Done.Click += Done_Click;
 				Reset.Click += Reset_Click;
 				Cancel.Click += Cancel_Click;
@@ -163,7 +169,7 @@ namespace LocationConnection
 			}
 		}
 
-		protected override void OnResume() //will be called after opening the file selector and permission results
+		protected async override void OnResume() //will be called after opening the file selector and permission results
 		{
 			try
 			{
@@ -229,8 +235,8 @@ namespace LocationConnection
 
 					Description.Text = arr[7];
 
-					LocationSwitch.Checked = bool.Parse(arr[8]);
-					rc.EnableLocationSwitches(LocationSwitch.Checked);
+					UseLocationSwitch.Checked = bool.Parse(arr[8]);
+					rc.EnableLocationSwitches(UseLocationSwitch.Checked);
 					rc.SetLocationShareLevel(byte.Parse(arr[9]));
 					rc.SetDistanceShareLevel(byte.Parse(arr[10]));
 				}
@@ -238,6 +244,32 @@ namespace LocationConnection
 				{
 					ResetForm();
 				}
+
+				string responseString = await c.MakeRequest("action=eula"); //deleting images from server
+				if (responseString.Substring(0, 2) == "OK")
+				{
+					if (Build.VERSION.SdkInt >= BuildVersionCodes.N)
+					{
+						EulaText.TextFormatted = Html.FromHtml(responseString.Substring(3), FromHtmlOptions.ModeCompact);
+					}
+					else
+					{
+						EulaText.TextFormatted = Html.FromHtml(responseString.Substring(3)); //.FromHtml("<h2>Title</h2><br><p>Description here</p>");
+					}
+				}
+				else
+				{
+					c.ReportError(responseString);
+				}
+
+				/*if (Build.VERSION.SdkInt >= BuildVersionCodes.N)
+				{
+					EulaText.TextFormatted = Html.FromHtml("<h2>Title</h2><br><p>Description here</p>", FromHtmlOptions.ModeCompact);
+				}
+				else
+				{*/
+				
+				//}
 			}
 			catch (Exception ex)
 			{
@@ -261,7 +293,7 @@ namespace LocationConnection
 			File.WriteAllText(regSaveFile, Sex.SelectedItemId + ";" + Email.Text.Trim() + ";" + Password.Text.Trim() + ";" + ConfirmPassword.Text.Trim()
 					+ ";" + Username.Text.Trim() + ";" + Name.Text.Trim()
 					+ ";" + string.Join("|", uploadedImages) + ";" + Description.Text.Trim()
-					+ ";" + LocationSwitch.Checked + ";" + rc.GetLocationShareLevel() + ";" + rc.GetDistanceShareLevel());
+					+ ";" + UseLocationSwitch.Checked + ";" + rc.GetLocationShareLevel() + ";" + rc.GetDistanceShareLevel());
 		}
 
 		private void ResetForm()
@@ -281,7 +313,7 @@ namespace LocationConnection
 			ImagesProgressText.Text = "";
 			ImagesProgress.Progress = 0;
 
-			LocationSwitch.Checked = false;
+			UseLocationSwitch.Checked = false;
 
 			LocationShareAll.Checked = false;
 			LocationShareLike.Checked = false;
@@ -335,7 +367,7 @@ namespace LocationConnection
 		{
 			((Timer)sender).Stop();
 			this.RunOnUiThread(() => {
-				LocationSwitch.Checked = true;
+				UseLocationSwitch.Checked = true;
 				rc.EnableLocationSwitches(true);
 			});
 		}
@@ -448,6 +480,13 @@ namespace LocationConnection
 			base.OnTouchEvent(e.Event);
 		}
 
+		private void EulaText_Touch(object sender, View.TouchEventArgs e)
+		{
+			MainScroll.RequestDisallowInterceptTouchEvent(true);
+			e.Handled = false;
+			base.OnTouchEvent(e.Event);
+		}
+
 		private async void Done_Click(object sender, System.EventArgs e)
         {            
             if (CheckFields())
@@ -457,7 +496,7 @@ namespace LocationConnection
 				int distanceShare = 0;
 
 
-				if (LocationSwitch.Checked)
+				if (UseLocationSwitch.Checked)
 				{
 					locationShare = rc.GetLocationShareLevel();
 					distanceShare = rc.GetDistanceShareLevel();
@@ -465,7 +504,7 @@ namespace LocationConnection
 
 				string url = "action=register&Sex=" + (Sex.SelectedItemId - 1) + "&Email=" + c.UrlEncode(Email.Text.Trim()) + "&Password=" + c.UrlEncode(Password.Text.Trim())
 					+ "&Username=" + c.UrlEncode(Username.Text.Trim()) + "&Name=" + c.UrlEncode(Name.Text.Trim())
-					+ "&Pictures=" + c.UrlEncode(string.Join("|", uploadedImages)) + "&Description=" + c.UrlEncode(Description.Text.Trim()) + "&UseLocation=" + LocationSwitch.Checked
+					+ "&Pictures=" + c.UrlEncode(string.Join("|", uploadedImages)) + "&Description=" + c.UrlEncode(Description.Text.Trim()) + "&UseLocation=" + UseLocationSwitch.Checked
 					+ "&LocationShare=" + locationShare + "&DistanceShare=" + distanceShare + "&regsessionid=" + regsessionid;
 
 				if (File.Exists(firebaseTokenFile)) //sends the token whether it was sent from this device or not

@@ -97,7 +97,7 @@
     <string name="Description">Introduction:</string>	
 	
 	<string name="Location">Use location</string>
-	<string name="LocationExplanation">Location enables you to find people in your area.</string>
+	<string name="LocationExplanation">Location enables you to find people in your area.\nWhen sharing your location with others, you will have to manually update it on your profile page every time you want to make changes.\nThese settings can be changed later on your profile edit page.</string>
 	<string name="LocationRationale">Location enables you to find people in your area.</string>
 	<string name="LocationNotGranted">Location permission was not granted.</string>
 	<string name="LocationEnable">Enable location access or change your settings.</string>
@@ -115,6 +115,9 @@
 	<string name="DistanceShareMatch">People I matched with</string>
 	<string name="DistanceShareFriend">My friends</string>
 	<string name="DistanceShareNone">No one</string>
+	
+	<string name="EulaLabel">By registering, I agree to the Terms of Use below:</string>
+	<string name="EulaText">Loading...</string>
 
 	<string name="Done">Register</string>
 	<string name="Reset">Reset</string>

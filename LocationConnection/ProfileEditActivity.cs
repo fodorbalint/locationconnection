@@ -1,7 +1,4 @@
-﻿//scroll to bottom when sections expand
-//after requesting permission, LocationSwitch doesn't get checked. 
-//scroll down when selecting more options
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -72,7 +69,7 @@ namespace LocationConnection
 				ImagesProgress = FindViewById<ProgressBar>(Resource.Id.ImagesProgress);			
 				Description = FindViewById<EditText>(Resource.Id.Description);
 
-				LocationSwitch = FindViewById<Switch>(Resource.Id.LocationSwitch);
+				UseLocationSwitch = FindViewById<Switch>(Resource.Id.UseLocationSwitch);
 				LocationShareAll = FindViewById<Switch>(Resource.Id.LocationShareAll);
 				LocationShareLike = FindViewById<Switch>(Resource.Id.LocationShareLike);
 				LocationShareMatch = FindViewById<Switch>(Resource.Id.LocationShareMatch);
@@ -133,7 +130,7 @@ namespace LocationConnection
 
 				CheckUsername.Click += rc.CheckUsername_Click;
 
-				LocationSwitch.Click += rc.LocationSwitch_Click;
+				UseLocationSwitch.Click += rc.UseLocationSwitch_Click;
 				LocationShareAll.Click += rc.LocationShareAll_Click;
 				LocationShareLike.Click += rc.LocationShareLike_Click;
 				LocationShareMatch.Click += rc.LocationShareMatch_Click;
@@ -184,7 +181,7 @@ namespace LocationConnection
 
 				Description.Text = Session.Description;
 
-				LocationSwitch.Checked = (bool)Session.UseLocation;
+				UseLocationSwitch.Checked = (bool)Session.UseLocation;
 				rc.EnableLocationSwitches((bool)Session.UseLocation);
 				rc.SetLocationShareLevel((byte)Session.LocationShare);
 				rc.SetDistanceShareLevel((byte)Session.DistanceShare);
@@ -273,7 +270,7 @@ namespace LocationConnection
 		{
 			((Timer)sender).Stop();			
 			this.RunOnUiThread(() => {
-				LocationSwitch.Checked = true;
+				UseLocationSwitch.Checked = true;
 				rc.EnableLocationSwitches(true);
 			});	
 		}
@@ -481,9 +478,9 @@ namespace LocationConnection
 				}
 				if (EditLocationSettingsSection.Visibility == ViewStates.Visible)
 				{
-					if (LocationSwitch.Checked != Session.UseLocation)
+					if (UseLocationSwitch.Checked != Session.UseLocation)
 					{
-						requestStringAdd += "&UseLocation=" + LocationSwitch.Checked;
+						requestStringAdd += "&UseLocation=" + UseLocationSwitch.Checked;
 					}
 					int locationShare = rc.GetLocationShareLevel();
 					int distanceShare = rc.GetDistanceShareLevel();
@@ -504,7 +501,7 @@ namespace LocationConnection
 					{
 						if (responseString.Length > 2) //a change happened
 						{
-							if (!(bool)Session.UseLocation && LocationSwitch.Checked)
+							if (!(bool)Session.UseLocation && UseLocationSwitch.Checked)
 							{
 								InitLocationUpdates();
 							}

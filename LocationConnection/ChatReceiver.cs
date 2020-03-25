@@ -34,12 +34,18 @@ namespace LocationConnection
 
 			this.context = context;
 			int senderID = int.Parse(intent.GetStringExtra("fromuser"));
+			int targetID = int.Parse(intent.GetStringExtra("touser"));
 			string type = intent.GetStringExtra("type");
 			string meta = intent.GetStringExtra("meta");
 			bool inApp = intent.GetBooleanExtra("inapp", false);
 
 			Console.WriteLine("ChatReceiver senderID " + senderID + " type " + type + " meta " +  meta + " inApp " + inApp);
 			((BaseActivity)context).c.LogActivity("ChatReceiver senderID " + senderID + " type " + type + " meta " + meta + " inApp " + inApp);
+
+			if (targetID != Session.ID)
+			{
+				return;
+			}
 
 			try
 			{

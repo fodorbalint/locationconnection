@@ -304,8 +304,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@+id/LocationSwitch"
-                app:layout_constraintBottom_toBottomOf="@+id/LocationSwitch"
+                app:layout_constraintTop_toTopOf="@+id/UseLocationSwitch"
+                app:layout_constraintBottom_toBottomOf="@+id/UseLocationSwitch"
                 app:layout_constraintLeft_toLeftOf="parent"
                 android:text="@string/Location"
     			android:theme="@style/BlackTextSmallNormal" />
@@ -314,12 +314,12 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                android:id="@+id/LocationSwitch" />
+                android:id="@+id/UseLocationSwitch" />
             
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/LocationSwitch"
+                app:layout_constraintTop_toBottomOf="@+id/UseLocationSwitch"
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
                 android:text="@string/LocationShare"
