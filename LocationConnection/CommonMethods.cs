@@ -227,8 +227,12 @@ namespace LocationConnection
 				stw.Start();
 				try
 				{
-					string url = SettingsDefault.HostName + "?" + query;
-					//url += Constants.TestDB;
+					string url = Constants.HostName + "?" + query;
+					if (Constants.isTestDB)
+					{
+						url += Constants.TestDB;
+					}
+					
 					HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
 					request.Timeout = Constants.RequestTimeout;
 					
@@ -303,8 +307,12 @@ namespace LocationConnection
 			stw.Start();
 			try
 			{
-				string url = SettingsDefault.HostName + "?" + query;
-				//url += Constants.TestDB;
+				string url = Constants.HostName + "?" + query;
+				if (Constants.isTestDB)
+				{
+					url += Constants.TestDB;
+				}
+
 				HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
 				request.Timeout = Constants.RequestTimeout;
 				
@@ -397,7 +405,6 @@ namespace LocationConnection
 					// 'Attempt to invoke virtual method 'android.content.res.Resources android.view.View.getResources()' on a null object reference'
 					if (responseString == "AUTHORIZATION_ERROR")
 					{
-						ListActivity.active = false;
 						Intent i = new Intent(context, typeof(MainActivity));
 						i.SetFlags(ActivityFlags.ReorderToFront);
 						IntentData.logout = true;
@@ -804,7 +811,6 @@ namespace LocationConnection
 		{
 			if (error == "AUTHORIZATION_ERROR")
 			{
-				ListActivity.active = false;
 				Intent i = new Intent(context, typeof(MainActivity));
 				i.SetFlags(ActivityFlags.ReorderToFront);
 				IntentData.logout = true;

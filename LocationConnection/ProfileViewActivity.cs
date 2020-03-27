@@ -1043,8 +1043,16 @@ namespace LocationConnection
 			ProfileImage.LayoutParameters = p;			
 
 			string url;
-			//url = SettingsDefault.HostName + Constants.UploadFolderTest + "/" + folder + "/" + Constants.LargeImageSize + "/" + picture;
-			url = SettingsDefault.HostName + Constants.UploadFolder + "/" + folder + "/" + Constants.LargeImageSize + "/" + picture;
+
+			if (Constants.isTestDB)
+			{
+				url = Constants.HostName + Constants.UploadFolderTest + "/" + folder + "/" + Constants.LargeImageSize + "/" + picture;
+			}
+			else
+			{
+				url = Constants.HostName + Constants.UploadFolder + "/" + folder + "/" + Constants.LargeImageSize + "/" + picture;
+			}			
+			
 			ImageService im = new ImageService();
 
 			im.LoadUrl(url).LoadingPlaceholder(Constants.loadingImage, FFImageLoading.Work.ImageSource.CompiledResource).ErrorPlaceholder(Constants.noImageHD, FFImageLoading.Work.ImageSource.CompiledResource)
@@ -1678,13 +1686,15 @@ namespace LocationConnection
 			ListActivity.viewIndex--;
 			ListActivity.absoluteIndex--;
 
+			c.CW("PreviousButton_Click viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " viewProfiles.Count " + ListActivity.viewProfiles.Count + " listProfiles.Count " + ListActivity.listProfiles.Count);
+
 			if (ListActivity.viewIndex >= 0)
 			{
 				PrevLoadAction();
 				displayUser = ListActivity.viewProfiles[ListActivity.viewIndex];
 				mapSet = false;
 				ProfileImageScroll.ScrollX = 0;
-				c.CW("Loading prev user");
+				c.CW("Loading previous user");
 				LoadUser();
 			}
 			else
@@ -1699,6 +1709,13 @@ namespace LocationConnection
 		{
 			ListActivity.viewIndex++;
 			ListActivity.absoluteIndex++;
+			c.CW("NextButton_Click");
+			c.CW("viewindex " + ListActivity.viewIndex);
+			c.CW("absoluteindex " + ListActivity.absoluteIndex);
+			c.CW("viewprofiles count " + ListActivity.viewProfiles.Count);
+			c.CW("listprofiles count " + ListActivity.listProfiles.Count);
+
+			c.CW("NextButton_Click viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " viewProfiles.Count " + ListActivity.viewProfiles.Count + " listProfiles.Count " + ListActivity.listProfiles.Count);
 
 			if (ListActivity.viewIndex < ListActivity.viewProfiles.Count)
 			{
@@ -1719,9 +1736,9 @@ namespace LocationConnection
 
 		private void PrevLoadAction()
 		{
-			//c.LogActivity("Prev viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " absoluteStartIndex " + ListActivity.absoluteStartIndex + " ResultsFrom " + Session.ResultsFrom + " view count " + ListActivity.viewProfiles.Count);
-			//c.CW("Prev viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " absoluteStartIndex " + ListActivity.absoluteStartIndex + " ResultsFrom " + Session.ResultsFrom + " view count " + ListActivity.viewProfiles.Count);
-			if (ListActivity.viewIndex == 0 && ListActivity.absoluteStartIndex > 1 && Session.ResultsFrom > 1) //preceding list will be loaded. Session.ResultsFrom may now be greater than absoluteStartIndex if the upper end of the list was loaded, but the user went back.
+			//c.LogActivity("PrevLoadAction viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " absoluteStartIndex " + ListActivity.absoluteStartIndex + " ResultsFrom " + Session.ResultsFrom + " view count " + ListActivity.viewProfiles.Count);
+			c.CW("PrevLoadAction viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " absoluteStartIndex " + ListActivity.absoluteStartIndex + " ResultsFrom " + Session.ResultsFrom + " viewProfiles.Count " + ListActivity.viewProfiles.Count + " totalResultCount " + ListActivity.totalResultCount);
+			if (ListActivity.viewIndex == 0 && ListActivity.absoluteFirstIndex > 0)
 			{
 				Session.ResultsFrom = ListActivity.absoluteIndex - Constants.MaxResultCount + 1;
 				//c.LogActivity("Prev2 ResultsFrom " + Session.ResultsFrom);
@@ -1740,8 +1757,8 @@ namespace LocationConnection
 
 		private void NextLoadAction()
 		{
-			//c.LogActivity("Next viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " absoluteStartIndex " + ListActivity.absoluteStartIndex + " ResultsFrom " + Session.ResultsFrom + " view count " + ListActivity.viewProfiles.Count);
-			//c.CW("Next viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " absoluteStartIndex " + ListActivity.absoluteStartIndex + " ResultsFrom " + Session.ResultsFrom + " view count " + ListActivity.viewProfiles.Count);
+			//c.LogActivity("NextLoadAction viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " absoluteStartIndex " + ListActivity.absoluteStartIndex + " ResultsFrom " + Session.ResultsFrom + " view count " + ListActivity.viewProfiles.Count);
+			c.CW("NextLoadAction viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " absoluteStartIndex " + ListActivity.absoluteStartIndex + " ResultsFrom " + Session.ResultsFrom + " viewProfiles.Count " + ListActivity.viewProfiles.Count + " totalResultCount " + ListActivity.totalResultCount);
 			if (ListActivity.viewIndex == ListActivity.viewProfiles.Count - 1 && ListActivity.totalResultCount > ListActivity.absoluteIndex + 1) //list will be loaded
 			{
 				Session.ResultsFrom = ListActivity.absoluteIndex + 2;
@@ -1757,6 +1774,16 @@ namespace LocationConnection
 					Task.Run(() => ListActivity.thisInstance.LoadListSearch());
 				}
 			}
+		}
+
+		public override void OnBackPressed()
+		{
+			if (Session.ListType == "hid")
+			{
+				Session.ResultsFrom = 1;
+				Session.LastDataRefresh = null;
+			}
+			base.OnBackPressed();
 		}
 
 		private async void LikeButton_Click(object sender, EventArgs e)
@@ -1874,17 +1901,19 @@ namespace LocationConnection
 					if (Session.ListType != "hid")
 					{
 						ListActivity.viewProfiles.RemoveAt(ListActivity.viewIndex);
-						if (ListActivity.viewIndex >= 0 && ListActivity.viewIndex < ListActivity.listProfiles.Count)
-                        {
-							ListActivity.listProfiles.RemoveAt(ListActivity.viewIndex);
-                        }
+						int listIndex = ListActivity.viewIndex - (ListActivity.absoluteStartIndex - ListActivity.absoluteFirstIndex); //we subtract from viewIndex the number of items that were loaded to add before listProfiles
+						{
+							if (listIndex >= 0 && listIndex < ListActivity.listProfiles.Count) // check the cases where an item was removed from the below or above added list
+							{
+								ListActivity.listProfiles.RemoveAt(listIndex);
+							}
+						}
+						
 						ListActivity.viewIndex--;
+						ListActivity.absoluteIndex--;
+						ListActivity.totalResultCount--;
 						NextButton_Click(null, null);
 					}
-                    else
-                    {
-						Session.LastDataRefresh = null;
-                    }
 				}
 				else if (responseString.Substring(0, 6) == "ERROR_") //IsAMatch
 				{
@@ -1896,7 +1925,7 @@ namespace LocationConnection
 					c.ReportError(responseString);
 				}
 			}
-			else if (displayUser.UserRelation == 1)
+			else if (displayUser.UserRelation == 1) //we are in Hid list
 			{
 				string responseString = await c.MakeRequest("action=unhide&ID=" + Session.ID + "&target=" + displayUser.ID
 				+ "&time=" + unixTimestamp + "&SessionID=" + Session.SessionID);
@@ -1910,12 +1939,6 @@ namespace LocationConnection
 					TooltipCompat.SetTooltipText(HideButton, res.GetString(Resource.String.Hide));
 					//HideButton.TooltipText = res.GetString(Resource.String.Hide);
 					HideButton.SetImageResource(icHide);
-					
-					//Session.ListType = hid
-					if (ListActivity.viewIndex >= 0 && ListActivity.viewIndex < ListActivity.listProfiles.Count)
-					{
-						ListActivity.listProfiles.RemoveAt(ListActivity.viewIndex);
-					}
 				}
 				else
 				{

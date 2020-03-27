@@ -43,10 +43,6 @@ namespace LocationConnection
 		public const int ResultsFrom = 1;
 		
 		public const byte LocationAccuracy = 0;
-		public const int InAppLocationRate = 60;
-
-		//Constants
-
-		public const string HostName = "https://locationconnection.appspot.com/";
+		public const int InAppLocationRate = 60;		
 	}
 }

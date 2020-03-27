@@ -96,7 +96,6 @@ namespace LocationConnection
 		public static ListActivity thisInstance;
 
 		public static bool initialized = false;
-		public static bool active = false;
 
 		public static List<Profile> listProfiles;
 		public static List<Profile> viewProfiles;
@@ -138,10 +137,10 @@ namespace LocationConnection
 
 		public static bool addResultsBefore;
 		public static bool addResultsAfter;
-		public static int absoluteStartIndex; //Session.ResultsFrom when we enter ProfileView (absolute index of first item in list)
+		public static int absoluteStartIndex; //Session.ResultsFrom-1 (absoluteFirstIndex) when we enter ProfileView (absolute index of first item in list)
 		public static int absoluteIndex; //index in the total number of results.
-		public static int viewIndex; //index in list, will change as the view list expands backwards
-		private static int absoluteFirstIndex; //absolute position of first element in the list. Changes as list is expanded backwards.
+		public static int viewIndex; //index in list, it will change as the view list expands backwards
+		public static int absoluteFirstIndex; //absolute position of first element in the list. Changes as list is expanded backwards.
 
 		private bool rippleRunning;
 		private int tweenTime = 300;
@@ -594,7 +593,6 @@ namespace LocationConnection
 					}
 				}
 
-				active = true;
 				backCounter = 0;
 				//when logging in with autologin, _itemSelected will fire twice, otherwise once. Once more when changing to the other view.
 				searchInClicked = 0;				
@@ -612,56 +610,63 @@ namespace LocationConnection
 				if (!(listProfiles is null) && !(newListProfiles is null)) {
 					if (absoluteIndex < absoluteStartIndex)
 					{
+						c.CW("OnResume got low range: absoluteIndex " + absoluteIndex + " absoluteStartIndex " + absoluteStartIndex + " absoluteFirstIndex " + absoluteFirstIndex + " viewIndex: " + (absoluteIndex - absoluteFirstIndex));
 						do
 						{
 							absoluteStartIndex -= Constants.MaxResultCount;
 						} while (absoluteStartIndex > absoluteIndex);
-						//c.LogActivity("onresume got low range: absoluteStartIndex " + absoluteStartIndex + " absoluteFirstIndex " + absoluteFirstIndex + " index " + (absoluteStartIndex - absoluteFirstIndex));
-						//c.CW("onresume got low range: absoluteStartIndex " + absoluteStartIndex + " absoluteFirstIndex " + absoluteFirstIndex + " index " + (absoluteStartIndex - absoluteFirstIndex));
-						listProfiles = viewProfiles.GetRange(absoluteStartIndex - absoluteFirstIndex, Constants.MaxResultCount);
-						absoluteFirstIndex = absoluteStartIndex;
-						viewProfiles = listProfiles;
-						
-						if ((bool)Settings.IsMapView)
+
+						if (absoluteStartIndex - absoluteFirstIndex + Constants.MaxResultCount > viewProfiles.Count) // this range contains less elements than MaxResultCount (could have happened, it profiles were hid)
 						{
-							mapToSet = true;
+							listProfiles = viewProfiles.GetRange(absoluteStartIndex - absoluteFirstIndex, viewProfiles.Count - (absoluteStartIndex - absoluteFirstIndex));
 						}
-						else
+						else //range is full
 						{
-							mapToSet = false;
+							listProfiles = viewProfiles.GetRange(absoluteStartIndex - absoluteFirstIndex, Constants.MaxResultCount);
 						}
 					}
 					else if (absoluteIndex >= absoluteStartIndex + listProfiles.Count)
 					{
+						c.CW("OnResume got high range: absoluteIndex " + absoluteIndex + " absoluteStartIndex " + absoluteStartIndex + " absoluteFirstIndex " + absoluteFirstIndex + " viewIndex: " + (absoluteIndex - absoluteFirstIndex));
 						do
 						{
 							absoluteStartIndex += Constants.MaxResultCount;
 						} while (absoluteStartIndex <= absoluteIndex);
 						absoluteStartIndex -= Constants.MaxResultCount;
 
-						//c.LogActivity("onresume got high range: absoluteStartIndex " + absoluteStartIndex + " absoluteFirstIndex " + absoluteFirstIndex + " index " + (absoluteStartIndex - absoluteFirstIndex));
-						//c.CW("onresume got high range: absoluteStartIndex " + absoluteStartIndex + " absoluteFirstIndex " + absoluteFirstIndex + " index " + (absoluteStartIndex - absoluteFirstIndex));
-						if (absoluteStartIndex - absoluteFirstIndex + Constants.MaxResultCount - 1 > viewProfiles.Count - 1)
+						if (absoluteStartIndex - absoluteFirstIndex + Constants.MaxResultCount > viewProfiles.Count) // this range contains less elements than MaxResultCount 
 						{
-							listProfiles = viewProfiles.GetRange(absoluteStartIndex - absoluteFirstIndex, viewProfiles.Count + absoluteFirstIndex - absoluteStartIndex);
+							listProfiles = viewProfiles.GetRange(absoluteStartIndex - absoluteFirstIndex, viewProfiles.Count - (absoluteStartIndex - absoluteFirstIndex));
 						}
-						else
+						else //range is full
 						{
 							listProfiles = viewProfiles.GetRange(absoluteStartIndex - absoluteFirstIndex, Constants.MaxResultCount);
 						}
-						absoluteFirstIndex = absoluteStartIndex;
-						viewProfiles = listProfiles;
-
-						if ((bool)Settings.IsMapView)
+					}
+					else //we are in the original range, but could have hid profiles, so the section must be recreated.
+					{
+						c.CW("OnResume in normal range: absoluteIndex " + absoluteIndex + " absoluteStartIndex " + absoluteStartIndex + " absoluteFirstIndex " + absoluteFirstIndex + " viewIndex: " + (absoluteIndex - absoluteFirstIndex));
+						if (absoluteStartIndex - absoluteFirstIndex + Constants.MaxResultCount > viewProfiles.Count) // this range contains less elements than MaxResultCount 
 						{
-							mapToSet = true;
+							listProfiles = viewProfiles.GetRange(absoluteStartIndex - absoluteFirstIndex, viewProfiles.Count - (absoluteStartIndex - absoluteFirstIndex));
 						}
-						else
+						else //range is full
 						{
-							mapToSet = false;
+							listProfiles = viewProfiles.GetRange(absoluteStartIndex - absoluteFirstIndex, Constants.MaxResultCount);
 						}
 					}
+
+					if ((bool)Settings.IsMapView)
+					{
+						mapToSet = true;
+					}
+					else
+					{
+						mapToSet = false;
+					}
+
 					Session.ResultsFrom = absoluteStartIndex + 1;
+					c.CW("Session.ResultsFrom " + Session.ResultsFrom + " listProfiles.Count " + listProfiles.Count + " newListProfiles.Count " + newListProfiles.Count);
 				}
 				newListProfiles = null;
 
@@ -806,7 +811,6 @@ namespace LocationConnection
 				Settings.ListMapType = thisMap.MapType;
 			}
 			c.SaveSettings();
-			active = false;
 		}
 
 		private void LoggedInLayout()
@@ -814,8 +818,16 @@ namespace LocationConnection
 			StatusImage.Visibility = ViewStates.Visible;
 			StatusText.Visibility = ViewStates.Gone;
 			string url;
-			//url = SettingsDefault.HostName + Constants.UploadFolderTest + "/" + Session.ID + "/" + Constants.SmallImageSize + "/" + Session.Pictures[0];
-			url = SettingsDefault.HostName + Constants.UploadFolder + "/" + Session.ID + "/" + Constants.SmallImageSize + "/" + Session.Pictures[0];
+
+			if (Constants.isTestDB)
+			{
+				url = Constants.HostName + Constants.UploadFolderTest + "/" + Session.ID + "/" + Constants.SmallImageSize + "/" + Session.Pictures[0];
+			}
+			else
+			{
+				url = Constants.HostName + Constants.UploadFolder + "/" + Session.ID + "/" + Constants.SmallImageSize + "/" + Session.Pictures[0];
+			}
+			
 			ImageService im = new ImageService();
 			im.LoadUrl(url).LoadingPlaceholder(Constants.loadingImage, FFImageLoading.Work.ImageSource.CompiledResource)
 				.ErrorPlaceholder(Constants.noImage, FFImageLoading.Work.ImageSource.CompiledResource).Into(StatusImage);
@@ -2060,10 +2072,12 @@ namespace LocationConnection
 			Intent i = new Intent(this, typeof(ProfileViewActivity));
 			i.SetFlags(ActivityFlags.ReorderToFront);
 			IntentData.pageType = "list";
+			viewProfiles = new List<Profile>(listProfiles);
 			viewIndex = e.Position;
 			absoluteIndex = viewIndex + (int)Session.ResultsFrom - 1;
-			absoluteStartIndex = (int)Session.ResultsFrom - 1;
-			//c.LogActivity("UserSearchList_ItemClick viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " absoluteStartIndex " + ListActivity.absoluteStartIndex + " ResultsFrom " + Session.ResultsFrom + " view count " + ListActivity.viewProfiles.Count);
+			absoluteFirstIndex = absoluteStartIndex = (int)Session.ResultsFrom - 1;
+			c.CW("UserSearchList_ItemClick ResultsFrom " + Session.ResultsFrom + " viewIndex " + viewIndex + " absoluteIndex " + absoluteIndex + " absoluteStartIndex " + absoluteStartIndex + " listProfiles.Count " + listProfiles.Count);
+			ShowListProfiles();
 			StartActivity(i);
 		}
 
@@ -2089,7 +2103,7 @@ namespace LocationConnection
 		private void LoadNext_Click(object sender, EventArgs e)
 		{
 			LoadNext.Enabled = false;
-			Session.ResultsFrom = Session.ResultsFrom + Constants.MaxResultCount;
+			Session.ResultsFrom = Session.ResultsFrom + listProfiles.Count;
 			recenterMap = false;
 			if (Session.LastSearchType == Constants.SearchType_Filter)
 			{
@@ -2260,8 +2274,10 @@ namespace LocationConnection
 		{
 			try
 			{
-				c.LogActivity("LoadList listLoading " + listLoading + " active " + active);
-				if (listLoading || !active)
+				c.CW("LoadList listLoading " + listLoading); 
+				c.LogActivity("LoadList listLoading " + listLoading);
+				
+				if (listLoading)
 				{
 					return;
 				}
@@ -2321,8 +2337,10 @@ namespace LocationConnection
 		{
 			try
 			{
-				c.LogActivity(" LoadListSearch listLoading " + listLoading + " active " + active);
-				if (listLoading || !active)
+				c.CW(" LoadListSearch listLoading " + listLoading);
+				c.LogActivity(" LoadListSearch listLoading " + listLoading);
+
+				if (listLoading)
 				{
 					return;
 				}
@@ -2362,9 +2380,9 @@ namespace LocationConnection
 
 		private void LoadResults(string url)
 		{
-			if (!active) return;
-
+			c.CW("LoadResults making request");
 			c.LogActivity("LoadResults making request");
+
 			string responseString = c.MakeRequestSync(url);
 			if (responseString.Substring(0, 2) == "OK")
 			{
@@ -2381,40 +2399,45 @@ namespace LocationConnection
 
 					if (addResultsAfter)
 					{
+						c.CW("addResultsAfter viewIndex " + viewIndex + " absoluteFirstIndex " + absoluteFirstIndex);
+
 						newListProfiles = parser.returnCollection;
 						viewProfiles = new List<Profile>(viewProfiles.Concat(newListProfiles));
-						//c.LogActivity("LoadResults add after absoluteFirstIndex " + absoluteFirstIndex);
 					}
 					else if (addResultsBefore)
 					{
+						c.CW("addResultsBefore old viewIndex " + viewIndex + " absoluteFirstIndex " + absoluteFirstIndex);
+
 						newListProfiles = parser.returnCollection;						
 						viewProfiles = new List<Profile>(newListProfiles.Concat(viewProfiles));
 						viewIndex += newListProfiles.Count;
 						absoluteFirstIndex -= newListProfiles.Count;
-						//c.LogActivity("LoadResults add before absoluteFirstIndex " + absoluteFirstIndex);
+
+						c.CW("addResultsBefore new viewIndex " + viewIndex + " absoluteFirstIndex " + absoluteFirstIndex);
 					}
 					else
 					{
-						viewProfiles = listProfiles = parser.returnCollection;
-						adapter = new UserSearchListAdapter(this, listProfiles);
-						absoluteFirstIndex = absoluteStartIndex = (int)Session.ResultsFrom - 1;
-						//c.LogActivity("LoadResults list loading absoluteFirstIndex " + absoluteFirstIndex);
+						//viewProfiles should not be set here, because if the click the first/last profile, background loading will start for the previous/next range, so when we go back and click another profile, a profile from the new range will be loaded.
+						listProfiles = parser.returnCollection;
+						adapter = new UserSearchListAdapter(this, listProfiles);						
 						newListProfiles = null;
-					}					
 
-					RunOnUiThread(() =>
-					{
-						NoResult.Visibility = ViewStates.Gone;
-						UserSearchList.Adapter = adapter;
-					});
+						c.CW("normal list absoluteFirstIndex " + absoluteFirstIndex);
+
+						RunOnUiThread(() =>
+						{
+							NoResult.Visibility = ViewStates.Gone;
+							UserSearchList.Adapter = adapter;
+						});
+					}				
 				}
-				else //no result
+				else if (!(addResultsAfter || addResultsBefore)) //no result; we can get empty list when unhiding profiles 
 				{
 					listProfiles = new List<Profile>();
 					viewProfiles = null;
 					adapter = new UserSearchListAdapter(this, listProfiles);
 					RunOnUiThread(() =>
-					{						
+					{
 						UserSearchList.Adapter = adapter;
 					});
 				}
@@ -2422,7 +2445,7 @@ namespace LocationConnection
 				usersLoaded = true;
 				listLoading = false;
 
-				if (mapLoaded && ((bool)Settings.IsMapView || mapToSet) && newListProfiles is null)
+				if (mapLoaded && ((bool)Settings.IsMapView || mapToSet) && !(addResultsBefore || addResultsAfter))
 				{
 					mapSet = false;
 					Task.Run(() => {
@@ -2595,7 +2618,16 @@ namespace LocationConnection
 				{
 					if (profile.Latitude != null && profile.Longitude != null && profile.LocationTime != null) //location available
 					{
-						Bitmap imageBitmap = c.GetImageBitmapFromUrl(SettingsDefault.HostName + Constants.UploadFolder + "/" + profile.ID + "/" + Constants.SmallImageSize + "/" + profile.Pictures[0]);
+						Bitmap imageBitmap;
+						if (Constants.isTestDB)
+						{
+							imageBitmap = c.GetImageBitmapFromUrl(Constants.HostName + Constants.UploadFolderTest + "/" + profile.ID + "/" + Constants.SmallImageSize + "/" + profile.Pictures[0]);
+						}
+						else
+						{
+							imageBitmap = c.GetImageBitmapFromUrl(Constants.HostName + Constants.UploadFolder + "/" + profile.ID + "/" + Constants.SmallImageSize + "/" + profile.Pictures[0]);
+						}
+						
 						Bitmap smallMarker = Bitmap.CreateScaledBitmap(imageBitmap, (int)(Settings.MapIconSize * pixelDensity), (int)(Settings.MapIconSize * pixelDensity), false);
 						LatLng location = new LatLng((double)profile.Latitude, (double)profile.Longitude);
 						markerOptions = new MarkerOptions();
@@ -2695,6 +2727,16 @@ namespace LocationConnection
 
 			return zoomLevel;
 		}
+
+		public void ShowListProfiles()
+		{
+			string str = "";
+			foreach (Profile profile in listProfiles)
+			{
+				str += profile.ID + " ";
+			}
+			c.CW("ShowListProfiles " + str);
+		}
 	}
 
 	public class MyMarkerClickListener : Java.Lang.Object, IOnMarkerClickListener
@@ -2721,11 +2763,11 @@ namespace LocationConnection
 				Intent i = new Intent(context, typeof(ProfileViewActivity));
 				i.SetFlags(ActivityFlags.ReorderToFront);
 				IntentData.pageType = "list";
-				//((ListActivity)context).c.LogActivity("OnMarkerClick0 viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " absoluteStartIndex " + ListActivity.absoluteStartIndex + " ResultsFrom " + Session.ResultsFrom + " view count " + ListActivity.viewProfiles.Count);
+				ListActivity.viewProfiles = new List<Profile>(ListActivity.listProfiles);
 				ListActivity.viewIndex = index;
 				ListActivity.absoluteIndex = index + (int)Session.ResultsFrom - 1;
-				ListActivity.absoluteStartIndex = (int)Session.ResultsFrom - 1;
-				//((ListActivity)context).c.LogActivity("OnMarkerClick1 viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " absoluteStartIndex " + ListActivity.absoluteStartIndex + " ResultsFrom " + Session.ResultsFrom + " view count " + ListActivity.viewProfiles.Count);
+				ListActivity.absoluteFirstIndex = ListActivity.absoluteStartIndex = (int)Session.ResultsFrom - 1;
+				
 				context.StartActivity(i);
 			}
 			return true;

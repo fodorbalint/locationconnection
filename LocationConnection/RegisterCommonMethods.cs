@@ -119,14 +119,23 @@ namespace LocationConnection
 				client.UploadFileCompleted += Client_UploadFileCompleted;
 				client.Headers.Add("Content-Type", "image/jpeg");
 
-				string url;			
+				string url;	
+				
 				if (context.c.IsLoggedIn())
 				{
-					url = SettingsDefault.HostName + "?action=uploadtouser&ID=" + Session.ID + "&SessionID=" + Session.SessionID;
+					url = Constants.HostName + "?action=uploadtouser&ID=" + Session.ID + "&SessionID=" + Session.SessionID;
+					if (Constants.isTestDB)
+					{
+						url += Constants.TestDB;
+					}
 				}
 				else
 				{
-					url = (regsessionid == "") ? SettingsDefault.HostName + "?action=uploadtotemp" : SettingsDefault.HostName + "?action=uploadtotemp&regsessionid=" + regsessionid;
+					url = (regsessionid == "") ? Constants.HostName + "?action=uploadtotemp" : Constants.HostName + "?action=uploadtotemp&regsessionid=" + regsessionid;
+					if (Constants.isTestDB)
+					{
+						url += Constants.TestDB;
+					}
 				}
 				await client.UploadFileTaskAsync(url, fileName);
 				client.UploadProgressChanged -= Client_UploadProgressChanged;

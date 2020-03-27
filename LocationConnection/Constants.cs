@@ -20,6 +20,8 @@ namespace LocationConnection
 		public const int MaxNumPictures = 9;
 		public const string UploadFolder = "userimages";
 		public const string TempUploadFolder = "userimagestemp";
+		public const string UploadFolderTest = "userimagestest";
+		public const string TempUploadFolderTest = "userimagestesttemp";
 		public const int SmallImageSize = 480;
 		public const int LargeImageSize = 1440;
 		public const int AlarmReceiverRequestCode = 1;
@@ -27,7 +29,7 @@ namespace LocationConnection
 		public const string EmailFormat = @"^\w+([.+-]?\w+)*@[a-zA-Z0-9]+([.-]?[a-zA-Z0-9]+)*\.[a-zA-z0-9]{2,4}$";
 		public const string CHANNEL_ID = "my_notification_channel";
 		public const int NOTIFICATION_ID = 100;
-		public const int MaxResultCount = 100;
+		public const int MaxResultCount = 3;//100;
 		public const string loadingImage = "loadingimage.png";
 		public const string noImage = "noimage.png";
 		public const string noImageHD = "noimage_hd.png";
@@ -49,8 +51,8 @@ namespace LocationConnection
 		public const int LocationKeepTime = 60 * 60 * 24;
 		public const int SystemLogKeepTime = 60 * 5;
 
+		public const bool isTestDB = true;
 		public const string TestDB = "&testDB";
-		public const string UploadFolderTest = "userimagestest";
-		public const string TempUploadFolderTest = "userimagestesttemp";
+		public const string HostName = "https://locationconnection.appspot.com/";
 	}
 }

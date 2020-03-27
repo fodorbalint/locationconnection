@@ -117,13 +117,25 @@ namespace LocationConnection
 			string url;
 			if (context is ProfileEditActivity)
 			{
-				//url = SettingsDefault.HostName + Constants.UploadFolderTest + "/" + Session.ID + "/" + Constants.LargeImageSize + "/" + picture;
-				url = SettingsDefault.HostName + Constants.UploadFolder + "/" + Session.ID + "/" + Constants.LargeImageSize + "/" + picture;
+				if (Constants.isTestDB)
+				{
+					url = Constants.HostName + Constants.UploadFolderTest + "/" + Session.ID + "/" + Constants.LargeImageSize + "/" + picture;
+				}
+				else
+				{
+					url = Constants.HostName + Constants.UploadFolder + "/" + Session.ID + "/" + Constants.LargeImageSize + "/" + picture;
+				}
 			}
 			else
 			{
-				//url = SettingsDefault.HostName + Constants.TempUploadFolderTest + "/" + RegisterActivity.regsessionid + "/" + Constants.SmallImageSize + "/" + picture;
-				url = SettingsDefault.HostName + Constants.TempUploadFolder + "/" + RegisterActivity.regsessionid + "/" + Constants.SmallImageSize + "/" + picture;
+				if (Constants.isTestDB)
+				{
+					url = Constants.HostName + Constants.TempUploadFolderTest + "/" + RegisterActivity.regsessionid + "/" + Constants.SmallImageSize + "/" + picture;
+				}
+				else
+				{
+					url = Constants.HostName + Constants.TempUploadFolder + "/" + RegisterActivity.regsessionid + "/" + Constants.SmallImageSize + "/" + picture;
+				}
 			}
 				
 			ImageService im = new ImageService();

@@ -105,8 +105,15 @@ namespace LocationConnection
 			}
 
 			string url;
-			//url = SettingsDefault.HostName + Constants.UploadFolderTest + "/" + items[position].TargetID + "/" + Constants.SmallImageSize + "/" + items[position].TargetPicture;
-			url = SettingsDefault.HostName + Constants.UploadFolder + "/" + items[position].TargetID + "/" + Constants.SmallImageSize + "/" + items[position].TargetPicture;
+			if (Constants.isTestDB)
+			{
+				url = Constants.HostName + Constants.UploadFolderTest + "/" + items[position].TargetID + "/" + Constants.SmallImageSize + "/" + items[position].TargetPicture;
+			}
+			else
+			{
+				url = Constants.HostName + Constants.UploadFolder + "/" + items[position].TargetID + "/" + Constants.SmallImageSize + "/" + items[position].TargetPicture;
+			}
+			
 			ImageService im = new ImageService();
 			im.LoadUrl(url).LoadingPlaceholder(Constants.loadingImage, FFImageLoading.Work.ImageSource.CompiledResource).ErrorPlaceholder(Constants.noImage, FFImageLoading.Work.ImageSource.CompiledResource).Into(Image);
 

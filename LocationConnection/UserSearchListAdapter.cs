@@ -44,8 +44,14 @@ namespace LocationConnection
 			//TextView ListName = view.FindViewById<TextView>(Resource.Id.ListName);
 			
 			string url;
-			//url = SettingsDefault.HostName + Constants.UploadFolderTest + "/" + profiles[position].ID + "/" + Constants.SmallImageSize + "/" + profiles[position].Pictures[0];
-			url = SettingsDefault.HostName + Constants.UploadFolder + "/" + profiles[position].ID + "/" + Constants.SmallImageSize + "/" + profiles[position].Pictures[0];
+            if (Constants.isTestDB)
+            {
+                url = Constants.HostName + Constants.UploadFolderTest + "/" + profiles[position].ID + "/" + Constants.SmallImageSize + "/" + profiles[position].Pictures[0];
+            }
+            else
+            {
+                url = Constants.HostName + Constants.UploadFolder + "/" + profiles[position].ID + "/" + Constants.SmallImageSize + "/" + profiles[position].Pictures[0];
+            }
 			ImageService im = new ImageService();
 			im.LoadUrl(url).LoadingPlaceholder(Constants.loadingImage, FFImageLoading.Work.ImageSource.CompiledResource).ErrorPlaceholder(Constants.noImage, FFImageLoading.Work.ImageSource.CompiledResource).Into(ListImage);
 			

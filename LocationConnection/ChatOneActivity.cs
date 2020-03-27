@@ -313,8 +313,15 @@ namespace LocationConnection
 		{
 			TargetName.Text = Session.CurrentMatch.TargetName;
 			string url;
-			//url = SettingsDefault.HostName + Constants.UploadFolderTest + "/" + Session.CurrentMatch.TargetID + "/" + Constants.SmallImageSize + "/" + Session.CurrentMatch.TargetPicture;
-			url = SettingsDefault.HostName + Constants.UploadFolder + "/" + Session.CurrentMatch.TargetID + "/" + Constants.SmallImageSize + "/" + Session.CurrentMatch.TargetPicture;
+			if (Constants.isTestDB)
+			{
+				url = Constants.HostName + Constants.UploadFolderTest + "/" + Session.CurrentMatch.TargetID + "/" + Constants.SmallImageSize + "/" + Session.CurrentMatch.TargetPicture;
+			}
+			else
+			{
+				url = Constants.HostName + Constants.UploadFolder + "/" + Session.CurrentMatch.TargetID + "/" + Constants.SmallImageSize + "/" + Session.CurrentMatch.TargetPicture;
+			}
+			
 			ImageService im = new ImageService();
 			im.LoadUrl(url).LoadingPlaceholder(Constants.loadingImage, FFImageLoading.Work.ImageSource.CompiledResource).ErrorPlaceholder(Constants.noImage, FFImageLoading.Work.ImageSource.CompiledResource).Into(ChatTargetImage);
 		}
