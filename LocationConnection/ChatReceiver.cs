@@ -195,6 +195,10 @@ namespace LocationConnection
 						{
 							((BaseActivity)context).RemoveUpdatesFrom(senderID);
 						}
+						if (((BaseActivity)context).IsUpdatingTo(senderID))
+						{
+							((BaseActivity)context).RemoveUpdatesTo(senderID);
+						}
 
 						if (inApp)
 						{
@@ -299,7 +303,6 @@ namespace LocationConnection
 						if (((BaseActivity)context).IsUpdatingFrom(senderID)) //user could have gone to the background, clearing out the list of people to receive updates from.
 						{
 							((BaseActivity)context).RemoveUpdatesFrom(senderID);
-							((BaseActivity)context).RemoveLocationData(senderID);
 
 							text = senderName + " " + context.Resources.GetString(Resource.String.LocationUpdatesFromEnd);
 							((BaseActivity)context).c.SnackStr(text, null);
@@ -331,12 +334,12 @@ namespace LocationConnection
 		{
 			Intent i = new Intent(context, typeof(ProfileViewActivity));
 			i.SetFlags(ActivityFlags.ReorderToFront);
-			IntentData.pageType = "standalone";
+			IntentData.profileViewPageType = Constants.ProfileViewType_Standalone;
 			IntentData.targetID = targetID;
 			context.StartActivity(i);
 		}
 
-		public void AddUpdateMatch(int senderID, bool isMatch)
+		public static void AddUpdateMatch(int senderID, bool isMatch)
 		{
 			if (!(ListActivity.viewProfiles is null))
 			{

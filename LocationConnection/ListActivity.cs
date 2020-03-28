@@ -607,7 +607,7 @@ namespace LocationConnection
 				//c.LogActivity("Onresume, after setting views: listTypeClicked " + listTypeClicked + " searchInClicked " + searchInClicked);
 				MainLayout.RequestFocus();
 
-				if (!(listProfiles is null) && !(newListProfiles is null)) {
+				if (!(listProfiles is null) && !(newListProfiles is null) && Session.ListType != "hid") { //hid list will reload
 					if (absoluteIndex < absoluteStartIndex)
 					{
 						c.CW("OnResume got low range: absoluteIndex " + absoluteIndex + " absoluteStartIndex " + absoluteStartIndex + " absoluteFirstIndex " + absoluteFirstIndex + " viewIndex: " + (absoluteIndex - absoluteFirstIndex));
@@ -1362,7 +1362,7 @@ namespace LocationConnection
 		{
 			Intent i = new Intent(this, typeof(ProfileViewActivity));
 			i.SetFlags(ActivityFlags.ReorderToFront);
-			IntentData.pageType = "self";
+			IntentData.profileViewPageType = Constants.ProfileViewType_Self;
 			StartActivity(i);
 		}
 
@@ -2071,7 +2071,7 @@ namespace LocationConnection
 		{
 			Intent i = new Intent(this, typeof(ProfileViewActivity));
 			i.SetFlags(ActivityFlags.ReorderToFront);
-			IntentData.pageType = "list";
+			IntentData.profileViewPageType = Constants.ProfileViewType_List;
 			viewProfiles = new List<Profile>(listProfiles);
 			viewIndex = e.Position;
 			absoluteIndex = viewIndex + (int)Session.ResultsFrom - 1;
@@ -2230,12 +2230,11 @@ namespace LocationConnection
 			RefreshDistance.Enabled = false;
 			//the same animation cannot be applied to different icons, because the pivot point changes.
 			Animation anim = Android.Views.Animations.AnimationUtils.LoadAnimation(this, Resource.Animation.rotate);
-			Animation anim_small = Android.Views.Animations.AnimationUtils.LoadAnimation(this, Resource.Animation.rotate_small);
+			Animation anim_small = Android.Views.Animations.AnimationUtils.LoadAnimation(this, Resource.Animation.rotate);
 			RefreshDistance.StartAnimation(anim);
 			LoaderCircle.StartAnimation(anim_small);
 			LoaderCircle.Visibility = ViewStates.Visible;
-
-			ReloadPulldown.Rotation = 0;
+;
 			anim_pulldown = ObjectAnimator.OfFloat(ReloadPulldown, "Rotation", 360);
 			anim_pulldown.SetDuration(loaderAnimTime);
 			anim_pulldown.SetInterpolator(new LinearInterpolator());
@@ -2252,10 +2251,6 @@ namespace LocationConnection
 
 			anim_pulldown.Cancel();
             HidePulldown();
-			/*ObjectAnimator animator = ObjectAnimator.OfFloat(ReloadPulldown, "Alpha", 0);
-			animator.SetDuration(tweenTime);
-			animator.Start();
-			animator.AnimationEnd += Animator_AnimationEnd;*/
 		}
 
 		private void HidePulldown()
@@ -2264,11 +2259,6 @@ namespace LocationConnection
 			animator.SetDuration(tweenTime);
 			animator.Start();
 		}
-
-		/*private void Animator_AnimationEnd(object sender, EventArgs e)
-		{
-			ReloadPulldown.ClearAnimation();
-		}*/
 
 		public void LoadList()
 		{
@@ -2445,12 +2435,10 @@ namespace LocationConnection
 				usersLoaded = true;
 				listLoading = false;
 
+				mapSet = false;
 				if (mapLoaded && ((bool)Settings.IsMapView || mapToSet) && !(addResultsBefore || addResultsAfter))
 				{
-					mapSet = false;
-					Task.Run(() => {
-						SetMap();
-					});
+					SetMap();
 				}
 				else if (!(bool)Settings.IsMapView && !mapToSet)
 				{
@@ -2671,7 +2659,7 @@ namespace LocationConnection
 							thisMap.UiSettings.MyLocationButtonEnabled = true;
 						}
 
-						if ((bool)Session.GeoFilter)
+						if ((bool)Session.GeoFilter && Session.LastSearchType == Constants.SearchType_Filter) //no geo filter on free text search
 						{
 							MarkerOptions markerOptions = new MarkerOptions();
 							markerOptions.SetPosition(new LatLng((double)latitude, (double)longitude));
@@ -2762,7 +2750,7 @@ namespace LocationConnection
 				}
 				Intent i = new Intent(context, typeof(ProfileViewActivity));
 				i.SetFlags(ActivityFlags.ReorderToFront);
-				IntentData.pageType = "list";
+				IntentData.profileViewPageType = Constants.ProfileViewType_List;
 				ListActivity.viewProfiles = new List<Profile>(ListActivity.listProfiles);
 				ListActivity.viewIndex = index;
 				ListActivity.absoluteIndex = index + (int)Session.ResultsFrom - 1;

@@ -24,22 +24,21 @@ namespace LocationConnection
 		public const string TempUploadFolderTest = "userimagestesttemp";
 		public const int SmallImageSize = 480;
 		public const int LargeImageSize = 1440;
-		public const int AlarmReceiverRequestCode = 1;
-		public const int ServiceRestartInterval = 500;
 		public const string EmailFormat = @"^\w+([.+-]?\w+)*@[a-zA-Z0-9]+([.-]?[a-zA-Z0-9]+)*\.[a-zA-z0-9]{2,4}$";
 		public const string CHANNEL_ID = "my_notification_channel";
-		public const int NOTIFICATION_ID = 100;
-		public const int MaxResultCount = 3;//100;
+		public const int NOTIFICATION_ID = 100;		
 		public const string loadingImage = "loadingimage.png";
 		public const string noImage = "noimage.png";
 		public const string noImageHD = "noimage_hd.png";
 		public const int DataRefreshInterval = 60; //minimum seconds
-		public const int LocationRefreshInterval = 60;
 		public const int DistanceChangeRefreshDelay = 300;
 		public const int MaxGoogleMapDistance = 20015;
 		public const int ActivityChangeInterval = 3000; //about 2 seconds needed from resuming an activity and entering to ListActivity
 		public const byte SearchType_Filter = 0;
 		public const byte SearchType_Search = 1;
+		public const byte ProfileViewType_List = 0;
+		public const byte ProfileViewType_Self = 1;
+		public const byte ProfileViewType_Standalone = 2;
 		public const int MapIconSizeMin = 10;
 		public const int MapIconSizeMax = 200;
 		public const float MapRatioMin = 0.46f; //0.4615f; //9 : 19.5
@@ -52,6 +51,8 @@ namespace LocationConnection
 		public const int SystemLogKeepTime = 60 * 5;
 
 		public const bool isTestDB = true;
+		public const int MaxResultCount = 100;
+
 		public const string TestDB = "&testDB";
 		public const string HostName = "https://locationconnection.appspot.com/";
 	}

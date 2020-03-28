@@ -10,7 +10,7 @@ namespace LocationConnection
 {
 	public class IntentData
 	{
-		public static string pageType;
+		public static byte profileViewPageType;
 		public static int? targetID;
 		public static bool logout;
 		public static bool authError;

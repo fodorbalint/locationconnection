@@ -264,9 +264,6 @@ namespace LocationConnection
 			// aapt resource value: 0x7F010010
 			public const int rotate = 2130771984;
 			
-			// aapt resource value: 0x7F010011
-			public const int rotate_small = 2130771985;
-			
 			static Animation()
 			{
 				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
@@ -5906,9 +5903,6 @@ namespace LocationConnection
 			
 			// aapt resource value: 0x7F0D0001
 			public const int menu_list = 2131558401;
-			
-			// aapt resource value: 0x7F0D0002
-			public const int menu_list_loggedout = 2131558402;
 			
 			static Menu()
 			{

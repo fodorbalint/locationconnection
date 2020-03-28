@@ -38,7 +38,7 @@ namespace LocationConnection
 		bool mapSet;
 		GoogleMap thisMap;
 		Marker thisMarker;
-		string pageType;
+		byte pageType;
 		Profile displayUser;
 		float navigationSpacerHeight;
 		float paddingSelfPage;
@@ -234,10 +234,12 @@ namespace LocationConnection
 				userLoaded = false;
 				ProfileImageScroll.ScrollX = 0;
 
-				pageType = IntentData.pageType;
+				c.CW("OnResume IntentData.profileViewPageType " + IntentData.profileViewPageType);
+				pageType = IntentData.profileViewPageType;
+
 				switch (pageType)
 				{
-					case "self":
+					case Constants.ProfileViewType_Self:
 
 						if ((bool)Session.UseLocation && c.IsLocationEnabled())
 						{
@@ -270,7 +272,7 @@ namespace LocationConnection
 						}
 						break;
 
-					case "list":
+					case Constants.ProfileViewType_List:
 
 						HideEditSpacer();
 
@@ -311,7 +313,7 @@ namespace LocationConnection
 						LoadUser();
 						break;
 
-					case "standalone": //coming from chat, we already know this is a match, Userrelation=3.
+					case Constants.ProfileViewType_Standalone: //coming from chat, we already know this is a match, Userrelation=3.
 
 						if (!(IntentData.targetID is null)) //due to back button navigation, this activity may resume and pause invisibly
 						{
@@ -341,7 +343,7 @@ namespace LocationConnection
 			base.OnPause();
 			if (!ListActivity.initialized) { return; }
 
-			if (pageType == "self" && (bool)Session.UseLocation && c.IsLocationEnabled())
+			if (pageType == Constants.ProfileViewType_Self && (bool)Session.UseLocation && c.IsLocationEnabled())
 			{
 				UnregisterReceiver(locationReceiver);
 			}
@@ -494,7 +496,7 @@ namespace LocationConnection
 			{
 				ScrollLayout.ScrollY = totalScrollHeight;
 			}
-			if (pageType != "self")
+			if (pageType != Constants.ProfileViewType_Self)
 			{
 				CastShadows(ScrollLayout.ScrollY);
 			}
@@ -851,7 +853,7 @@ namespace LocationConnection
 
 				//c.SnackStr(Settings.MapRatio.ToString(), null);
 
-				if (pageType == "self")
+				if (pageType == Constants.ProfileViewType_Self)
 				{
 					if (Session.Latitude != null && Session.Longitude != null && Session.LocationTime != null) //location available
 					{
@@ -959,15 +961,15 @@ namespace LocationConnection
 			this.RunOnUiThread(() => { 
 				switch (pageType)
 				{
-					case "self":
+					case Constants.ProfileViewType_Self:
 						LastActiveDate.Text = c.GetTimeDiffStr(Session.LastActiveDate, true);
 						if (Session.Latitude != null && Session.Longitude != null && Session.LocationTime != null)
 						{
 							LocationTime.Text = res.GetString(Resource.String.ProfileViewLocation) + " " + c.GetTimeDiffStr(Session.LocationTime, false);
 						}
 						break;
-					case "list":
-					case "standalone":
+					case Constants.ProfileViewType_List:
+					case Constants.ProfileViewType_Standalone:
 						LastActiveDate.Text = c.GetTimeDiffStr(displayUser.LastActiveDate, true);
 						if (displayUser.Latitude != null && displayUser.Longitude != null && displayUser.LocationTime != null)
 						{
@@ -1782,13 +1784,14 @@ namespace LocationConnection
 			{
 				Session.ResultsFrom = 1;
 				Session.LastDataRefresh = null;
+				ListActivity.listProfiles = null;
 			}
 			base.OnBackPressed();
 		}
 
 		private async void LikeButton_Click(object sender, EventArgs e)
 		{
-			if (pageType=="standalone")
+			if (pageType == Constants.ProfileViewType_Standalone)
 			{
 				IntentData.senderID = displayUser.ID; //we could have gotten on this profile page from another chat by clicking on a notification.
 				OnBackPressed();
@@ -1839,7 +1842,7 @@ namespace LocationConnection
 						//LikeButton.TooltipText = res.GetString(Resource.String.Liked);
 						LikeButton.SetImageResource(icLiked);
 
-						if (pageType=="list")
+						if (pageType == Constants.ProfileViewType_List)
 						{
 							NextButton_Click(null, null);
 						}
@@ -1852,7 +1855,7 @@ namespace LocationConnection
 			}
 			else // already a match, opening chat window
 			{
-				if (pageType == "list") //a previously gotten match, we are coming from list, not chat
+				if (pageType == Constants.ProfileViewType_List) //a previously gotten match, we are coming from list, not chat
 				{
 					string responseString = await c.MakeRequest("action=requestmatchid&ID=" + Session.ID + "&SessionID=" + Session.SessionID + "&target=" + displayUser.ID);
 					if (responseString.Substring(0, 2) == "OK")
@@ -1949,7 +1952,7 @@ namespace LocationConnection
 
 		public void AddNewMatch(int senderID, MatchItem item)
 		{
-			if (pageType != "self" && displayUser.ID == senderID)
+			if (pageType != Constants.ProfileViewType_Self && displayUser.ID == senderID)
 			{
 				Session.CurrentMatch = item;
 				ListActivity.viewProfiles[ListActivity.viewIndex].UserRelation = 3;
@@ -1964,7 +1967,7 @@ namespace LocationConnection
 
 		public void UpdateStatus(int senderID, bool isMatch, int? matchID)
 		{
-			if (pageType != "self" && displayUser.ID == senderID)
+			if (pageType == Constants.ProfileViewType_List && displayUser.ID == senderID)
 			{
 				if (isMatch) //start userrelation 2
 				{
@@ -1997,24 +2000,55 @@ namespace LocationConnection
 					HideButton.Visibility = ViewStates.Visible;
 				}
 			}
+			else if (pageType == Constants.ProfileViewType_Standalone)
+			{
+				ChatReceiver.AddUpdateMatch(senderID, isMatch);
+			}
+
+			if (pageType == Constants.ProfileViewType_Standalone && displayUser.ID == senderID)
+			{
+				if (isMatch)
+				{
+					displayUser.UserRelation = 3;
+
+					TooltipCompat.SetTooltipText(LikeButton, res.GetString(Resource.String.Match));
+					//LikeButton.TooltipText = res.GetString(Resource.String.Match);
+					LikeButton.SetImageResource(icChatOne);
+
+					HideButton.Visibility = ViewStates.Gone;
+				}
+				else
+				{
+					displayUser.UserRelation = 2;
+
+					TooltipCompat.SetTooltipText(LikeButton, res.GetString(Resource.String.Liked));
+					//LikeButton.TooltipText = res.GetString(Resource.String.Liked);
+					LikeButton.SetImageResource(icLiked);
+
+					HideButton.SetImageResource(icHide);
+					TooltipCompat.SetTooltipText(HideButton, res.GetString(Resource.String.Hide));
+					//HideButton.TooltipText = res.GetString(Resource.String.Hide);
+					HideButton.Visibility = ViewStates.Visible;
+				}
+			}
 		}
 
 		public void UpdateLocationStart(int senderID, string message)
 		{
-			if (pageType != "self" && displayUser.ID == senderID)
+			if (pageType != Constants.ProfileViewType_Self && displayUser.ID == senderID)
 			{
 				c.SnackStr(message, null);
 			}
 			else {
 
 				c.SnackAction(message, Resource.String.ShowReceived, new Action<View>(delegate (View obj) {
-					if (pageType == "self" && (bool)Session.UseLocation && c.IsLocationEnabled())
+					if (pageType == Constants.ProfileViewType_Self && (bool)Session.UseLocation && c.IsLocationEnabled())
 					{
 						UnregisterReceiver(locationReceiver);
 					}
 					mapSet = false;
 					ProfileImageScroll.ScrollX = 0;
-					pageType = "standalone";
+					pageType = Constants.ProfileViewType_Standalone;
 					LoadStandalone(senderID);
 					int currentScrollHeight = GetScrollHeight();
 					totalScrollHeight = currentScrollHeight - MainLayout.Height;
@@ -2024,7 +2058,7 @@ namespace LocationConnection
 
 		public void UpdateLocation(int senderID, long time, double latitude, double longitude)
 		{
-			if (pageType != "self" && displayUser.ID == senderID)
+			if (pageType != Constants.ProfileViewType_Self && displayUser.ID == senderID)
 			{
 				displayUser.LastActiveDate = time;
 				displayUser.Latitude = latitude;

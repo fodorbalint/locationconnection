@@ -512,12 +512,14 @@ namespace LocationConnection
 
 				if (active)
 				{
+					MenuLocationUpdates.SetVisible(true);
 					ChatEditMessage.Enabled = true;
 					ChatSendMessage.Enabled = true;
 					ChatSendMessage.ImageAlpha = 255;
 				}
 				else
 				{
+					MenuLocationUpdates.SetVisible(false);
 					ChatEditMessage.Enabled = false;
 					ChatSendMessage.Enabled = false;
 					ChatSendMessage.ImageAlpha = 128;
@@ -696,11 +698,15 @@ namespace LocationConnection
 				res.GetString(Resource.String.DialogOK), res.GetString(Resource.String.DialogCancel));
 			if (dialogResponse == res.GetString(Resource.String.DialogOK))
 			{
-				if (IsUpdatingTo((int)Session.CurrentMatch.TargetID)) //user could have gone to the background, clearing out the list of people to receive updates from.
+				if (IsUpdatingTo((int)Session.CurrentMatch.TargetID))
 				{
 					RemoveUpdatesTo((int)Session.CurrentMatch.TargetID);
 				}
-					
+				if (IsUpdatingFrom((int)Session.CurrentMatch.TargetID))
+				{
+					RemoveUpdatesFrom((int)Session.CurrentMatch.TargetID);
+				}
+
 				long unixTimestamp = c.Now();
 				string responseString = await c.MakeRequest("action=unmatch&ID=" + Session.ID + "&target=" + Session.CurrentMatch.TargetID
 					+ "&time=" + unixTimestamp + "&SessionID=" + Session.SessionID);
@@ -741,7 +747,7 @@ namespace LocationConnection
 			Intent i = new Intent(this, typeof(ProfileViewActivity));
 			i.SetFlags(ActivityFlags.ReorderToFront);
 			IntentData.targetID = (int)Session.CurrentMatch.TargetID;
-			IntentData.pageType = "standalone";		
+			IntentData.profileViewPageType = Constants.ProfileViewType_Standalone;		
 			StartActivity(i);
 		}		
 
