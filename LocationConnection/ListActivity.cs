@@ -111,8 +111,8 @@ namespace LocationConnection
 		private bool distanceSourceAddressTextChanging;
 		private bool distanceLimitChangedByCode;
 		private Timer ProgressTimer;
-		private int listTypeClicked; //Itemselected gets called unecessarily on startup, or when seting the container visible.
-		private int searchInClicked;
+		private bool listTypeClicked; //Itemselected gets called when seting the container visible for the first time, or when setting initial list selection
+		private bool searchInClicked;
 		private bool listTypeShown;
 		private bool searchInShown;
 		private bool recenterMap;
@@ -226,6 +226,7 @@ namespace LocationConnection
 								ResultSet.Text = res.GetString(Resource.String.LoggingIn);
 							}
 						});
+
 						string responseString = c.MakeRequestSync(url);
 						if (responseString.Substring(0, 2) == "OK")
 						{
@@ -252,7 +253,7 @@ namespace LocationConnection
 								{
 									if (!onCreateError)
 									{
-										c.ReportError(ex.Message + System.Environment.NewLine + ex.StackTrace);
+										c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 									}
 								}
 							});
@@ -272,24 +273,8 @@ namespace LocationConnection
 									{
 										c.CW("Logged in getting last location");
 										c.LogActivity("Logged in getting last location");
-										var task = UpdateLocationLast();
-										Stopwatch stw = new Stopwatch();
-										stw.Start();
-										if (await Task.WhenAny(task, Task.Delay(Constants.LocationTimeout)) != task)
-										{
-											stw.Stop();
-											RunOnUiThread(() =>
-											{
-												if (c.snackPermanentText != Resource.String.LocationTimeout) //prevents duplicate apperance
-												{
-													c.SnackIndef(Resource.String.LocationTimeout, 4);
-												}
-											});
-										}
-										else
-										{
-											stw.Stop();
-										}
+										
+										await GetLastLocation();
 									}
 								}
 								else
@@ -330,7 +315,7 @@ namespace LocationConnection
 										SetResultStatus();
 									}
 									string error = responseString.Substring(6);
-									c.SnackIndefStr(res.GetString(res.GetIdentifier(error, "string", PackageName)), null);
+									snack = c.SnackIndefStr(res.GetString(res.GetIdentifier(error, "string", PackageName)), null);
 									if (error == "LoginFailed") // this is the only error we can get
 									{
 										File.Delete(loginSessionFile);
@@ -350,7 +335,7 @@ namespace LocationConnection
 								{
 									if (!onCreateError)
 									{
-										c.ReportError(ex.Message + System.Environment.NewLine + ex.StackTrace);
+										c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 									}
 								}
 							});
@@ -375,7 +360,7 @@ namespace LocationConnection
 								{
 									if (!onCreateError)
 									{
-										c.ReportError(ex.Message + System.Environment.NewLine + ex.StackTrace);
+										c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 									}
 								}
 							});
@@ -534,7 +519,7 @@ namespace LocationConnection
 			}
             catch (Exception ex)
             {
-				c.ReportError(ex.Message + System.Environment.NewLine + ex.StackTrace);
+				c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 				onCreateError = true;
 
 				Intent i = new Intent(this, typeof(MainActivity));
@@ -595,8 +580,8 @@ namespace LocationConnection
 
 				backCounter = 0;
 				//when logging in with autologin, _itemSelected will fire twice, otherwise once. Once more when changing to the other view.
-				searchInClicked = 0;				
-				listTypeClicked = 0;
+				searchInClicked = false;				
+				listTypeClicked = false;
 				searchInShown = false;
 				listTypeShown = false;
 				addResultsBefore = false;
@@ -707,24 +692,9 @@ namespace LocationConnection
 					//usually 70 - 800 ms, but sometimes exceeds the 5 seconds.
 					c.CW("OnResume getting last location");
 					c.LogActivity("OnResume getting last location");
-					var task = UpdateLocationLast();
-					Stopwatch stw = new Stopwatch();
-					stw.Start();
-					if (await Task.WhenAny(task, Task.Delay(Constants.LocationTimeout)) != task)
-					{
-						stw.Stop();
-						RunOnUiThread(() =>
-						{
-							if (c.snackPermanentText != Resource.String.LocationTimeout) //prevents duplicate apperance
-							{
-								c.SnackIndef(Resource.String.LocationTimeout, 4);
-							}
-						});
-					}
-					else
-					{
-						stw.Stop();
-					}
+
+					await GetLastLocation();
+
 					c.LogActivity("OnResume got location, LocationTime " + Session.LocationTime);
 				}
 
@@ -776,7 +746,7 @@ namespace LocationConnection
 			{
 				if (!onCreateError)
 				{
-					c.ReportError(ex.Message + System.Environment.NewLine + ex.StackTrace);
+					c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 					Intent i = new Intent(this, typeof(MainActivity));
 					i.SetFlags(ActivityFlags.ReorderToFront);
 					IntentData.error = ex.Message + System.Environment.NewLine + ex.StackTrace;
@@ -808,7 +778,7 @@ namespace LocationConnection
 			}
 			if (!(thisMap is null) && thisMap.MapType != Settings.ListMapType)
 			{
-				Settings.ListMapType = thisMap.MapType;
+				Settings.ListMapType = (byte)thisMap.MapType;
 			}
 			c.SaveSettings();
 		}
@@ -934,14 +904,11 @@ namespace LocationConnection
 			}
 			else
 			{
-				if (!searchInShown)
-				{
-					Session.LastSearchType = Constants.SearchType_Search;
-					SearchLayout.Visibility = ViewStates.Visible;
-					OpenSearch.SetBackgroundResource(iconBackgroundLight);
-					searchInClicked++;
-					searchInShown = true;
-				}
+				Session.LastSearchType = Constants.SearchType_Search;
+				SearchLayout.Visibility = ViewStates.Visible;
+				OpenSearch.SetBackgroundResource(iconBackgroundLight);
+				searchInClicked = true;
+				searchInShown = true;
 			}
 
 			SearchTerm.Text = Session.SearchTerm;
@@ -961,14 +928,12 @@ namespace LocationConnection
 			}
 			else
 			{
-				//if (!listTypeShown) list type changes when logging in, it will run the click handler again 
-				//{
-					Session.LastSearchType = Constants.SearchType_Filter;
-					FilterLayout.Visibility = ViewStates.Visible;
-					OpenFilters.SetBackgroundResource(iconBackgroundLight);
-					listTypeClicked++;
-					listTypeShown = true;
-				//}
+				//if autologin finishes before onresume, ListType_ItemSelected runs only once, otherwise it runs twice.
+				Session.LastSearchType = Constants.SearchType_Filter;
+				FilterLayout.Visibility = ViewStates.Visible;
+				OpenFilters.SetBackgroundResource(iconBackgroundLight);
+				listTypeClicked = true;
+				listTypeShown = true;
 			}
 
 			if (!(bool)Settings.GeoFiltersOpen)
@@ -1212,13 +1177,17 @@ namespace LocationConnection
 							SetDistanceSourceAddress();
 						}
 					}
-					else
+					else //permission is granted, but UseLocation is off (coming from MapView_Click)
 					{
 						string dialogResponse = await c.DisplayCustomDialog("", res.GetString(Resource.String.MapViewNoUseLocation),
 				res.GetString(Resource.String.DialogYes), res.GetString(Resource.String.DialogNo));
 						if (dialogResponse == res.GetString(Resource.String.DialogYes))
 						{
-							UpdateLocationSetting();
+							if (UpdateLocationSetting()) {
+								InitLocationUpdates();
+								await GetLastLocation();
+								MapViewSecond(); //location was not set or acquired message.
+							}
 						}
 						else
 						{
@@ -1260,6 +1229,7 @@ namespace LocationConnection
 						{
 							c.LogActivity("PM logged in granted map clicked, mapToSet " + mapToSet);
 						}
+						Session.LocationTime = null;
 						UpdateLocationSetting();
 					}
 					else
@@ -1301,30 +1271,26 @@ namespace LocationConnection
 			}
 		}
 
-		public void UpdateLocationSetting()
+		public bool UpdateLocationSetting()
 		{
 			string url = "action=profileedit&ID=" + Session.ID + "&SessionID=" + Session.SessionID + "&UseLocation=True";
 			string responseString = c.MakeRequestSync(url);
 			if (responseString.Substring(0, 2) == "OK")
 			{
 				Session.UseLocation = true;
-				Session.LocationTime = null;
-
 				//OnResume will be called which starts location updates and refreshing the list
 
-				if (mapToSet)
-				{
-					MapViewSecond();
-				}
 				if (distanceSourceCurrentClicked)
 				{
 					Session.LastDataRefresh = null;
 					distanceSourceCurrentClicked = false;
 				}
+				return true;
 			}
 			else
 			{
 				c.ReportError(responseString);
+				return false;
 			}
 		}
 
@@ -1358,6 +1324,31 @@ namespace LocationConnection
 			}
 		}
 
+		public Task GetLastLocation()
+		{
+			return Task.Run(async () =>
+			{
+				var task = UpdateLocationLast();
+				Stopwatch stw = new Stopwatch();
+				stw.Start();
+				if (await Task.WhenAny(task, Task.Delay(Constants.LocationTimeout)) != task)
+				{
+					stw.Stop();
+					RunOnUiThread(() =>
+					{
+						if (c.snackPermanentText != Resource.String.LocationTimeout) //prevents duplicate apperance
+						{
+							c.SnackIndef(Resource.String.LocationTimeout, 4);
+						}
+					});
+				}
+				else
+				{
+					stw.Stop();
+				}
+			});
+		}
+
 		private void StatusImage_Click(object sender, EventArgs e)
 		{
 			Intent i = new Intent(this, typeof(ProfileViewActivity));
@@ -1365,21 +1356,69 @@ namespace LocationConnection
 			IntentData.profileViewPageType = Constants.ProfileViewType_Self;
 			StartActivity(i);
 		}
+			   
+		private void OpenFilters_Click(object sender, EventArgs e)
+		{
+			//situation: when clicking it for the first time in the Activity's lifecycle, the spinners' event handler get triggered, thus unnecessarily refresing the list.
+			//in test, the first spinner reacted at 141 ms, the third 5 ms later.
+			//we set a timer disabling the refresh up to 500 ms
+			imm.HideSoftInputFromWindow(SearchTerm.WindowToken, 0);
+			if (!(bool)Settings.FiltersOpen)
+			{
+				OpenFilters.SetBackgroundResource(iconBackgroundLight);
+				OpenSearch.SetBackgroundResource(0);
+				FilterLayout.Visibility = ViewStates.Visible;
+
+				if ((bool)Settings.SearchOpen)
+				{
+					SearchLayout.Visibility = ViewStates.Gone;
+					Settings.SearchOpen = false;
+				}
+				
+				if (!listTypeShown)
+				{
+					listTypeShown = true;
+					listTypeClicked = true;
+				}
+
+				Settings.FiltersOpen = true;				
+				Session.LastDataRefresh = null;
+				if (Session.LastSearchType == Constants.SearchType_Search)
+				{
+					Session.ResultsFrom = 1;
+					recenterMap = true;
+					Task.Run(() => LoadList());
+				}
+			}
+			else
+			{
+				OpenFilters.SetBackgroundResource(0);
+				FilterLayout.Visibility = ViewStates.Gone;
+				Settings.FiltersOpen = false;
+			}
+		}
 
 		private void OpenSearch_Click(object sender, EventArgs e)
 		{
-			if (SearchLayout.Visibility == ViewStates.Gone)
+			imm.HideSoftInputFromWindow(DistanceSourceAddressText.WindowToken, 0);
+			if (!(bool)Settings.SearchOpen)
 			{
 				OpenFilters.SetBackgroundResource(0);
 				OpenSearch.SetBackgroundResource(iconBackgroundLight);
-				FilterLayout.Visibility = ViewStates.Gone;
 				SearchLayout.Visibility = ViewStates.Visible;
+
+				if ((bool)Settings.FiltersOpen)
+				{
+					FilterLayout.Visibility = ViewStates.Gone;
+					Settings.FiltersOpen = false;
+				}
+
 				if (!searchInShown)
 				{
 					searchInShown = true;
-					searchInClicked++;
+					searchInClicked = true;
 				}
-				Settings.FiltersOpen = false;
+
 				Settings.SearchOpen = true;
 				Session.LastDataRefresh = null;
 				if (Session.LastSearchType == Constants.SearchType_Filter)
@@ -1394,42 +1433,6 @@ namespace LocationConnection
 				OpenSearch.SetBackgroundResource(0);
 				SearchLayout.Visibility = ViewStates.Gone;
 				Settings.SearchOpen = false;
-			}
-		}
-
-		private void OpenFilters_Click(object sender, EventArgs e)
-		{
-			//situation: when clicking it for the first time in the Activity's lifecycle, the spinners' event handler get triggered, thus unnecessarily refresing the list.
-			//in test, the first spinner reacted at 141 ms, the third 5 ms later.
-			//we set a timer disabling the refresh up to 500 ms
-
-			SearchLayout.Visibility = ViewStates.Gone;
-			if (FilterLayout.Visibility == ViewStates.Gone)
-			{
-				OpenFilters.SetBackgroundResource(iconBackgroundLight);
-				OpenSearch.SetBackgroundResource(0);
-				FilterLayout.Visibility = ViewStates.Visible;
-				SearchLayout.Visibility = ViewStates.Gone;
-				if (!listTypeShown)
-				{
-					listTypeShown = true;
-					listTypeClicked++;
-				}
-				Settings.FiltersOpen = true;
-				Settings.SearchOpen = false;
-				Session.LastDataRefresh = null;
-				if (Session.LastSearchType == Constants.SearchType_Search)
-				{
-					Session.ResultsFrom = 1;
-					recenterMap = true;
-					Task.Run(() => LoadList());
-				}
-			}
-			else
-			{
-				OpenFilters.SetBackgroundResource(0);
-				FilterLayout.Visibility = ViewStates.Gone;
-				Settings.FiltersOpen = false;
 			}
 		}
 
@@ -1500,11 +1503,9 @@ namespace LocationConnection
 
 		private void SearchIn_ItemSelected(object sender, AdapterView.ItemSelectedEventArgs e)
 		{
-			//c.CW("SearchIn_ItemSelected searchInClicked " + searchInClicked);
-			//c.LogActivity("SearchIn_ItemSelected searchInClicked " + searchInClicked);
-			if (searchInClicked > 0)
+			if (searchInClicked)
 			{
-				searchInClicked--;
+				searchInClicked = false;
 				return;
 			}
 			imm.HideSoftInputFromWindow(SearchTerm.WindowToken, 0);
@@ -1523,11 +1524,9 @@ namespace LocationConnection
 
 		private void ListType_ItemSelected(object sender, AdapterView.ItemSelectedEventArgs e)
 		{
-			//c.CW("ListType_ItemSelected listTypeClicked " + listTypeClicked);
-			//c.LogActivity("ListType_ItemSelected listTypeClicked " + listTypeClicked);
-			if (listTypeClicked > 0)
+			if (listTypeClicked)
 			{
-				listTypeClicked--;
+				listTypeClicked = false;
 				return;
 			}
 			if (c.IsLoggedIn())
@@ -1661,17 +1660,22 @@ namespace LocationConnection
 					return;
 				}
 
-				if ((bool)Settings.IsMapView && !(bool)Session.UseLocation)
+				if (!(bool)Session.UseLocation) //can only mean, user is logged in
 				{
 					string dialogResponse = await c.DisplayCustomDialog("", res.GetString(Resource.String.MapViewNoUseLocation),
 				res.GetString(Resource.String.DialogYes), res.GetString(Resource.String.DialogNo));
 					if (dialogResponse == res.GetString(Resource.String.DialogYes))
 					{
 						UpdateLocationSetting();
+						InitLocationUpdates();
+						await GetLastLocation();
+
+						Session.ResultsFrom = 1;
+						recenterMap = true;
+						await Task.Run(() => LoadList());
 					}
 					else
 					{
-						mapToSet = false;
 						SetDistanceSourceAddress();
 					}
 				}
@@ -1871,8 +1875,24 @@ namespace LocationConnection
 			}
 			catch (Exception ex)
 			{
-				c.ReportError(ex.Message + System.Environment.NewLine + ex.StackTrace);
+				c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 			}*/
+		}
+
+		private void RevertInvalidAddress()
+		{
+			if (!(Session.OtherAddress is null))
+			{
+				distanceSourceAddressTextChanging = true;
+				DistanceSourceAddressText.Text = Session.OtherAddress;
+				distanceSourceAddressTextChanging = false;
+			}
+			else if (Session.OtherLatitude != null && Session.OtherLongitude != null)
+			{
+				distanceSourceAddressTextChanging = true;
+				DistanceSourceAddressText.Text = Session.OtherLatitude + ", " + Session.OtherLongitude;
+				distanceSourceAddressTextChanging = false;
+			}
 		}
 
 		private void DistanceLimit_ProgressChanged(object sender, SeekBar.ProgressChangedEventArgs e)
@@ -2124,7 +2144,7 @@ namespace LocationConnection
 				map.UiSettings.ZoomControlsEnabled = false;
 
 				map.MapType = (int)Settings.ListMapType;
-				if (Settings.ListMapType == 1)
+				if (Settings.ListMapType == MapTypeNormal)
 				{
 					MapStreet.SetBackgroundResource(Resource.Drawable.maptype_activeLeft);
 					MapSatellite.SetBackgroundResource(Resource.Drawable.maptype_passiveRight);
@@ -2160,7 +2180,7 @@ namespace LocationConnection
 		{
 			if (mapLoaded)
 			{
-				thisMap.MapType = GoogleMap.MapTypeNormal;
+				thisMap.MapType = MapTypeNormal;
 				MapStreet.SetBackgroundResource(Resource.Drawable.maptype_activeLeft);
 				MapSatellite.SetBackgroundResource(Resource.Drawable.maptype_passiveRight);
 			}
@@ -2170,7 +2190,7 @@ namespace LocationConnection
 		{
 			if (mapLoaded)
 			{
-				thisMap.MapType = GoogleMap.MapTypeHybrid;
+				thisMap.MapType = MapTypeHybrid;
 				MapStreet.SetBackgroundResource(Resource.Drawable.maptype_passiveLeft);
 				MapSatellite.SetBackgroundResource(Resource.Drawable.maptype_activeRight);
 			}
@@ -2279,7 +2299,7 @@ namespace LocationConnection
 						SetResultStatus();
 						c.LogActivity("Exiting loadlist GeoFilter " + Session.GeoFilter + " GeoSourceOther " + Session.GeoSourceOther
 							+ " own location " + c.IsOwnLocationAvailable() + " other location " + c.IsOtherLocationAvailable());
-						c.SnackIndef(Resource.String.GeoFilterNoLocation, 3);
+						snack = c.SnackIndef(Resource.String.GeoFilterNoLocation, 3);
 						if (ReloadPulldown.Alpha == 1)
 						{
 							HidePulldown();
@@ -2288,7 +2308,18 @@ namespace LocationConnection
 					return;
 				}
 
-				RunOnUiThread(() => { SetDistanceLimit(); });
+				if (c.snackPermanentText == Resource.String.GeoFilterNoLocation && !(snack is null) && snack.IsShown)
+				{
+					RunOnUiThread(() =>
+					{
+						snack.Dismiss();
+					});
+				}
+
+				RunOnUiThread(() => {
+					SetDistanceLimit();
+					RevertInvalidAddress();
+				});
 
 				listLoading = true;
 
@@ -2598,38 +2629,33 @@ namespace LocationConnection
 				mapSet = true;
 			});
 
-			if (recenterMap)
+			profileMarkers = new List<Marker>();
+			foreach (Profile profile in listProfiles)
 			{
-				int index = 0;
-				profileMarkers = new List<Marker>();
-				foreach (Profile profile in listProfiles)
+				if (profile.Latitude != null && profile.Longitude != null && profile.LocationTime != null) //location available
 				{
-					if (profile.Latitude != null && profile.Longitude != null && profile.LocationTime != null) //location available
+					Bitmap imageBitmap;
+					if (Constants.isTestDB)
 					{
-						Bitmap imageBitmap;
-						if (Constants.isTestDB)
-						{
-							imageBitmap = c.GetImageBitmapFromUrl(Constants.HostName + Constants.UploadFolderTest + "/" + profile.ID + "/" + Constants.SmallImageSize + "/" + profile.Pictures[0]);
-						}
-						else
-						{
-							imageBitmap = c.GetImageBitmapFromUrl(Constants.HostName + Constants.UploadFolder + "/" + profile.ID + "/" + Constants.SmallImageSize + "/" + profile.Pictures[0]);
-						}
-						
-						Bitmap smallMarker = Bitmap.CreateScaledBitmap(imageBitmap, (int)(Settings.MapIconSize * pixelDensity), (int)(Settings.MapIconSize * pixelDensity), false);
-						LatLng location = new LatLng((double)profile.Latitude, (double)profile.Longitude);
-						markerOptions = new MarkerOptions();
-						markerOptions.SetPosition(location);
-						markerOptions.SetTitle(profile.ID.ToString());
-						markerOptions.SetIcon(BitmapDescriptorFactory.FromBitmap(smallMarker));
-						markerOptions.Anchor(0.5f, 0.5f);
-						this.RunOnUiThread(() =>
-						{
-							Marker marker = thisMap.AddMarker(markerOptions);
-							profileMarkers.Add(marker);
-						});
+						imageBitmap = c.GetImageBitmapFromUrl(Constants.HostName + Constants.UploadFolderTest + "/" + profile.ID + "/" + Constants.SmallImageSize + "/" + profile.Pictures[0]);
 					}
-					index++;
+					else
+					{
+						imageBitmap = c.GetImageBitmapFromUrl(Constants.HostName + Constants.UploadFolder + "/" + profile.ID + "/" + Constants.SmallImageSize + "/" + profile.Pictures[0]);
+					}
+						
+					Bitmap smallMarker = Bitmap.CreateScaledBitmap(imageBitmap, (int)(Settings.MapIconSize * pixelDensity), (int)(Settings.MapIconSize * pixelDensity), false);
+					LatLng location = new LatLng((double)profile.Latitude, (double)profile.Longitude);
+					markerOptions = new MarkerOptions();
+					markerOptions.SetPosition(location);
+					markerOptions.SetTitle(profile.ID.ToString());
+					markerOptions.SetIcon(BitmapDescriptorFactory.FromBitmap(smallMarker));
+					markerOptions.Anchor(0.5f, 0.5f);
+					this.RunOnUiThread(() =>
+					{
+						Marker marker = thisMap.AddMarker(markerOptions);
+						profileMarkers.Add(marker);
+					});
 				}
 			}
 
@@ -2649,10 +2675,10 @@ namespace LocationConnection
 
 				RunOnUiThread(() =>
 				{
+					thisMap.Clear();
+
 					if (recenterMap)
 					{
-						thisMap.Clear();
-
 						if (c.IsLocationEnabled())
 						{
 							thisMap.MyLocationEnabled = true;
@@ -2683,8 +2709,6 @@ namespace LocationConnection
 					}
 					else //change only circle radius
 					{
-						circle.Remove();
-
 						CircleOptions circleOptions = new CircleOptions();
 						circleOptions.InvokeCenter(new LatLng((double)latitude, (double)longitude));
 						circleOptions.InvokeRadius((double)Session.DistanceLimit * 1000);

@@ -69,7 +69,7 @@ namespace LocationConnection
 			}
 			catch (Exception ex)
 			{
-				c.ReportError(ex.Message + System.Environment.NewLine + ex.StackTrace);
+				c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 			}
 		}
 
@@ -108,7 +108,7 @@ namespace LocationConnection
 			}
 			catch (Exception ex)
 			{
-				c.ReportError(ex.Message + System.Environment.NewLine + ex.StackTrace);
+				c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 			}
 		}
 

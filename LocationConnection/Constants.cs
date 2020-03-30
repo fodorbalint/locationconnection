@@ -36,6 +36,8 @@ namespace LocationConnection
 		public const int ActivityChangeInterval = 3000; //about 2 seconds needed from resuming an activity and entering to ListActivity
 		public const byte SearchType_Filter = 0;
 		public const byte SearchType_Search = 1;
+		public const byte MapTypeStreet = 1;
+		public const byte MapTypeSatellite = 4;
 		public const byte ProfileViewType_List = 0;
 		public const byte ProfileViewType_Self = 1;
 		public const byte ProfileViewType_Standalone = 2;

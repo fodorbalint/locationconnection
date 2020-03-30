@@ -165,7 +165,7 @@ namespace LocationConnection
 			}
 			catch (Exception ex)
 			{
-				c.ReportError(ex.Message + System.Environment.NewLine + ex.StackTrace);
+				c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 			}
 		}
 
@@ -261,19 +261,10 @@ namespace LocationConnection
 				{
 					c.ReportError(responseString);
 				}
-
-				/*if (Build.VERSION.SdkInt >= BuildVersionCodes.N)
-				{
-					EulaText.TextFormatted = Html.FromHtml("<h2>Title</h2><br><p>Description here</p>", FromHtmlOptions.ModeCompact);
-				}
-				else
-				{*/
-				
-				//}
 			}
 			catch (Exception ex)
 			{
-				c.ReportError(ex.Message + System.Environment.NewLine + ex.StackTrace);
+				c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 			}
 		}
 

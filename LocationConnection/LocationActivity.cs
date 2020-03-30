@@ -79,7 +79,7 @@ namespace LocationConnection
 			}
 			catch (Exception ex)
 			{
-				c.ReportError(ex.Message + System.Environment.NewLine + ex.StackTrace);
+				c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 			}
 		}
 
@@ -91,11 +91,10 @@ namespace LocationConnection
 
 				RegisterReceiver(locationReceiver, new IntentFilter("balintfodor.locationconnection.LocationReceiver"));
 
-				locationList = null;
+				locationList = new List<LocationItem>();
 
 				if (File.Exists(c.locationLogFile))
 				{
-					locationList = new List<LocationItem>();
 					string[] fileLines = File.ReadAllLines(c.locationLogFile);
 
 					for(int i = fileLines.Length - 1; i >= 0; i--)
@@ -115,8 +114,7 @@ namespace LocationConnection
 						locationList.Add(item);
 					}
 					locationList[0].isSelected = true;
-					adapter = new LocationListAdapter(this, locationList);
-					LocationHistoryList.Adapter = adapter;
+					selectedPos = 0;
 
 					if (mapLoaded)
 					{
@@ -128,10 +126,13 @@ namespace LocationConnection
 				{
 					c.Snack(Resource.String.NoLocationRecords, null);
 				}
+
+				adapter = new LocationListAdapter(this, locationList);
+				LocationHistoryList.Adapter = adapter;
 			}
 			catch (Exception ex)
 			{
-				c.ReportError(ex.Message + System.Environment.NewLine + ex.StackTrace);
+				c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 			}
 		}
 
@@ -144,7 +145,7 @@ namespace LocationConnection
 
 			if (!(thisMap is null) && thisMap.MapType != Settings.LocationMapType)
 			{
-				Settings.LocationMapType = thisMap.MapType;
+				Settings.LocationMapType = (byte)thisMap.MapType;
 				c.SaveSettings();
 			}
 		}
@@ -156,7 +157,7 @@ namespace LocationConnection
 			map.SetPadding(0, (int)(42 * pixelDensity), 0, 0);
 
 			map.MapType = (int)Settings.LocationMapType;
-			if (Settings.LocationMapType == 1)
+			if (Settings.LocationMapType == GoogleMap.MapTypeNormal)
 			{
 				MapStreet.SetBackgroundResource(Resource.Drawable.maptype_activeLeft);
 				MapSatellite.SetBackgroundResource(Resource.Drawable.maptype_passiveRight);
@@ -170,7 +171,7 @@ namespace LocationConnection
 			MapSatellite.Visibility = ViewStates.Visible;
 
 			thisMap = map;
-			if (!(locationList is null))
+			if (!(locationList is null) && locationList.Count > 0)
 			{
 				SetMap();
 			}
@@ -196,34 +197,6 @@ namespace LocationConnection
 			}
 		}
 
-		public void AddItem(long time, double latitude, double longitude)
-		{
-			LatLng location = new LatLng(latitude, longitude);
-			LocationItem item = new LocationItem();
-			item.time = time;
-			item.latitude = latitude;
-			item.longitude = longitude;
-			item.inApp = true;
-
-			if (selectedPos == 0)
-			{
-				item.isSelected = true;
-				locationList[selectedPos].isSelected = false;
-				circle.Remove();
-				AddCircle(location);
-				MoveMap(location, false);
-			}
-			else
-			{
-				item.isSelected = false;
-				selectedPos++;
-			}
-			locationList.Insert(0, item);
-			adapter.NotifyDataSetChanged();
-
-			AddLine(location, new LatLng(locationList[1].latitude, locationList[1].longitude), Color.Argb(255, 0, 255, 0));		
-		}
-
 		public void SetMap()
 		{
 			double latitude = locationList[0].latitude;
@@ -234,14 +207,14 @@ namespace LocationConnection
 			MoveMap(location, true);
 			AddCircle(location);
 
-			for (int i = 0; i < (locationList.Count - 1); i++)
+			for(int i = locationList.Count - 1; i > 0; i--)
 			{
 				long unixTimestamp = c.Now();
-				long time = locationList[i].time;
+				long time = locationList[i - 1].time;
 				float ratio = ((float)unixTimestamp - time) / Constants.LocationKeepTime;
 				Color color = Color.Argb(255, (int)(ratio * 255), (int)((1 - ratio) * 255), 0);
 
-				AddLine(new LatLng(locationList[i].latitude, locationList[i].longitude), new LatLng(locationList[i + 1].latitude, locationList[i + 1].longitude), color);
+				AddLine(new LatLng(locationList[i].latitude, locationList[i].longitude), new LatLng(locationList[i - 1].latitude, locationList[i - 1].longitude), color);
 			}
 		}
 
@@ -264,6 +237,11 @@ namespace LocationConnection
 
 		private void AddCircle(LatLng location)
 		{
+			if (!(circle is null))
+			{
+				circle.Remove();
+			}
+
 			Drawable drawable = ContextCompat.GetDrawable(this, icMapmarker);
 
 			Bitmap bitmap = Bitmap.CreateBitmap((int)(circleSize * pixelDensity), (int)(circleSize * pixelDensity), Bitmap.Config.Argb8888);
@@ -340,8 +318,6 @@ namespace LocationConnection
 				locationList[e.Position].isSelected = true;
 				selectedPos = e.Position;
 
-				circle.Remove();
-
 				LatLng location = new LatLng(locationList[e.Position].latitude, locationList[e.Position].longitude);
 				MoveMap(location, false);
 				AddCircle(location);
@@ -359,11 +335,51 @@ namespace LocationConnection
 				else
 				{
 					locationList[selectedPos].isSelected = false;
-
-					circle.Remove();
+					if (!(circle is null))
+					{
+						circle.Remove();
+					}
 				}
 			}
 			adapter.NotifyDataSetChanged();
+		}
+
+		public void AddItem(long time, double latitude, double longitude)
+		{
+			LatLng location = new LatLng(latitude, longitude);
+			LocationItem item = new LocationItem();
+			item.time = time;
+			item.latitude = latitude;
+			item.longitude = longitude;
+			item.inApp = true;
+
+			if (selectedPos == 0 && locationList.Count > 0)
+			{
+				item.isSelected = true;
+				locationList[selectedPos].isSelected = false;
+				AddCircle(location);
+				MoveMap(location, false);
+			}
+
+			else if (locationList.Count == 0)
+			{
+				item.isSelected = true;
+				AddCircle(location);
+				MoveMap(location, true);
+			}
+			else
+			{
+				item.isSelected = false;
+				selectedPos++;
+			}
+
+			locationList.Insert(0, item);
+			adapter.NotifyDataSetChanged();
+
+			if (locationList.Count >= 2)
+			{
+				AddLine(location, new LatLng(locationList[1].latitude, locationList[1].longitude), Color.Argb(255, 0, 255, 0));
+			}
 		}
 	}
 }

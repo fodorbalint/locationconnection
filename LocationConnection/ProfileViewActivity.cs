@@ -219,7 +219,7 @@ namespace LocationConnection
 			}
 			catch (Exception ex)
 			{
-				c.ReportError(ex.Message + System.Environment.NewLine + ex.StackTrace);
+				c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 			}
 		}
 
@@ -334,7 +334,7 @@ namespace LocationConnection
 			}
 			catch (Exception ex)
 			{
-				c.ReportError(ex.Message + System.Environment.NewLine + ex.StackTrace);
+				c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 			}
 		}
 
@@ -349,7 +349,7 @@ namespace LocationConnection
 			}
 			if (!(thisMap is null) && thisMap.MapType != Settings.ProfileViewMapType)
 			{
-				Settings.ProfileViewMapType = thisMap.MapType;
+				Settings.ProfileViewMapType = (byte)thisMap.MapType;
 				c.SaveSettings();
 			}
 			refreshTimer.Stop();
@@ -486,6 +486,9 @@ namespace LocationConnection
 		private void SetHeight()
 		{
 			int currentScrollHeight = GetScrollHeight();
+
+			//c.CW("SetHeight currentScrollHeight " + currentScrollHeight + " MainLayout.Height " + MainLayout.Height);
+
 			totalScrollHeight = currentScrollHeight - MainLayout.Height;
 
 			if (totalScrollHeight < 0)
@@ -510,7 +513,7 @@ namespace LocationConnection
 				p.BottomToTop = Resource.Id.Footer;
 				ProfileImageContainer.LayoutParameters = p;
 
-				//Does not work when activity is only resumed (only refreshtimer makes it work):
+				//The following does not work when activity is only resumed (only refreshtimer makes it work):
 				//ProfileImageContainer.LayoutParameters.Height = ProfileImageScroll.Height + MainLayout.Height - currentScrollHeight;
 			}
 			else
@@ -520,7 +523,7 @@ namespace LocationConnection
 		}
 
 		private int GetScrollHeight() {
-			return ((EditSpacer.Visibility == ViewStates.Visible) ? EditSpacer.Height : 0) + HeaderBackground.Height + ProfileImageScroll.Height
+			return ((EditSpacer.Visibility == ViewStates.Visible) ? EditSpacer.Height : 0) + HeaderBackground.Height + screenWidth
 				+ Footer.Height + ((MapContainer.Visibility == ViewStates.Visible) ? MapContainer.LayoutParameters.Height : 0) + NavigationSpacer.LayoutParameters.Height;
 		}
 
@@ -644,7 +647,7 @@ namespace LocationConnection
 			map.UiSettings.ZoomControlsEnabled = true;
 			
 			map.MapType = (int)Settings.ProfileViewMapType;
-			if (Settings.ProfileViewMapType == 1)
+			if (Settings.ProfileViewMapType == GoogleMap.MapTypeNormal)
 			{
 				MapStreet.SetBackgroundResource(Resource.Drawable.maptype_activeLeft);
 				MapSatellite.SetBackgroundResource(Resource.Drawable.maptype_passiveRight);
@@ -730,7 +733,7 @@ namespace LocationConnection
 			}
 			catch (Exception ex)
 			{
-				c.ReportError(ex.Message + System.Environment.NewLine + ex.StackTrace);
+				c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 			}
 		}
 
@@ -837,7 +840,7 @@ namespace LocationConnection
 			}
 			catch (Exception ex)
 			{
-				c.ReportError(ex.Message + System.Environment.NewLine + ex.StackTrace);
+				c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 			}
 		}
 
@@ -952,7 +955,7 @@ namespace LocationConnection
 			}
 			catch (Exception ex)
 			{
-				c.ReportError(ex.Message + System.Environment.NewLine + ex.StackTrace);
+				c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 			}
 		}
 
@@ -965,7 +968,16 @@ namespace LocationConnection
 						LastActiveDate.Text = c.GetTimeDiffStr(Session.LastActiveDate, true);
 						if (Session.Latitude != null && Session.Longitude != null && Session.LocationTime != null)
 						{
-							LocationTime.Text = res.GetString(Resource.String.ProfileViewLocation) + " " + c.GetTimeDiffStr(Session.LocationTime, false);
+							if (MapContainer.Visibility == ViewStates.Gone)
+							{
+								mapSet = false;
+								SetMap();
+								SetHeight();
+							}
+							else
+							{
+								LocationTime.Text = res.GetString(Resource.String.ProfileViewLocation) + " " + c.GetTimeDiffStr(Session.LocationTime, false);
+							}							
 						}
 						break;
 					case Constants.ProfileViewType_List:

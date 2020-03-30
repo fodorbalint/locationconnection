@@ -148,7 +148,7 @@ namespace LocationConnection
 
 				context.imagesUploading = false;
 				context.RunOnUiThread(() => {
-					context.c.ReportError(ex.Message + System.Environment.NewLine + ex.StackTrace);
+					context.c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 				});
 			}
 		}

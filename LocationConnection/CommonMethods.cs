@@ -881,11 +881,6 @@ namespace LocationConnection
 			return (long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
 		}
 
-		public long NowMs()
-		{
-			return (long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
-		}
-
 		public string UrlEncode(string input)
 		{
 			if (!string.IsNullOrEmpty(input))

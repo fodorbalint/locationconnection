@@ -37,24 +37,28 @@ namespace LocationConnection
 			{
 				var location = result.Locations.First();				
 
-				long unixTimestamp = c.Now();
-				Session.Latitude = location.Latitude;
-				Session.Longitude = location.Longitude;
-				Session.LocationTime = unixTimestamp;
+				long unixTimestamp = c.Now();			
 
-				c.LogLocation(unixTimestamp + "|" + ((double)Session.Latitude).ToString(CultureInfo.InvariantCulture) + "|" + ((double)Session.Longitude).ToString(CultureInfo.InvariantCulture) + "|" + (BaseActivity.isAppForeground?1:0));
-
-				Intent intent = new Intent("balintfodor.locationconnection.LocationReceiver");
-				intent.PutExtra("time", unixTimestamp);
-				intent.PutExtra("latitude", (double)Session.Latitude);
-				intent.PutExtra("longitude", (double)Session.Longitude);
-				activity.SendBroadcast(intent);
-
-				if (c.IsLoggedIn())
+				if (unixTimestamp != Session.LocationTime) //sometimes we get several location updates at the same time.
 				{
-					Session.LastActiveDate = unixTimestamp;
-					await c.UpdateLocationSync();
-				}
+					Session.Latitude = location.Latitude;
+					Session.Longitude = location.Longitude;
+					Session.LocationTime = unixTimestamp;
+
+					c.LogLocation(unixTimestamp + "|" + ((double)Session.Latitude).ToString(CultureInfo.InvariantCulture) + "|" + ((double)Session.Longitude).ToString(CultureInfo.InvariantCulture) + "|" + (BaseActivity.isAppForeground ? 1 : 0));
+
+					Intent intent = new Intent("balintfodor.locationconnection.LocationReceiver");
+					intent.PutExtra("time", unixTimestamp);
+					intent.PutExtra("latitude", (double)Session.Latitude);
+					intent.PutExtra("longitude", (double)Session.Longitude);
+					activity.SendBroadcast(intent);
+
+					if (c.IsLoggedIn())
+					{
+						Session.LastActiveDate = unixTimestamp;
+						await c.UpdateLocationSync();
+					}
+				}				
 			}
 			else
 			{
