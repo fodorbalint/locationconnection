@@ -119,11 +119,11 @@ namespace LocationConnection
 			{
 				if (Constants.isTestDB)
 				{
-					url = Constants.HostName + Constants.UploadFolderTest + "/" + Session.ID + "/" + Constants.LargeImageSize + "/" + picture;
+					url = Constants.HostName + Constants.UploadFolderTest + "/" + Session.ID + "/" + Constants.SmallImageSize + "/" + picture;
 				}
 				else
 				{
-					url = Constants.HostName + Constants.UploadFolder + "/" + Session.ID + "/" + Constants.LargeImageSize + "/" + picture;
+					url = Constants.HostName + Constants.UploadFolder + "/" + Session.ID + "/" + Constants.SmallImageSize + "/" + picture;
 				}
 			}
 			else

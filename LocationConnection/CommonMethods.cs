@@ -568,6 +568,81 @@ namespace LocationConnection
 			return str.Replace(" ", "\u00A0"); //non-breaking space
 		}
 
+
+
+		public void Snack(int messageResId, int? maxLines)
+		{
+			Snackbar snack = Snackbar.Make(view, messageResId, Snackbar.LengthLong);
+
+			View snackView = snack.View;
+			TextView t = snackView.FindViewById<TextView>(Resource.Id.snackbar_text);
+			t.SetTextAppearance(textSmall);
+			if (!(maxLines is null))
+			{
+				t.SetMaxLines(5);
+			}
+			snack.Show();
+		}
+
+		public void SnackStr(string message, int? maxLines)
+		{
+			//Was used when the global text color was set to black. Not needed anymore, just here for future reference.
+			/*SpannableStringBuilder sbb = new SpannableStringBuilder();
+			sbb.Append(snackText);
+			sbb.SetSpan(new ForegroundColorSpan(Color.White), 0, snackText.Length, SpanTypes.ExclusiveExclusive);*/
+
+			Snackbar snack = Snackbar.Make(view, message, Snackbar.LengthLong);
+
+			View snackView = snack.View;
+			TextView t = snackView.FindViewById<TextView>(Resource.Id.snackbar_text);
+			t.SetTextAppearance(textSmall);
+			if (!(maxLines is null))
+			{
+				t.SetMaxLines(5);
+			}
+			snack.Show();
+		}
+
+		public void SnackAction(string message, int actionText, Action<View> action) //used in ChatReceiver
+		{
+			Snackbar snack = Snackbar.Make(view, message, Snackbar.LengthLong).SetAction(actionText, action).SetActionTextColor(new Color(ContextCompat.GetColor(context, Resource.Color.colorAccentLight)));
+
+			View snackView = snack.View;
+			TextView t = snackView.FindViewById<TextView>(Resource.Id.snackbar_text);
+			t.SetTextAppearance(textSmall);
+			snack.Show();
+		}
+
+		public Snackbar SnackIndef(int messageResId, int? maxLines) //maximum lines are 5.
+		{
+			Snackbar snack = Snackbar.Make(view, messageResId, Snackbar.LengthIndefinite).SetAction("OK", new Action<View>(delegate (View obj) { })).SetActionTextColor(new Color(ContextCompat.GetColor(context, Resource.Color.colorAccentLight)));
+
+			View snackView = snack.View;
+			TextView t = snackView.FindViewById<TextView>(Resource.Id.snackbar_text);
+			t.SetTextAppearance(textSmall);
+			if (!(maxLines is null))
+			{
+				t.SetMaxLines(5);
+			}
+			snack.Show();
+			snackPermanentText = messageResId;
+			return snack;
+		}
+
+		public Snackbar SnackIndefStr(string message, int? maxLines)
+		{
+			Snackbar snack = Snackbar.Make(view, message, Snackbar.LengthIndefinite).SetAction("OK", new Action<View>(delegate (View obj) { })).SetActionTextColor(new Color(ContextCompat.GetColor(context, Resource.Color.colorAccentLight)));
+			View snackView = snack.View;
+			TextView t = snackView.FindViewById<TextView>(Resource.Id.snackbar_text);
+			t.SetTextAppearance(textSmall);
+			if (!(maxLines is null))
+			{
+				t.SetMaxLines(5);
+			}
+			snack.Show();
+			return snack;
+		}
+
 		public Task<string> DisplayCustomDialog(string dialogTitle, string dialogMessage, string dialogPositiveBtnLabel, string dialogNegativeBtnLabel)
 		{
 			var tcs = new TaskCompletionSource<string>();
@@ -624,26 +699,7 @@ namespace LocationConnection
 			return tcs.Task;
 		}
 
-		public Task<string> ErrorAlert(string message)
-		{
-			TextView msg = GetAlertText(alertTextSize, alertPadding);
-			msg.Text = message;
-
-			var tcs = new TaskCompletionSource<string>();
-			Android.App.AlertDialog.Builder alert = new Android.App.AlertDialog.Builder(context);
-			alert.SetTitle(context.Resources.GetString(Resource.String.ErrorEncountered));
-			alert.SetView(msg);
-			alert.SetPositiveButton("OK", (senderAlert, args) => {
-				tcs.SetResult("OK");
-			});
-
-			Dialog dialog = alert.Create();
-			dialog.Show();
-
-			return tcs.Task;
-		}
-
-		public Task<string> AlertHTML(string dialogMessage)
+		public Task<string> AlertLinks(string dialogMessage)
 		{
 			TextView msg = GetAlertText(alertTextSize, alertPadding);
 			SpannableString s = new SpannableString(dialogMessage);
@@ -664,8 +720,10 @@ namespace LocationConnection
 			return tcs.Task;
 		}
 
-		public Task<string> AlertSmallText(string dialogMessage)
+		public Task<string> LogAlert(string dialogMessage)
 		{
+			dialogMessage = dialogMessage.Replace(DateTime.UtcNow.ToString(@"yyyy-MM-dd "), "");
+
 			TextView msg = GetAlertText(logAlertTextSize, logAlertPadding);
 			msg.Text = dialogMessage;
 			ScrollView scroll = new ScrollView(context);
@@ -685,6 +743,25 @@ namespace LocationConnection
 			return tcs.Task;
 		}
 
+		public Task<string> ErrorAlert(string message)
+		{
+			TextView msg = GetAlertText(alertTextSize, alertPadding);
+			msg.Text = message;
+
+			var tcs = new TaskCompletionSource<string>();
+			Android.App.AlertDialog.Builder alert = new Android.App.AlertDialog.Builder(context);
+			alert.SetTitle(context.Resources.GetString(Resource.String.ErrorEncountered));
+			alert.SetView(msg);
+			alert.SetPositiveButton("OK", (senderAlert, args) => {
+				tcs.SetResult("OK");
+			});
+
+			Dialog dialog = alert.Create();
+			dialog.Show();
+
+			return tcs.Task;
+		}
+
 		private TextView GetAlertText(float size, float padding)
 		{
 			int paddingInt = (int)(padding * BaseActivity.pixelDensity);
@@ -693,79 +770,6 @@ namespace LocationConnection
 			msg.SetTextColor(Color.Black);
 			msg.SetTextSize(Android.Util.ComplexUnitType.Dip, size);
 			return msg;
-		}
-
-		public void Snack(int messageResId, int? maxLines)
-        {
-			Snackbar snack = Snackbar.Make(view, messageResId, Snackbar.LengthLong);
-
-			View snackView = snack.View;
-			TextView t = snackView.FindViewById<TextView>(Resource.Id.snackbar_text);
-			t.SetTextAppearance(textSmall);
-			if (!(maxLines is null))
-			{
-				t.SetMaxLines(5);
-			}
-			snack.Show();
-		}
-
-		public void SnackStr(string message, int? maxLines)
-		{
-			//Was used when the global text color was set to black. Not needed anymore, just here for future reference.
-			/*SpannableStringBuilder sbb = new SpannableStringBuilder();
-			sbb.Append(snackText);
-			sbb.SetSpan(new ForegroundColorSpan(Color.White), 0, snackText.Length, SpanTypes.ExclusiveExclusive);*/
-
-			Snackbar snack = Snackbar.Make(view, message, Snackbar.LengthLong);
-
-			View snackView = snack.View;
-			TextView t = snackView.FindViewById<TextView>(Resource.Id.snackbar_text);
-			t.SetTextAppearance(textSmall);
-			if (!(maxLines is null))
-			{
-				t.SetMaxLines(5);
-			}
-			snack.Show();
-		}
-
-		public void SnackAction(string message, int actionText, Action<View> action) //used in ChatReceiver
-		{
-			Snackbar snack = Snackbar.Make(view, message, Snackbar.LengthLong).SetAction(actionText, action).SetActionTextColor(new Color(ContextCompat.GetColor(context, Resource.Color.colorAccentLight)));
-
-			View snackView = snack.View;
-			TextView t = snackView.FindViewById<TextView>(Resource.Id.snackbar_text);
-			t.SetTextAppearance(textSmall);
-			snack.Show();
-		}
-
-		public Snackbar SnackIndef(int messageResId, int? maxLines) //maximum lines are 5.
-		{
-			Snackbar snack = Snackbar.Make(view, messageResId, Snackbar.LengthIndefinite).SetAction("OK", new Action<View>(delegate (View obj) { })).SetActionTextColor(new Color(ContextCompat.GetColor(context, Resource.Color.colorAccentLight)));
-
-			View snackView = snack.View;
-			TextView t = snackView.FindViewById<TextView>(Resource.Id.snackbar_text);
-			t.SetTextAppearance(textSmall); 
-			if (!(maxLines is null))
-			{
-				t.SetMaxLines(5);
-			}		
-			snack.Show();
-			snackPermanentText = messageResId;
-			return snack;
-		}
-
-		public Snackbar SnackIndefStr(string message, int? maxLines)
-		{
-			Snackbar snack = Snackbar.Make(view, message, Snackbar.LengthIndefinite).SetAction("OK", new Action<View>(delegate (View obj) { })).SetActionTextColor(new Color(ContextCompat.GetColor(context, Resource.Color.colorAccentLight)));
-			View snackView = snack.View;
-			TextView t = snackView.FindViewById<TextView>(Resource.Id.snackbar_text);
-			t.SetTextAppearance(textSmall); 
-			if (!(maxLines is null))
-			{
-				t.SetMaxLines(5);
-			}
-			snack.Show();
-			return snack;
 		}
 
 		public void Msg(string message)
@@ -851,6 +855,34 @@ namespace LocationConnection
 		{
 			if (error != "AUTHORIZATION_ERROR" && error != "The operation has timed out." && error != "NoNetwork" && error != "NetworkTimeout")
 			{
+				string url = "action=reporterror&ID=" + Session.ID + "&SessionID=" + Session.SessionID;
+				string content = "Content=" + UrlEncode(error + System.Environment.NewLine
+					+ "Android version: " + Build.VERSION.SdkInt + " " + Build.VERSION.Sdk + " " + System.Environment.NewLine + Build.VERSION.BaseOs + System.Environment.NewLine + File.ReadAllText(logFile));
+				MakeRequestSync(url, "POST", content);
+			}
+		}
+
+		public void ReportErrorSnackNext(string error)
+		{
+			if (error == "AUTHORIZATION_ERROR")
+			{
+				Intent i = new Intent(context, typeof(MainActivity));
+				i.SetFlags(ActivityFlags.ReorderToFront);
+				IntentData.logout = true;
+				IntentData.authError = true;
+				context.StartActivity(i);
+			}
+			else if (error == "NoNetwork")
+			{
+				Session.SnackMessage = context.Resources.GetString(Resource.String.NoNetwork);
+			}
+			else if (error == "NetworkTimeout")
+			{
+				Session.SnackMessage = context.Resources.GetString(Resource.String.NetworkTimeout);
+			}
+			else
+			{
+				Session.SnackMessage = error;
 				string url = "action=reporterror&ID=" + Session.ID + "&SessionID=" + Session.SessionID;
 				string content = "Content=" + UrlEncode(error + System.Environment.NewLine
 					+ "Android version: " + Build.VERSION.SdkInt + " " + Build.VERSION.Sdk + " " + System.Environment.NewLine + Build.VERSION.BaseOs + System.Environment.NewLine + File.ReadAllText(logFile));

@@ -263,13 +263,10 @@ namespace LocationConnection
 
 						Session.CurrentMatch = null;
 						userLoaded = true;
+
 						LoadSelf();
 						HideNavigationSpacer();
-						if (!(Session.SnackMessage is null))
-						{
-							c.Snack((int)Session.SnackMessage, null);
-							Session.SnackMessage = null;
-						}
+
 						break;
 
 					case Constants.ProfileViewType_List:
@@ -400,9 +397,9 @@ namespace LocationConnection
 				userLoaded = true;
 				LoadUser();
 			}
-			else if (responseString.Substring(0, 6) == "ERROR_")
+			else if (responseString.Substring(0, 6) == "ERROR_") // ERROR_UserPassive
 			{
-				Session.SnackMessage = Resources.GetIdentifier(responseString.Substring(6), "string", PackageName);
+				Session.SnackMessage = res.GetString(Resources.GetIdentifier(responseString.Substring(6), "string", PackageName));
 				OnBackPressed();
 			}
 			else

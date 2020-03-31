@@ -75,7 +75,7 @@ namespace LocationConnection
 
 		public static long? LastDataRefresh;
 		public static byte LastSearchType;
-		public static int? SnackMessage;
+		public static string SnackMessage;
 		public static MatchItem CurrentMatch; //not necessarily a match
 	}
 }

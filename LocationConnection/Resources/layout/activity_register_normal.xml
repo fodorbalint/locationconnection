@@ -154,8 +154,6 @@
             app:layout_constraintBottom_toBottomOf="@+id/LoaderCircle"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/LoaderCircle"
-            android:paddingTop="5dp"
-			android:paddingBottom="5dp"
             android:theme="@style/BlackTextSmallNormal"
 			android:id="@+id/ImagesProgressText" />
 		<ImageView

@@ -87,8 +87,7 @@ namespace LocationConnection
 		ImageView ReloadPulldown;
         UserSearchListAdapter adapter;
 		ImageView LoaderCircle;
-		InputMethodManager imm;
-		Snackbar snack;
+		InputMethodManager imm;		
 
 		FusedLocationProviderClient fusedLocationProviderClient;
 		ObjectAnimator anim_pulldown;
@@ -279,7 +278,9 @@ namespace LocationConnection
 								}
 								else
 								{
-									snack = c.SnackIndef(Resource.String.LocationDisabledButUsingLocation, 3);
+									RunOnUiThread(() => {
+										snack = c.SnackIndef(Resource.String.LocationDisabledButUsingLocation, 3);
+									});									
 								}
 							}
 
@@ -550,16 +551,6 @@ namespace LocationConnection
 				c.LogActivity("Truncated log file " + stw1.ElapsedMilliseconds);
 				stw1.Stop();
 
-				if (!(snack is null) && snack.IsShown)
-				{
-					snack.Dismiss();
-				}
-				if (!(Session.SnackMessage is null)) //for the situation when the user is deleted, while the other is on their page, and now want to load the chat.
-				{
-					c.Snack((int)Session.SnackMessage, null);
-					Session.SnackMessage = null;
-				}
-
 				c.LogActivity("Logged in: " + c.IsLoggedIn());
 				if (c.IsLoggedIn())
 				{
@@ -738,8 +729,10 @@ namespace LocationConnection
 				{
 					ListView_Click(null, null);
 				}
+
 				c.CW("Onresume end");
 				c.LogActivity("ListActivity OnResume end");
+
 				//ListType_ItemSelected get called here if container is visible
 			}
 			catch (Exception ex)
@@ -1121,7 +1114,7 @@ namespace LocationConnection
 					StartActivity(i);
 					break;
 				case Resource.Id.MenuAbout:
-					c.AlertHTML(res.GetString(Resource.String.versionInfo));
+					c.AlertLinks(res.GetString(Resource.String.versionInfo));
 					break;
 			}
 			return base.OnOptionsItemSelected(item);

@@ -125,12 +125,6 @@ namespace LocationConnection
 
 				MainLayout.RequestFocus();
 
-				if (!(Session.SnackMessage is null))
-				{
-					c.SnackStr(res.GetString((int)Session.SnackMessage).Replace("[name]", Session.CurrentMatch.TargetName), null);
-					Session.SnackMessage = null;
-				}
-
 				dataLoadStarted = false;
 
 				if (menuCreated) //menu is not yet created after OnCreate.
@@ -153,9 +147,9 @@ namespace LocationConnection
 					{
 						LoadMessages(responseString, false);
 					}
-					else if (responseString == "ERROR_MatchNotFound")
+					else if (responseString == "ERROR_MatchNotFound") //user deleted itself while the other was on its standalone page, and now loading chat. Chat remains, but userid does not exist anymore. 
 					{
-						Session.SnackMessage = Resource.String.MatchNotFound;
+						Session.SnackMessage = res.GetString(Resource.String.MatchNotFound);
 						OnBackPressed();
 					}
 					else {
@@ -200,7 +194,7 @@ namespace LocationConnection
 			}
 			else if (responseString == "ERROR_MatchNotFound")
 			{
-				Session.SnackMessage = Resource.String.MatchNotFound;
+				Session.SnackMessage = res.GetString(Resource.String.MatchNotFound);
 				OnBackPressed();
 			}
 			else

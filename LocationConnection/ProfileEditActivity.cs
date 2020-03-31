@@ -29,7 +29,7 @@ namespace LocationConnection
 	public class ProfileEditActivity : ProfilePage
 	{
 		public ConstraintLayout EditAccountDataSection, EditChangePasswordSection, EditLocationSettingsSection;
-		Button Done, Cancel, DeactivateAccount, DeleteAccount;
+		Button Save, Cancel, DeactivateAccount, DeleteAccount;
 		public TextView EditAccountData, EditChangePassword, EditLocationSettings, EditMoreOptions;
 		Switch Women, Men;
 		public EditText EditOldPassword, EditNewPassword, EditConfirmPassword;
@@ -99,7 +99,7 @@ namespace LocationConnection
 				EditNewPassword = FindViewById<EditText>(Resource.Id.EditNewPassword);
 				EditConfirmPassword = FindViewById<EditText>(Resource.Id.EditConfirmPassword);
 
-				Done = FindViewById<Button>(Resource.Id.Done);
+				Save = FindViewById<Button>(Resource.Id.Save);
 				Cancel = FindViewById<Button>(Resource.Id.Cancel);
 
 				DeactivateAccount = FindViewById<Button>(Resource.Id.DeactivateAccount);
@@ -143,7 +143,7 @@ namespace LocationConnection
 				DistanceShareFriend.Click += rc.DistanceShareFriend_Click;
 				DistanceShareNone.Click += rc.DistanceShareNone_Click;
 
-				Done.Click += Done_Click;
+				Save.Click += Save_Click;
 				Cancel.Click += Cancel_Click;
 				DeactivateAccount.Click += DeactivateAccount_Click;
 				DeleteAccount.Click += DeleteAccount_Click;
@@ -178,6 +178,18 @@ namespace LocationConnection
 					ImagesUploaded.AddPicture(image, i);
 					i++;
 				}
+
+				if (!imagesUploading)
+				{
+					if (uploadedImages.Count > 1)
+					{
+						ImagesProgressText.Text = res.GetString(Resource.String.ImagesRearrange);
+					}
+					else
+					{
+						ImagesProgressText.Text = "";
+					}
+				}				
 
 				Description.Text = Session.Description;
 
@@ -441,11 +453,11 @@ namespace LocationConnection
 			this.RunOnUiThread(() => { MainScroll.FullScroll(FocusSearchDirection.Down); });
 		}
 
-		private async void Done_Click(object sender, EventArgs e) //Update intro, sex and open section data. Reset closed section data
+		private async void Save_Click(object sender, EventArgs e) //Update intro, sex and open section data. Reset closed section data
 		{
 			if (CheckFields())
 			{
-				Done.Enabled = false;
+				Save.Enabled = false;
 				//not visible form fields do not get saved, but there is no need to reload the form, since we are exiting the activity on successful save.
 				string requestStringBase = "action=profileedit&ID=" + Session.ID + "&SessionID=" + Session.SessionID;
 				string requestStringAdd = "";
@@ -519,8 +531,8 @@ namespace LocationConnection
 								Session.LocationTime = null;
 							}
 						}
-						Session.SnackMessage = Resource.String.SettingsUpdated;
-						Done.Enabled = true;
+						Session.SnackMessage = res.GetString(Resource.String.SettingsUpdated);
+						Save.Enabled = true;
 						OnBackPressed();
 					}
 					else if (responseString.Substring(0, 6) == "ERROR_")
@@ -534,10 +546,10 @@ namespace LocationConnection
 				}
 				else
 				{
-					Done.Enabled = true;
+					Save.Enabled = true;
 					OnBackPressed();
 				}
-				Done.Enabled = true;
+				Save.Enabled = true;
 			}
 			else
 			{

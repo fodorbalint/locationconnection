@@ -18,6 +18,7 @@ using System.Timers;
 using Android.Content;
 using Android.Gms.Location;
 using Android.OS;
+using Android.Support.Design.Widget;
 using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
@@ -29,6 +30,7 @@ namespace LocationConnection
 		public View MainLayout;
 		private ChatReceiver chatReceiver;
 		public CommonMethods c;
+		public Snackbar snack;
 
 		private static LocationCallback locationCallback;
 		private static FusedLocationProviderClient fusedLocationProviderClient;
@@ -105,6 +107,32 @@ namespace LocationConnection
 				i.SetFlags(ActivityFlags.ReorderToFront); //ListActivity must be recreated.
 				StartActivity(i);
 			}
+
+			if (!(snack is null) && snack.IsShown)
+			{
+				snack.Dismiss();
+			}
+
+			if (!(Session.SnackMessage is null)) //ChatList: for the situation when the user is deleted, while the other is on their page, and now want to load the chat.
+			{
+				if (this is ChatOneActivity)
+				{
+					RunOnUiThread(() =>
+					{
+						c.SnackStr(Session.SnackMessage.Replace("[name]", Session.CurrentMatch.TargetName), null);
+					});					
+					Session.SnackMessage = null;
+				}
+				else
+				{
+					RunOnUiThread(() =>
+					{
+						c.SnackStr(Session.SnackMessage, null);
+					});				
+					Session.SnackMessage = null;
+				}
+			}
+
 		}
 
 		protected override void OnPause()

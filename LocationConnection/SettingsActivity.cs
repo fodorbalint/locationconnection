@@ -229,6 +229,9 @@ namespace LocationConnection
 		protected override async void OnPause()
 		{
 			base.OnPause();
+
+			c.CW("Settings OnPause start");
+
 			if (!ListActivity.initialized) { return; }
 
 			bool changed = false;
@@ -329,8 +332,9 @@ namespace LocationConnection
 					}
 					else
 					{
-						//could create a snack to display in the next page through broadcastreceiver
-						c.ReportErrorSilent(responseString);
+						//since ListActivity onResume is already called now, this will display in the next page.
+						//alert dialog does not show
+						c.ReportErrorSnackNext(responseString);
 					}
 				}
 			}
@@ -359,6 +363,7 @@ namespace LocationConnection
 			{
 				c.SaveSettings();
 			}
+			c.CW("Settings OnPause end");
 		}
 
 		public override void OnBackPressed()
@@ -520,7 +525,7 @@ namespace LocationConnection
 
 		private void ProgramLogButton_Click(object sender, EventArgs e)
 		{
-			c.AlertSmallText(File.ReadAllText(c.logFile));
+			c.LogAlert(File.ReadAllText(c.logFile));
 		}
 
 		private void SetFormVisible()

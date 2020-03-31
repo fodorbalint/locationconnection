@@ -90,12 +90,6 @@ namespace LocationConnection
 				base.OnResume();
 				if (!ListActivity.initialized) { return; }
 
-				if (!(Session.SnackMessage is null)) //for the situation when the user is deleted, while the other is on their page, and now want to load the chat.
-				{
-					c.Snack((int)Session.SnackMessage, null);
-					Session.SnackMessage = null;
-				}
-
 				string responseString = await c.MakeRequest("action=loadmessagelist&ID=" + Session.ID + "&SessionID=" + Session.SessionID);
 				if (responseString.Substring(0, 2) == "OK")
 				{

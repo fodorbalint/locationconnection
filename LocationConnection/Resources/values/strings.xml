@@ -151,7 +151,7 @@
 	<string name="EditNewPassword">New password:</string>
 	<string name="EditConfirmPassword">Confirm new password:</string>   
 	
-    <string name="EditDone">Save</string>
+    <string name="EditSave">Save</string>
 	<string name="DeactivateAccount">Deactivate your account</string>
     <string name="ActivateAccount">Activate your account</string>    
 	<string name="DeleteAccount">Delete your account</string>

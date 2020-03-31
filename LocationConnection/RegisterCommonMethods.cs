@@ -224,7 +224,7 @@ namespace LocationConnection
 			}
 			catch (Exception ex)
 			{
-				context.c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace + System.Environment.NewLine + "context: " + context);
+				context.c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 			}
 		}
 

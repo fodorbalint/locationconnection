@@ -497,7 +497,7 @@
             android:textAllCaps="false"
             android:backgroundTint="@color/ButtonOnWhite"
             android:theme="@style/ButtonSmall"
-            android:text="@string/EditDone"
+            android:text="@string/EditSave"
 			android:id="@+id/Done" />
 		<Button
 			android:layout_width="0px"
