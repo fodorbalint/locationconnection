@@ -306,18 +306,9 @@ namespace LocationConnection
 		private void LoadHeader()
 		{
 			TargetName.Text = Session.CurrentMatch.TargetName;
-			string url;
-			if (Constants.isTestDB)
-			{
-				url = Constants.HostName + Constants.UploadFolderTest + "/" + Session.CurrentMatch.TargetID + "/" + Constants.SmallImageSize + "/" + Session.CurrentMatch.TargetPicture;
-			}
-			else
-			{
-				url = Constants.HostName + Constants.UploadFolder + "/" + Session.CurrentMatch.TargetID + "/" + Constants.SmallImageSize + "/" + Session.CurrentMatch.TargetPicture;
-			}
-			
-			ImageService im = new ImageService();
-			im.LoadUrl(url).LoadingPlaceholder(Constants.loadingImage, FFImageLoading.Work.ImageSource.CompiledResource).ErrorPlaceholder(Constants.noImage, FFImageLoading.Work.ImageSource.CompiledResource).Into(ChatTargetImage);
+
+			ImageCache im = new ImageCache(this);
+			im.LoadImage(ChatTargetImage, Session.CurrentMatch.TargetID.ToString(), Session.CurrentMatch.TargetPicture, false);
 		}
 
 		private void LoadMessages(string responseString, bool merge)
@@ -364,7 +355,6 @@ namespace LocationConnection
 
 			if ((bool)Session.CurrentMatch.Active)
 			{
-				ChatViewProfile.Click += ChatViewProfile_Click;
 				if ((bool)Session.UseLocation && c.IsLocationEnabled())
 				{
 					MenuLocationUpdates.SetVisible(true);
@@ -528,7 +518,9 @@ namespace LocationConnection
 
 			if (message.Length != 0)
 			{
-				ChatSendMessage.Enabled = false; //to prevent mulitple clicks			
+				ChatSendMessage.Enabled = false; //to prevent mulitple clicks	
+				ChatSendMessage.ImageAlpha = 128;
+
 				string responseString = await c.MakeRequest("action=sendmessage&ID=" + Session.ID + "&SessionID=" + Session.SessionID + "&MatchID=" + Session.CurrentMatch.MatchID + "&message=" + c.UrlEncode(message));
 				if (responseString.Substring(0, 2) == "OK")
 				{
@@ -566,7 +558,9 @@ namespace LocationConnection
 				{
 					c.ReportError(responseString);
 				}
+
 				ChatSendMessage.Enabled = true;
+				ChatSendMessage.ImageAlpha = 255;
 			}
 		}
 

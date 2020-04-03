@@ -48,6 +48,8 @@ namespace LocationConnection
 				return;
 			}
 
+			context.CheckUsername.Enabled = false;
+
 			string responseString = await context.c.MakeRequest("action=usercheck&Username=" + context.Username.Text.Trim());
 			if (responseString == "OK")
 			{
@@ -61,13 +63,15 @@ namespace LocationConnection
 			{
 				context.c.ReportError(responseString);
 			}
+
+			context.CheckUsername.Enabled = true;
 		}
 
 		public void Images_Click(object sender, System.EventArgs e)
 		{
 			if (context.uploadedImages.Count < Constants.MaxNumPictures)
 			{
-				if (!context.imagesUploading)
+				if (!context.imagesUploading && !context.imagesDeleting)
 				{
 					context.ImagesProgressText.Text = "";
 					context.ImagesProgress.Progress = 0;
@@ -84,7 +88,6 @@ namespace LocationConnection
 						{
 							ActivityCompat.RequestPermissions(context, new String[] { Manifest.Permission.ReadExternalStorage }, 1);
 						}
-
 					}
 					else
 					{
@@ -93,7 +96,14 @@ namespace LocationConnection
 				}
 				else
 				{
-					context.c.Snack(Resource.String.ImagesUploading, null);
+					if (context.imagesUploading)
+					{
+						context.c.Snack(Resource.String.ImagesUploading, null);
+					}
+					else
+					{
+						context.c.Snack(Resource.String.ImagesDeleting, null);
+					}
 				}
 			}
 			else
@@ -232,7 +242,7 @@ namespace LocationConnection
 		{
 			if (context.UseLocationSwitch.Checked)
 			{
-				if (ContextCompat.CheckSelfPermission(context, Manifest.Permission.AccessFineLocation) != (int)Permission.Granted)
+				if (!context.c.IsLocationEnabled())
 				{
 					context.UseLocationSwitch.Checked = false;
 					if (ActivityCompat.ShouldShowRequestPermissionRationale(context, Manifest.Permission.AccessFineLocation)) //shows when the user has once denied the permission, and now requesting it again.

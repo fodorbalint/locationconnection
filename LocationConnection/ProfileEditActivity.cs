@@ -458,6 +458,7 @@ namespace LocationConnection
 			if (CheckFields())
 			{
 				Save.Enabled = false;
+
 				//not visible form fields do not get saved, but there is no need to reload the form, since we are exiting the activity on successful save.
 				string requestStringBase = "action=profileedit&ID=" + Session.ID + "&SessionID=" + Session.SessionID;
 				string requestStringAdd = "";
@@ -532,6 +533,7 @@ namespace LocationConnection
 							}
 						}
 						Session.SnackMessage = res.GetString(Resource.String.SettingsUpdated);
+						
 						Save.Enabled = true;
 						OnBackPressed();
 					}
@@ -644,6 +646,7 @@ namespace LocationConnection
 					res.GetString(Resource.String.DialogOK), res.GetString(Resource.String.DialogCancel));
 				if (dialogResponse == res.GetString(Resource.String.DialogOK))
 				{
+					DeactivateAccount.Enabled = false;
 					string url = "action=deactivateaccount&ID=" + Session.ID + "&SessionID=" + Session.SessionID;
 					if (!string.IsNullOrEmpty(locationUpdatesTo))
 					{
@@ -661,10 +664,12 @@ namespace LocationConnection
 					{
 						c.ReportError(responseString);
 					}
+					DeactivateAccount.Enabled = true;
 				}
 			}
 			else
 			{
+				DeactivateAccount.Enabled = false;
 				string responseString = await c.MakeRequest("action=activateaccount&ID=" + Session.ID + "&SessionID=" + Session.SessionID);
 				if (responseString == "OK")
 				{
@@ -676,6 +681,7 @@ namespace LocationConnection
 				{
 					c.ReportError(responseString);
 				}
+				DeactivateAccount.Enabled = true;
 			}
 		}
 
@@ -685,6 +691,7 @@ namespace LocationConnection
 				res.GetString(Resource.String.DialogOK), res.GetString(Resource.String.DialogCancel));
 			if (dialogResponse == res.GetString(Resource.String.DialogOK))
 			{
+				DeleteAccount.Enabled = false;
 				string url = "action=deleteaccount&ID=" + Session.ID + "&SessionID=" + Session.SessionID;
 				if (!string.IsNullOrEmpty(locationUpdatesTo))
 				{
@@ -703,6 +710,7 @@ namespace LocationConnection
 				{
 					c.ReportError(responseString);
 				}
+				DeleteAccount.Enabled = true;
 			}
 		}
 

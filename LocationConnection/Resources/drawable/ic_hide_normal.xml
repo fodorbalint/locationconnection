@@ -9,7 +9,6 @@
         c-4.41,0 -8,-3.59 -8,-8
         s 3.59,-8 8,-8 8,3.59 8,8 -3.59,8 -8,8
         z"
-		android:strokeAlpha="0.3"
 		android:fillAlpha="0.3"/>
 	<path
 		android:fillColor="#FF000000"

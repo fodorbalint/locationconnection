@@ -92,6 +92,7 @@ namespace LocationConnection
 				SettingsBack.Click += SettingsBack_Click;
 				MapIconSize.ProgressChanged += MapIconSize_ProgressChanged;
 				MapRatio.ProgressChanged += MapRatio_ProgressChanged;
+				BackgroundLocation.Click += BackgroundLocation_Click;
 				InAppLocationRate.ProgressChanged += InAppLocationRate_ProgressChanged;
 				BackgroundLocationRate.ProgressChanged += BackgroundLocationRate_ProgressChanged;
 				LocationHistoryButton.Click += LocationHistoryButton_Click;
@@ -105,7 +106,6 @@ namespace LocationConnection
 				c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 			}
 		}
-
 		private void NormalDisplaySize_Click(object sender, EventArgs e)
 		{
 			/*Recreate();
@@ -184,6 +184,15 @@ namespace LocationConnection
 					CheckRematchBackground.Checked = (bool)Session.RematchBackground;
 
 					BackgroundLocation.Checked = (bool)Session.BackgroundLocation;
+					if (BackgroundLocation.Checked)
+					{
+						BackgroundLocationRate.Enabled = true;
+					}
+					else
+					{
+						BackgroundLocationRate.Enabled = false;
+					}
+
 					LocationAccuracyPrecise.Checked = (Session.LocationAccuracy == 0) ? false : true;
 					LocationAccuracyBalanced.Checked = (Session.LocationAccuracy == 0) ? true : false;
 					InAppLocationRate.Progress = InAppLocationRateValToProgress((int)Session.InAppLocationRate);
@@ -442,6 +451,18 @@ namespace LocationConnection
 			MapRatioValue.Text = MapRatioProgressToVal(MapRatio.Progress).ToString();
 		}
 
+		private void BackgroundLocation_Click(object sender, EventArgs e)
+		{
+			if (BackgroundLocation.Checked)
+			{
+				BackgroundLocationRate.Enabled = true;
+			}
+			else
+			{
+				BackgroundLocationRate.Enabled = false;
+			}
+		}
+
 		private void InAppLocationRate_ProgressChanged(object sender, SeekBar.ProgressChangedEventArgs e)
 		{
 			InAppLocationRateValue.Text = GetTimeString(InAppLocationRateProgressToVal(InAppLocationRate.Progress));
@@ -479,6 +500,8 @@ namespace LocationConnection
 			else
 			{
 				SetFormHidden();
+				imm.HideSoftInputFromWindow(MessageEdit.WindowToken, 0);
+				MainLayout.RequestFocus();
 			}
 		}
 
@@ -505,14 +528,14 @@ namespace LocationConnection
 
 				string url = "action=reporterror&ID=" + Session.ID + "&SessionID=" + Session.SessionID;
 				string content = "Content=" + c.UrlEncode(MessageEdit.Text + System.Environment.NewLine
-					+ "Android version: " + Build.VERSION.SdkInt + " " + Build.VERSION.Sdk + " " + System.Environment.NewLine + Build.VERSION.BaseOs + System.Environment.NewLine + File.ReadAllText(c.logFile));
+					+ "Android version: " + Build.VERSION.SdkInt + " " + Build.VERSION.Sdk + " " + System.Environment.NewLine + Build.VERSION.BaseOs + System.Environment.NewLine + File.ReadAllText(CommonMethods.logFile));
 				string responseString = await c.MakeRequest(url, "POST", content);
 
 				if (responseString == "OK")
 				{
-					MainLayout.RequestFocus();
 					MessageEdit.Text = "";
 					SetFormHidden();
+					MainLayout.RequestFocus();
 					c.Snack(Resource.String.SettingsSent, null);
 				}
 				else
@@ -525,7 +548,7 @@ namespace LocationConnection
 
 		private void ProgramLogButton_Click(object sender, EventArgs e)
 		{
-			c.LogAlert(File.ReadAllText(c.logFile));
+			c.LogAlert(File.ReadAllText(CommonMethods.logFile));
 		}
 
 		private void SetFormVisible()

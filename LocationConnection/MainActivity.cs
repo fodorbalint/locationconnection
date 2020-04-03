@@ -31,16 +31,10 @@ namespace LocationConnection
     [Activity(MainLauncher = false, ConfigurationChanges = Android.Content.PM.ConfigChanges.Orientation | Android.Content.PM.ConfigChanges.ScreenSize)]
     public class MainActivity : BaseActivity
     {
-		public static string regSessionFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "regsession.txt");
-		private string regSaveFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "regsave.txt");
-		private string firebaseTokenFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "firebasetoken.txt");
-		private string tokenUptoDateFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "tokenuptodate.txt");
-
 		public new ConstraintLayout MainLayout;
 		public EditText LoginEmail, LoginPassword, ResetEmail;
-		Button LoginDone, LoginResetPassword, ResetSendButton, RegisterButton, ListButton;
+		Button LoginDone, ResetPassword, ResetSendButton, RegisterButton, ListButton;
 		TextView ResetEmailText;
-		Snackbar snack;
 
 		Android.Content.Res.Resources res;
 		InputMethodManager imm;
@@ -66,7 +60,7 @@ namespace LocationConnection
 				LoginEmail = FindViewById<EditText>(Resource.Id.LoginEmail);
 				LoginPassword = FindViewById<EditText>(Resource.Id.LoginPassword);
 				LoginDone = FindViewById<Button>(Resource.Id.LoginDone);
-				LoginResetPassword = FindViewById<Button>(Resource.Id.LoginResetPassword);
+				ResetPassword = FindViewById<Button>(Resource.Id.ResetPassword);
 				ResetEmailText = FindViewById<TextView>(Resource.Id.ResetEmailText);
 				ResetEmail = FindViewById<EditText>(Resource.Id.ResetEmail);
 				ResetSendButton = FindViewById<Button>(Resource.Id.ResetSendButton);
@@ -80,7 +74,7 @@ namespace LocationConnection
 
 				LoginPassword.KeyPress += LoginPassword_KeyPress;
 				LoginDone.Click += LoginDone_Click;
-				LoginResetPassword.Click += LoginResetPassword_Click;
+				ResetPassword.Click += ResetPassword_Click;
 				ResetEmail.KeyPress += ResetEmail_KeyPress;
 				ResetSendButton.Click += ResetSendButton_Click;
 				RegisterButton.Click += RegisterButton_Click;
@@ -154,6 +148,7 @@ namespace LocationConnection
 			if (CheckFields())
 			{
 				LoginDone.Enabled = false;
+
 				string url = "action=login&User=" + c.UrlEncode(LoginEmail.Text.Trim()) + "&Password=" + c.UrlEncode(LoginPassword.Text.Trim());
 
 				if (File.Exists(firebaseTokenFile)) //sends the token whether it was already sent from this device or not
@@ -216,7 +211,7 @@ namespace LocationConnection
 			return true;
 		}
 
-		private void LoginResetPassword_Click(object sender, EventArgs e)
+		private void ResetPassword_Click(object sender, EventArgs e)
 		{
 			if (ResetEmailText.Visibility == ViewStates.Gone)
 			{
@@ -247,6 +242,7 @@ namespace LocationConnection
 			if (CheckFieldsReset())
 			{
 				ResetSendButton.Enabled = false;
+
 				string url = "action=resetpassword&Email=" + c.UrlEncode(ResetEmail.Text.Trim());
 
 				string responseString = await c.MakeRequest(url);

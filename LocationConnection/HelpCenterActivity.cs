@@ -126,6 +126,8 @@ namespace LocationConnection
 				MessageEdit.Visibility = ViewStates.Gone;
 				MessageSend.Visibility = ViewStates.Gone;
 				QuestionsScroll.Visibility = ViewStates.Visible;
+				imm.HideSoftInputFromWindow(MessageEdit.WindowToken, 0);
+				MainLayout.RequestFocus();
 			}
 		}
 
@@ -135,15 +137,16 @@ namespace LocationConnection
 			if (MessageEdit.Text != "")
 			{
 				MessageSend.Enabled = false;
+
 				string url = "action=helpcentermessage&ID=" + Session.ID + "&SessionID=" + Session.SessionID + "&Content=" + c.UrlEncode(MessageEdit.Text);
 				string responseString = await c.MakeRequest(url);
 				if (responseString == "OK")
 				{
-					MainLayout.RequestFocus();
 					MessageEdit.Text = "";
 					MessageEdit.Visibility = ViewStates.Gone;
 					MessageSend.Visibility = ViewStates.Gone;
 					QuestionsScroll.Visibility = ViewStates.Visible;
+					MainLayout.RequestFocus();
 					c.Snack(Resource.String.HelpCenterSent, null);
 				}
 				else

@@ -77,7 +77,7 @@
             android:layout_height="45dp"
             app:layout_constraintTop_toBottomOf="@+id/LoginPassword"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/LoginResetPassword"
+            app:layout_constraintRight_toLeftOf="@+id/ResetPassword"
             app:layout_constraintHorizontal_weight="1"
             android:textAllCaps="false"
             android:backgroundTint="@color/LoginButton"
@@ -96,8 +96,8 @@
             android:textAllCaps="false"
             android:backgroundTint="@color/ForgotButton"
             android:theme="@style/ButtonNormal"
-            android:text="@string/LoginResetPassword"
-            android:id="@+id/LoginResetPassword" />
+            android:text="@string/ResetPassword"
+            android:id="@+id/ResetPassword" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -106,13 +106,13 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/ResetEmail"
             android:visibility="gone"
-            android:text="@string/LoginResetEmail"
+            android:text="@string/ResetEmail"
             android:theme="@style/BlackTextSmallNormal"
             android:id="@+id/ResetEmailText" />
         <EditText
             android:layout_width="0px"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/LoginResetPassword"
+            app:layout_constraintTop_toBottomOf="@+id/ResetPassword"
             app:layout_constraintBottom_toTopOf="@+id/ResetSendButton"
             app:layout_constraintLeft_toRightOf="@+id/ResetEmailText"
             app:layout_constraintRight_toRightOf="parent"
@@ -131,7 +131,7 @@
             android:textAllCaps="false"
             android:backgroundTint="@color/ForgotButton"
             android:theme="@style/ButtonNormal"
-            android:text="@string/LoginResetSend"
+            android:text="@string/ResetSend"
             android:id="@+id/ResetSendButton" />
     </android.support.constraint.ConstraintLayout>
     <Button

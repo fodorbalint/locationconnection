@@ -19,9 +19,6 @@ namespace LocationConnection
 	[IntentFilter(new[] { "com.google.firebase.MESSAGING_EVENT" })]
 	public class MyFirebaseMessagingService : FirebaseMessagingService
 	{
-		private string firebaseTokenFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "firebasetoken.txt");
-		private string tokenUptoDateFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "tokenuptodate.txt");
-
 		public override void OnMessageReceived(RemoteMessage message)
 		{
 			Intent intent = new Intent("balintfodor.locationconnection.ChatReceiver");
@@ -48,8 +45,8 @@ namespace LocationConnection
 		{
 			base.OnNewToken(p0);
 
-			File.WriteAllText(firebaseTokenFile, p0);
-			File.WriteAllText(tokenUptoDateFile, "False");
+			File.WriteAllText(BaseActivity.firebaseTokenFile, p0);
+			File.WriteAllText(BaseActivity.tokenUptoDateFile, "False");
 
 			CommonMethods c = new CommonMethods(null);
 			if (c.IsLoggedIn()) //might never be true
@@ -57,7 +54,7 @@ namespace LocationConnection
 				string responseString = await c.MakeRequest("action=updatetoken&ID=" + Session.ID + "&SessionID=" + Session.SessionID + "&token=" + p0);
 				if (responseString == "OK")
 				{
-					File.WriteAllText(tokenUptoDateFile, "True");
+					File.WriteAllText(BaseActivity.tokenUptoDateFile, "True");
 				}
 				else
 				{

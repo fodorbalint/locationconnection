@@ -40,10 +40,11 @@ namespace LocationConnection
             if (view == null) view = context.LayoutInflater.Inflate(Resource.Layout.list_item, null);
             ImageView ListImage = view.FindViewById<ImageView>(Resource.Id.ListImage);
 
-			//TextView ListUsername = view.FindViewById<TextView>(Resource.Id.ListUsername);
-			//TextView ListName = view.FindViewById<TextView>(Resource.Id.ListName);
-			
-			string url;
+            //When switching from map to list, if during map view, I opened or closed the filters, we will sometimes see an upward / downward animation.
+            ImageCache im = new ImageCache(context);
+            im.LoadImage(ListImage, profiles[position].ID.ToString(), profiles[position].Pictures[0]);
+
+            /*string url;
             if (Constants.isTestDB)
             {
                 url = Constants.HostName + Constants.UploadFolderTest + "/" + profiles[position].ID + "/" + Constants.SmallImageSize + "/" + profiles[position].Pictures[0];
@@ -53,17 +54,8 @@ namespace LocationConnection
                 url = Constants.HostName + Constants.UploadFolder + "/" + profiles[position].ID + "/" + Constants.SmallImageSize + "/" + profiles[position].Pictures[0];
             }
 			ImageService im = new ImageService();
-			im.LoadUrl(url).LoadingPlaceholder(Constants.loadingImage, FFImageLoading.Work.ImageSource.CompiledResource).ErrorPlaceholder(Constants.noImage, FFImageLoading.Work.ImageSource.CompiledResource).Into(ListImage);
-			
-			/*var imageBitmap = new CommonMethods(null, null).GetImageBitmapFromUrl(url);
-			try
-            {
-                ListImage.SetImageBitmap(imageBitmap);
-            }
-            catch { }*/
+			im.LoadUrl(url).LoadingPlaceholder(Constants.loadingImage, FFImageLoading.Work.ImageSource.CompiledResource).ErrorPlaceholder(Constants.noImage, FFImageLoading.Work.ImageSource.CompiledResource).Into(ListImage);*/
 
-            //ListUsername.Text = profiles[position].Username;
-            //ListName.Text = profiles[position].Name;
             return view;
         }      
     }

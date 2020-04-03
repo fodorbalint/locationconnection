@@ -62,19 +62,15 @@ namespace LocationConnection
     [Activity(MainLauncher = true, ConfigurationChanges = Android.Content.PM.ConfigChanges.Orientation | Android.Content.PM.ConfigChanges.ScreenSize)]
     public class ListActivity : BaseActivity, IOnMapReadyCallback
 	{
-		private string loginSessionFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "loginsession.txt");
-		private string firebaseTokenFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "firebasetoken.txt");
-		private string tokenUptoDateFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "tokenuptodate.txt");
-
         Android.Content.Res.Resources res;
 
 		IMenu pageMenu;
 
-		ConstraintLayout FilterLayout, DistanceFilters, UseGeoContainer, StatusBar;
+		ConstraintLayout FilterLayout, DistanceFilters, UseGeoContainer;
 		LinearLayout SearchLayout, MapContainer;
 		Android.Support.V7.Widget.Toolbar MainPageToolbar;
 		TextView StatusText, NoResult, ResultSet;
-		ImageButton StatusImage, OpenSearch, OpenFilters, ListView, MapView, SearchOK, SortBy_LastActiveDate, SortBy_ResponseRate,
+		ImageButton StatusImage, OpenSearch, OpenFilters, ListView, MapView, SortBy_LastActiveDate, SortBy_ResponseRate,
 			SortBy_RegisterDate, OrderBy, DistanceFiltersOpenClose, AddressOK, LoadPrevious, LoadNext, RefreshDistance, MenuChatList;
 		View BottomSeparator, MenuChatListBg, MenuChatListBgCorner, RippleMain;
 		Button MapStreet, MapSatellite;
@@ -173,7 +169,7 @@ namespace LocationConnection
 				{
 					string url = "action=reporterror&ID=" + Session.ID + "&SessionID=" + Session.SessionID;
 					string content = "Content=" + c.UrlEncode(File.ReadAllText(c.errorFile) + System.Environment.NewLine
-						+ "Android version: " + Build.VERSION.SdkInt + " " + Build.VERSION.Sdk + " " + System.Environment.NewLine + Build.VERSION.BaseOs + System.Environment.NewLine + File.ReadAllText(c.logFile));
+						+ "Android version: " + Build.VERSION.SdkInt + " " + Build.VERSION.Sdk + " " + System.Environment.NewLine + Build.VERSION.BaseOs + System.Environment.NewLine + File.ReadAllText(CommonMethods.logFile));
 					string responseString = c.MakeRequestSync(url, "POST", content);
 					if (responseString == "OK")
 					{
@@ -184,7 +180,16 @@ namespace LocationConnection
 				IsPlayServicesAvailable();
 				CreateNotificationChannel();
 
-				if (!c.IsLoggedIn() && File.Exists(loginSessionFile))
+				c.CW(" Directory.Exists(CommonMethods.largeCacheFolder) " + Directory.Exists(CommonMethods.largeCacheFolder));
+				if (!Directory.Exists(CommonMethods.largeCacheFolder)) {
+					Directory.CreateDirectory(CommonMethods.largeCacheFolder);
+				}
+				else
+				{
+					CommonMethods.EmptyFolder(CommonMethods.largeCacheFolder);
+				}
+
+				if (!c.IsLoggedIn() && File.Exists(c.loginSessionFile))
 				{
 					autoLogin = true;
 				}
@@ -201,7 +206,7 @@ namespace LocationConnection
 						Session.LastDataRefresh = null;
 						Session.LocationTime = null;
 
-						string str = File.ReadAllText(loginSessionFile);
+						string str = File.ReadAllText(c.loginSessionFile);
 						string[] strarr = str.Split(";");
 
 						string url = "action=loginsession&ID=" + strarr[0] + "&SessionID=" + strarr[1];
@@ -319,7 +324,7 @@ namespace LocationConnection
 									snack = c.SnackIndefStr(res.GetString(res.GetIdentifier(error, "string", PackageName)), null);
 									if (error == "LoginFailed") // this is the only error we can get
 									{
-										File.Delete(loginSessionFile);
+										File.Delete(c.loginSessionFile);
 									}
 
 									recenterMap = true;
@@ -421,7 +426,6 @@ namespace LocationConnection
 				SearchLayout = FindViewById<LinearLayout>(Resource.Id.SearchLayout);
 				SearchTerm = FindViewById<EditText>(Resource.Id.SearchTerm);
 				SearchIn = FindViewById<Spinner>(Resource.Id.SearchIn);
-				SearchOK = FindViewById<ImageButton>(Resource.Id.SearchOK);
 				FilterLayout = FindViewById<ConstraintLayout>(Resource.Id.FilterLayout);
 				ListType = FindViewById<Spinner>(Resource.Id.ListType);
 				SortBy_LastActiveDate = FindViewById<ImageButton>(Resource.Id.SortBy_LastActiveDate);
@@ -447,7 +451,6 @@ namespace LocationConnection
 				MapSatellite = FindViewById<Button>(Resource.Id.MapSatellite);
 				UserSearchList = FindViewById<GridView>(Resource.Id.UserSearchList);
 				ReloadPulldown = FindViewById<ImageView>(Resource.Id.ReloadPulldown);
-				StatusBar = FindViewById<ConstraintLayout>(Resource.Id.StatusBar);
 				ResultSet = FindViewById<TextView>(Resource.Id.ResultSet);
 				LoadPrevious = FindViewById<ImageButton>(Resource.Id.LoadPrevious);
 				LoadNext = FindViewById<ImageButton>(Resource.Id.LoadNext);
@@ -490,7 +493,6 @@ namespace LocationConnection
 				MapSatellite.Click += MapSatellite_Click;
 				SearchTerm.KeyPress += SearchTerm_KeyPress;				
 				SearchIn.ItemSelected += SearchIn_ItemSelected;
-				SearchOK.Click += SearchOK_Click;
 				ListType.ItemSelected += ListType_ItemSelected;
 				SortBy_LastActiveDate.Click += SortBy_LastActiveDate_Click;
 				SortBy_ResponseRate.Click += SortBy_ResponseRate_Click;
@@ -782,18 +784,9 @@ namespace LocationConnection
 			StatusText.Visibility = ViewStates.Gone;
 			string url;
 
-			if (Constants.isTestDB)
-			{
-				url = Constants.HostName + Constants.UploadFolderTest + "/" + Session.ID + "/" + Constants.SmallImageSize + "/" + Session.Pictures[0];
-			}
-			else
-			{
-				url = Constants.HostName + Constants.UploadFolder + "/" + Session.ID + "/" + Constants.SmallImageSize + "/" + Session.Pictures[0];
-			}
+			ImageCache im = new ImageCache(this);
+			im.LoadImage(StatusImage, Session.ID.ToString(), Session.Pictures[0]);
 			
-			ImageService im = new ImageService();
-			im.LoadUrl(url).LoadingPlaceholder(Constants.loadingImage, FFImageLoading.Work.ImageSource.CompiledResource)
-				.ErrorPlaceholder(Constants.noImage, FFImageLoading.Work.ImageSource.CompiledResource).Into(StatusImage);
 			MenuChatList.Visibility = ViewStates.Visible;
 			MenuChatListBg.Visibility = ViewStates.Visible;
 			MenuChatListBgCorner.Visibility = ViewStates.Visible;
@@ -1036,6 +1029,7 @@ namespace LocationConnection
 			distanceLimitChangedByCode = true;
 			DistanceLimit.Progress = DistanceLimitValToProgress((int)Session.DistanceLimit);
 			DistanceLimitInput.Text = Session.DistanceLimit.ToString();
+			distanceLimitChangedByCode = false;
 		}
 
 		public override bool OnCreateOptionsMenu(IMenu menu)
@@ -1472,7 +1466,7 @@ namespace LocationConnection
 					MapView.SetBackgroundResource(iconBackgroundLight);
 					ListView.SetBackgroundResource(0);
 
-					UserSearchList.Visibility = ViewStates.Gone;
+					UserSearchList.Visibility = ViewStates.Invisible;
 					MapContainer.Visibility = ViewStates.Visible;
 					MapStreet.Visibility = ViewStates.Visible;
 					MapSatellite.Visibility = ViewStates.Visible;
@@ -1501,14 +1495,6 @@ namespace LocationConnection
 				searchInClicked = false;
 				return;
 			}
-			imm.HideSoftInputFromWindow(SearchTerm.WindowToken, 0);
-			Session.ResultsFrom = 1;
-			recenterMap = true;
-			Task.Run(() => LoadListSearch());
-		}
-
-		private void SearchOK_Click(object sender, EventArgs e)
-		{
 			imm.HideSoftInputFromWindow(SearchTerm.WindowToken, 0);
 			Session.ResultsFrom = 1;
 			recenterMap = true;
@@ -1776,6 +1762,9 @@ namespace LocationConnection
 			{
 				if (!MatchCoordinates(true))
 				{
+					AddressOK.Enabled = false;
+					AddressOK.ImageAlpha = 128; //changes only the checkmark, not the background
+
 					StartLoaderAnim();
 					ResultSet.Visibility = ViewStates.Visible;
 					ResultSet.Text = res.GetString(Resource.String.ConvertingAddress);
@@ -1817,6 +1806,9 @@ namespace LocationConnection
 
 					SetResultStatus();
 					StopLoaderAnim();
+
+					AddressOK.Enabled = true;
+					AddressOK.ImageAlpha = 255;
 				}
 				else
 				{
@@ -2627,16 +2619,8 @@ namespace LocationConnection
 			{
 				if (profile.Latitude != null && profile.Longitude != null && profile.LocationTime != null) //location available
 				{
-					Bitmap imageBitmap;
-					if (Constants.isTestDB)
-					{
-						imageBitmap = c.GetImageBitmapFromUrl(Constants.HostName + Constants.UploadFolderTest + "/" + profile.ID + "/" + Constants.SmallImageSize + "/" + profile.Pictures[0]);
-					}
-					else
-					{
-						imageBitmap = c.GetImageBitmapFromUrl(Constants.HostName + Constants.UploadFolder + "/" + profile.ID + "/" + Constants.SmallImageSize + "/" + profile.Pictures[0]);
-					}
-						
+					ImageCache im = new ImageCache(this);
+					Bitmap imageBitmap = im.LoadBitmap(profile.ID.ToString(), profile.Pictures[0]);
 					Bitmap smallMarker = Bitmap.CreateScaledBitmap(imageBitmap, (int)(Settings.MapIconSize * pixelDensity), (int)(Settings.MapIconSize * pixelDensity), false);
 					LatLng location = new LatLng((double)profile.Latitude, (double)profile.Longitude);
 					markerOptions = new MarkerOptions();
@@ -2676,6 +2660,11 @@ namespace LocationConnection
 						{
 							thisMap.MyLocationEnabled = true;
 							thisMap.UiSettings.MyLocationButtonEnabled = true;
+						}
+						else
+						{
+							thisMap.MyLocationEnabled = false;
+							thisMap.UiSettings.MyLocationButtonEnabled = false;
 						}
 
 						if ((bool)Session.GeoFilter && Session.LastSearchType == Constants.SearchType_Filter) //no geo filter on free text search

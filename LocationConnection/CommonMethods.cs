@@ -29,17 +29,19 @@ using Android.Text.Method;
 using Android.Text.Util;
 using System.Net.Http;
 using System.Globalization;
+using Java.Net;
 
 namespace LocationConnection
 {
     public class CommonMethods
     {
 		public string errorFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "error.txt");
-		public string logFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "systemlog.txt");
+		public static string logFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "systemlog.txt");
 		public string locationLogFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "locationlog.txt");
 		private string settingsFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "settings.txt");
 		private string defaultSettingsFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "defaultsettings.txt");
-		private string loginSessionFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "loginsession.txt");
+		public string loginSessionFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "loginsession.txt");
+		public static string largeCacheFolder = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "largeImages");
 
 		public View view;
         Activity context;
@@ -426,28 +428,6 @@ namespace LocationConnection
 				return false;
 			}
 		}
-
-		public Bitmap GetImageBitmapFromUrl(string url)
-        {
-            Bitmap imageBitmap = null;
-            try
-            {
-                using (var webClient = new WebClient())
-                {
-                    var imageBytes = webClient.DownloadData(url);
-                    if (imageBytes != null && imageBytes.Length > 0)
-                    {
-                        imageBitmap = BitmapFactory.DecodeByteArray(imageBytes, 0, imageBytes.Length);
-                    }
-                }
-            }
-            catch
-            {
-                //string errorFile = System.IO.Path.Combine(Android.OS.Environment.GetExternalStoragePublicDirectory(Android.OS.Environment.DirectoryDownloads).AbsolutePath, "error.txt");
-                //File.AppendAllLines(errorFile, new string[] { ex.Message + ":" + url + ";" });
-            }
-            return imageBitmap;
-        }
 
 		public string GetTimeDiffStr(long? pastTime, bool isShort)
 		{
@@ -853,7 +833,15 @@ namespace LocationConnection
 
 		public void ReportErrorSilent(string error)
 		{
-			if (error != "AUTHORIZATION_ERROR" && error != "The operation has timed out." && error != "NoNetwork" && error != "NetworkTimeout")
+			if (error == "AUTHORIZATION_ERROR")
+			{
+				Intent i = new Intent(context, typeof(MainActivity));
+				i.SetFlags(ActivityFlags.ReorderToFront);
+				IntentData.logout = true;
+				IntentData.authError = true;
+				context.StartActivity(i);
+			}
+			else if (error != "The operation has timed out." && error != "NoNetwork" && error != "NetworkTimeout")
 			{
 				string url = "action=reporterror&ID=" + Session.ID + "&SessionID=" + Session.SessionID;
 				string content = "Content=" + UrlEncode(error + System.Environment.NewLine
@@ -946,6 +934,78 @@ namespace LocationConnection
             }
 			return newObj;
         }
+
+		public static Bitmap GetImageBitmapFromUrl(string url)
+		{
+			Bitmap imageBitmap = null;
+			try
+			{
+				using (var webClient = new WebClient())
+				{
+					var imageBytes = webClient.DownloadData(url);
+					if (imageBytes != null && imageBytes.Length > 0)
+					{
+						imageBitmap = BitmapFactory.DecodeByteArray(imageBytes, 0, imageBytes.Length);
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				File.AppendAllLines(logFile, new string[] { DateTime.UtcNow.ToString(@"yyyy-MM-dd HH\:mm\:ss.fff") + " Error loading image: " + url + " " + ex.Message });
+				Console.WriteLine("Error loading image: " + url + " " + ex.Message);
+			}
+			return imageBitmap;
+		}
+
+		public static byte[] GetImageDataFromUrl(string url)
+		{
+			byte[] imageBytes = null;
+			try
+			{
+				using (var webClient = new WebClient())
+				{
+					imageBytes = webClient.DownloadData(url);
+					return imageBytes;
+				}
+			}
+			catch (Exception ex)
+			{
+				File.AppendAllLines(logFile, new string[] { DateTime.UtcNow.ToString(@"yyyy-MM-dd HH\:mm\:ss.fff") + " Error loading image: " + url + " " + ex.Message });
+				Console.WriteLine("Error loading image: " + url + " " + ex.Message);
+			}
+			return imageBytes;
+		}
+
+
+
+		public static void EmptyFolder(string dir)
+		{
+			var list = Directory.GetFiles(dir, "*");
+			Console.WriteLine("--------------- Emptyfolder: " + list.Length);
+			if (list.Length > 0)
+			{
+				for (int i = 0; i < list.Length; i++)
+				{
+					File.Delete(list[i]);
+					Console.WriteLine("-------------- Deleted from folder: " + list[i]);
+				}
+			}
+		}
+		/*
+		 * Alternatively, but this is async:
+		var client = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+		using var httpResponse = await client.GetAsync(url);
+		if (httpResponse.StatusCode == HttpStatusCode.OK)
+		{
+			byte[] result = await httpResponse.Content.ReadAsByteArrayAsync();
+			return BitmapFactory.DecodeByteArray(result, 0, result.Length);
+		}
+		else
+		{
+			//Url is Invalid
+			return null;
+		}
+		*/
 
 		/*
 		protected void CreateLocationRequest()

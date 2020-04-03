@@ -27,6 +27,11 @@ namespace LocationConnection
 {
 	public class BaseActivity : AppCompatActivity
 	{
+		public static string firebaseTokenFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "firebasetoken.txt");
+		public static string tokenUptoDateFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "tokenuptodate.txt");
+		public static string regSessionFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "regsession.txt");
+		public static string regSaveFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "regsave.txt");
+
 		public View MainLayout;
 		private ChatReceiver chatReceiver;
 		public CommonMethods c;
@@ -359,7 +364,7 @@ namespace LocationConnection
 				string format = @"yyyy-MM-dd HH\:mm\:ss.fff";
 				DateTime dt = DateTime.UtcNow;
 
-				string[] lines = File.ReadAllLines(c.logFile);
+				string[] lines = File.ReadAllLines(CommonMethods.logFile);
 				string firstLine = lines[0];
 				int sep1Pos = firstLine.IndexOf(" ");
 				int sep2Pos = firstLine.IndexOf(" ", sep1Pos + 1);
@@ -380,13 +385,13 @@ namespace LocationConnection
 							newLines.Add(line);
 						}
 					}
-					File.WriteAllLines(c.logFile, newLines);
+					File.WriteAllLines(CommonMethods.logFile, newLines);
 				}
 			}
 			catch
 			{
 				c.CW("Resetting log File");
-				File.WriteAllText(c.logFile, "");
+				File.WriteAllText(CommonMethods.logFile, "");
 			}			
 		}
 

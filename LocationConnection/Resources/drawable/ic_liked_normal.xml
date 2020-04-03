@@ -4,10 +4,6 @@
         android:viewportWidth="36"
         android:viewportHeight="36">
     <path
-      android:pathData="M18,18m-18,0a18,18 0,1 1,36 0a18,18 0,1 1,-36 0"
-      android:fillColor="@color/ContentBackground"
-      android:fillAlpha="0.9"/>
-    <path
         android:fillColor="#FF0000"
         android:pathData="M 22.5,11
         c -1.54,0 -3.04,0.99 -3.56,2.36

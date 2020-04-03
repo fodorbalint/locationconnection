@@ -194,8 +194,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/LocationSwitch"
-            app:layout_constraintBottom_toBottomOf="@+id/LocationSwitch"
+            app:layout_constraintTop_toTopOf="@+id/UseLocationSwitch"
+            app:layout_constraintBottom_toBottomOf="@+id/UseLocationSwitch"
             app:layout_constraintLeft_toLeftOf="parent"
             android:text="@string/Location"
 			android:theme="@style/BlackTextSmallSmall" />
@@ -204,11 +204,11 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@+id/Description"
             app:layout_constraintRight_toRightOf="parent"
-            android:id="@+id/LocationSwitch" />       
+            android:id="@+id/UseLocationSwitch" />       
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/LocationSwitch"
+            app:layout_constraintTop_toBottomOf="@+id/UseLocationSwitch"
             android:paddingTop="8.57dp"
             android:paddingBottom="8.57dp" 
 			android:text="@string/LocationExplanation"
@@ -394,13 +394,13 @@
             android:textAllCaps="false"
             android:backgroundTint="@color/ButtonOnWhite"
             android:theme="@style/ButtonSmall"
-            android:text="@string/Done"
-			android:id="@+id/Done" />
+            android:text="@string/Register"
+			android:id="@+id/Register" />
 		<Button
 			android:layout_width="0px"
 			android:layout_height="38.57dp"
             app:layout_constraintTop_toBottomOf="@+id/DistanceShareNone"
-            app:layout_constraintLeft_toRightOf="@+id/Done"
+            app:layout_constraintLeft_toRightOf="@+id/Register"
             app:layout_constraintRight_toLeftOf="@+id/Cancel"
             android:textAllCaps="false"
             android:backgroundTint="@color/ButtonOnWhite"

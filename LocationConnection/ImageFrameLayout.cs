@@ -84,7 +84,8 @@ namespace LocationConnection
 
 		public void SetTileSize()
 		{
-			tileSize = (BaseActivity.screenWidth - 20 * BaseActivity.pixelDensity - 2 * tileSpacing * BaseActivity.pixelDensity) / numColumns;
+			tileSize = (BaseActivity.screenWidth - 20 * BaseActivity.pixelDensity - tileSpacing * (numColumns - 1) * BaseActivity.pixelDensity) / numColumns;
+			context.c.CW("SetTileSize " + BaseActivity.screenWidth + " " + tileSize + " " + BaseActivity.pixelDensity);
 		}
 
 		public void Reposition()
@@ -114,34 +115,15 @@ namespace LocationConnection
 
 			DeleteUploadedImage.Click += DeleteUploadedImage_Click;
 
-			string url;
+			ImageCache im = new ImageCache(context);
 			if (context is ProfileEditActivity)
 			{
-				if (Constants.isTestDB)
-				{
-					url = Constants.HostName + Constants.UploadFolderTest + "/" + Session.ID + "/" + Constants.SmallImageSize + "/" + picture;
-				}
-				else
-				{
-					url = Constants.HostName + Constants.UploadFolder + "/" + Session.ID + "/" + Constants.SmallImageSize + "/" + picture;
-				}
+				im.LoadImage(UploadedImage, Session.ID.ToString(), picture);
 			}
 			else
 			{
-				if (Constants.isTestDB)
-				{
-					url = Constants.HostName + Constants.TempUploadFolderTest + "/" + RegisterActivity.regsessionid + "/" + Constants.SmallImageSize + "/" + picture;
-				}
-				else
-				{
-					url = Constants.HostName + Constants.TempUploadFolder + "/" + RegisterActivity.regsessionid + "/" + Constants.SmallImageSize + "/" + picture;
-				}
+				im.LoadImage(UploadedImage, RegisterActivity.regsessionid, picture, false, true);
 			}
-				
-			ImageService im = new ImageService();
-
-			im.LoadUrl(url).LoadingPlaceholder(Constants.loadingImage, FFImageLoading.Work.ImageSource.CompiledResource).ErrorPlaceholder(Constants.noImageHD, FFImageLoading.Work.ImageSource.CompiledResource)
-			.Into(UploadedImage);
 
 			LayoutParams p0 = new LayoutParams((int)tileSize, (int)tileSize);
 			UploadedImageContainer.LayoutParameters = p0;
@@ -169,6 +151,11 @@ namespace LocationConnection
 				context.c.Snack(Resource.String.ImagesUploading, null);
 				return;
 			}
+			else if (context.imagesDeleting)
+			{
+				context.c.Snack(Resource.String.ImagesDeleting, null);
+				return;
+			}
 
 			if (context is ProfileEditActivity)
 			{
@@ -182,6 +169,8 @@ namespace LocationConnection
 			{
 				context.ImagesProgressText.Text = "";
 			}
+
+			context.imagesDeleting = true;
 
 			Animation anim = Android.Views.Animations.AnimationUtils.LoadAnimation(context, Resource.Animation.rotate);
 			context.LoaderCircle.Visibility = ViewStates.Visible;
@@ -205,6 +194,7 @@ namespace LocationConnection
 				else
 				{
 					context.c.ReportError(responseString);
+					context.imagesDeleting = false;
 				}
 			}
 			else
@@ -226,6 +216,7 @@ namespace LocationConnection
 				else
 				{
 					context.c.ReportError(responseString);
+					context.imagesDeleting = false;
 				}
 			}
 
@@ -259,8 +250,9 @@ namespace LocationConnection
 			else
 			{
 				RemoveViewFromDrawOrder(removeIndex);
-			}
-			RefitImagesContainer();
+				RefitImagesContainer();
+				context.imagesDeleting = false;
+			}			
 		}
 
 		private void MovePictureTo(int from, int to)
@@ -272,17 +264,19 @@ namespace LocationConnection
 		{
 			((Timer)sender).Stop();
 			RefitImagesContainer();
+			context.imagesDeleting = false;
 		}
 
 		public void RefitImagesContainer()
 		{
-			
 			if (ChildCount > 0)
 			{
 				int indexCount = ChildCount - 1;
 				context.RunOnUiThread(() => {
 					LayoutParameters.Width = (int)(BaseActivity.screenWidth - 20 * BaseActivity.pixelDensity);
 					LayoutParameters.Height = (int)((indexCount - indexCount % numColumns) / numColumns * (tileSize + tileSpacing * BaseActivity.pixelDensity) + tileSize);
+					RequestLayout();
+					context.c.CW("Refitimagecontainer " + LayoutParameters.Height + " --- " + indexCount);
 				});
 			}
 			else
@@ -290,6 +284,8 @@ namespace LocationConnection
 				context.RunOnUiThread(() => {
 					LayoutParameters.Width = (int)(BaseActivity.screenWidth - 20 * BaseActivity.pixelDensity);
 					LayoutParameters.Height = 0;
+					RequestLayout();
+					context.c.CW("Refitimagecontainer 0 " + LayoutParameters.Height);
 				});
 			}
 		}

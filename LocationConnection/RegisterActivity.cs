@@ -25,6 +25,7 @@ using Android.Support.V7.App;
 using Android.Text;
 using Android.Views;
 using Android.Views.Animations;
+using Android.Views.InputMethods;
 using Android.Widget;
 using System;
 using System.Collections.Generic;
@@ -40,15 +41,11 @@ namespace LocationConnection
 	[Activity(MainLauncher = false, ConfigurationChanges = Android.Content.PM.ConfigChanges.Orientation | Android.Content.PM.ConfigChanges.ScreenSize)]
 	public class RegisterActivity : ProfilePage
     {
-		public static string regSessionFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "regsession.txt");
-		private string regSaveFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "regsave.txt");
-		private string firebaseTokenFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "firebasetoken.txt");
-		private string tokenUptoDateFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "tokenuptodate.txt");
-
 		Spinner Sex;
         public EditText Password, ConfirmPassword;
-		Button Done, Reset, Cancel;
+		Button Register, Reset, Cancel;
 		EditText EulaText;
+		InputMethodManager imm;
 
 		RegisterCommonMethods<RegisterActivity> rc;
 		public BaseAdapter adapter;
@@ -115,17 +112,17 @@ namespace LocationConnection
 				Password = FindViewById<EditText>(Resource.Id.Password);
 				ConfirmPassword = FindViewById<EditText>(Resource.Id.ConfirmPassword);
 
-				Done = FindViewById<Button>(Resource.Id.Done);
+				Register = FindViewById<Button>(Resource.Id.Register);
 				Reset = FindViewById<Button>(Resource.Id.Reset);
 				Cancel = FindViewById<Button>(Resource.Id.Cancel);
 
 				ImagesUploaded.numColumns = 5; //it does not get passed in the layout file
 				ImagesUploaded.tileSpacing = 2;
-				ImagesUploaded.SetTileSize();
 				ImagesProgress.Progress = 0;
 				c.view = MainLayout;
 				rc = new RegisterCommonMethods<RegisterActivity>(MainLayout, this);
 				res = Resources;
+				imm = (InputMethodManager)GetSystemService(Context.InputMethodService);
 
 				var adapter = ArrayAdapter.CreateFromResource(this, Resource.Array.SexEntries, spinnerItem);
 				adapter.SetDropDownViewResource(spinnerItemDropdown);
@@ -159,7 +156,7 @@ namespace LocationConnection
 
 				EulaText.Touch += EulaText_Touch;
 
-				Done.Click += Done_Click;
+				Register.Click += Register_Click;
 				Reset.Click += Reset_Click;
 				Cancel.Click += Cancel_Click;
 			}
@@ -175,6 +172,9 @@ namespace LocationConnection
 			{
 				base.OnResume();
 				if (!ListActivity.initialized) { return; }
+
+				GetScreenMetrics();
+				ImagesUploaded.SetTileSize();
 
 				MainLayout.RequestFocus();
 
@@ -478,14 +478,17 @@ namespace LocationConnection
 			base.OnTouchEvent(e.Event);
 		}
 
-		private async void Done_Click(object sender, System.EventArgs e)
+		private async void Register_Click(object sender, System.EventArgs e)
         {            
             if (CheckFields())
             {
-				Done.Enabled = false;
+				imm.HideSoftInputFromWindow(Email.WindowToken, 0);
+				MainLayout.RequestFocus();
+
+				Register.Enabled = false;
+
 				int locationShare = 0;
 				int distanceShare = 0;
-
 
 				if (UseLocationSwitch.Checked)
 				{
@@ -523,7 +526,7 @@ namespace LocationConnection
 
 					c.LoadCurrentUser(responseString);
 
-					Done.Enabled = true;
+					Register.Enabled = true;
 
 					Intent i = new Intent(this, typeof(ListActivity));
 					i.SetFlags(ActivityFlags.ReorderToFront);
@@ -537,7 +540,7 @@ namespace LocationConnection
                 {
 					c.ReportError(responseString);
 				}
-				Done.Enabled = true;
+				Register.Enabled = true;
 			}
             else
             {
@@ -613,6 +616,9 @@ namespace LocationConnection
 
 		private async void Reset_Click(object sender, EventArgs e)
 		{
+			imm.HideSoftInputFromWindow(Email.WindowToken, 0);
+			MainLayout.RequestFocus();
+
 			Reset.Enabled = false;
 
 			if (regsessionid != "")
@@ -640,7 +646,6 @@ namespace LocationConnection
 			{
 				ResetForm();
 			}
-
 			Reset.Enabled = true;
 		}
 

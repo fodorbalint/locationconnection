@@ -30,6 +30,7 @@ namespace LocationConnection
 
 		public List<string> uploadedImages;		
 		public bool imagesUploading;
+		public bool imagesDeleting;
 		public Resources res;
 
 		public abstract void SaveRegData();

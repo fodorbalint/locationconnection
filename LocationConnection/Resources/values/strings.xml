@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Location Connection</string>
 	<string name="app_name_short">Connection</string>
-    <string name="versionInfo">Version: 31. December 2019\n\nCreated by Balint Fodor\n\nContact: fodorbalint@gmail.com\nlocationconnection.me</string>
+    <string name="versionInfo">Version: 2. April 2020\n\nCreated by Balint Fodor\n\nContact: fodorbalint@gmail.com\nlocationconnection.me\n\nPrivacy policy:\nhttps://locationconnection.me/?page=legal#privacy\n\nSource code:\nhttps://github.com/fodorbalint?tab=repositories</string>
 
 	<!-- General -->
 
@@ -49,9 +49,9 @@
 	<string name="LoginEmail">Email/username:</string>
     <string name="LoginPassword">Password:</string>
     <string name="LoginDone">Login</string>  
-    <string name="LoginResetPassword">Forgot your password?</string>
-	<string name="LoginResetEmail">Enter your email:</string>
-	<string name="LoginResetSend">Send reset link</string>
+    <string name="ResetPassword">Forgot your password?</string>
+	<string name="ResetEmail">Enter your email:</string>
+	<string name="ResetSend">Send reset link</string>
     <string name="RegisterButton">Register</string>
     <string name="ListButton">See people nearby</string>
 
@@ -89,6 +89,7 @@
 	<string name="StorageRationale">Accessing storage is needed for uploading pictures.</string>
 	<string name="StorageNotGranted">Storage read permission was not granted.</string>
 	<string name="ImagesUploading">Wait until the picture finished uploading.</string>
+	<string name="ImagesDeleting">Wait until picture deletion is finished.</string>
 	<string name="UploadImagePathNotFound">File cannot be accessed. Try uploading from your local storage.</string>
 	<string name="ImagesProgressText">Uploading... (This may take up to a minute.)</string>
     <string name="ImagesProgressTextPercent">Uploading:</string>    
@@ -119,7 +120,7 @@
 	<string name="EulaLabel">By registering, I agree to the Terms of Use below:</string>
 	<string name="EulaText">Loading...</string>
 
-	<string name="Done">Register</string>
+	<string name="Register">Register</string>
 	<string name="Reset">Reset</string>
 	<string name="Cancel">Cancel</string>
 
@@ -212,7 +213,7 @@
     <string name="YourLocation">Your location</string>
 	<string name="ConvertingAddress">Converting address...</string>
 
-	<string name="Search">Search</string>
+	<string name="Search">Search...</string>
 	<string-array name="SearchInEntries">
 		<item>All</item>
 		<item>Username</item>
