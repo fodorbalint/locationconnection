@@ -51,14 +51,14 @@
         android:layout_marginRight="0px"
         android:translationX="1.71dp"
         android:background="@drawable/status_round_background"
-        android:id="@+id/MenuChatListBg" />
+        android:id="@+id/MenuListBg" />
     <View
 		android:layout_width="1.71dp"
 		android:layout_height="1.71dp"
         app:layout_constraintLeft_toRightOf="@+id/BottomSeparator"
         app:layout_constraintBottom_toTopOf="@+id/NoofMatches"
         android:background="@drawable/status_round_background_corner"
-        android:id="@+id/MenuChatListBgCorner" />
+        android:id="@+id/MenuListBgCorner" />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="24.86dp"

@@ -39,6 +39,12 @@
 	<string name="DialogYes">Yes</string>
 	<string name="DialogNo">No</string>
 
+	<string name="MenuReport">Report...</string>
+	<string name="MenuBlock">Block...</string>
+	<string name="ReportDialogText">This will send a nofitication to the developer, who will review it, and take action if necessary.\nAre you sure you want to continue?</string>
+	<string name="BlockDialogText">This will permanently hide the user while you are logged in to your account.\nThey will not show up in search lists, nor can you find them on the list of hidden people.\nThis action cannot be undone.\nAre you sure you want to continue?</string>
+	<string name="UserReported">User reported.</string>
+
 	<!-- Bottom navigation bar -->
 
 	<string name="MenuChatList">Matches</string>

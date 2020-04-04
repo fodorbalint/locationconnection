@@ -4,10 +4,20 @@
     <item android:title=""
 		android:showAsAction="always"
 		android:id="@+id/MenuLocationUpdates" />
+
 	<item android:title=""
 		android:showAsAction="always"
 		android:id="@+id/MenuFriend" />
+
 	<item android:title="@string/MenuUnmatch" 
 		android:showAsAction="always"
-		android:id="@+id/MenuUnmatch" />	
+		android:id="@+id/MenuUnmatch" />
+
+	<item android:title="@string/MenuReport" 
+		android:showAsAction="always"
+		android:id="@+id/MenuReport" />
+		
+	<item android:title="@string/MenuBlock" 
+		android:showAsAction="always"
+		android:id="@+id/MenuBlock" />	
 </menu>

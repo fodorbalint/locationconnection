@@ -24,7 +24,8 @@ namespace LocationConnection
 	public class ProfileViewActivity : BaseActivity, IOnMapReadyCallback
 	{
 		public ConstraintLayout ScrollLayout, ProfileImageContainer, Footer;
-		LinearLayout MapContainer;
+		LinearLayout MapContainer, CircleContainer;
+		Android.Support.V7.Widget.Toolbar MenuContainer;
 		View EditSpacer, HeaderBackground, PercentProgress, MapTopSeparator, MapBottomSeparator, NavigationSpacer,
 			EditSelfHeader, RippleImageEditBack, RippleImage, RippleImageNext, RippleImagePrev;
 		TextView Name, Username, ResponseRate, LastActiveDate, RegisterDate, Description, LocationTime, DistanceText;
@@ -107,7 +108,8 @@ namespace LocationConnection
 		int counterCircle;
 		int counterCircleSelected;
 
-		bool cancelImageLoading;
+		public bool cancelImageLoading;
+		public int currentID;
 
 		LocationReceiver locationReceiver;
 
@@ -168,6 +170,8 @@ namespace LocationConnection
 				RegisterDate = FindViewById<TextView>(Resource.Id.RegisterDate);
 				ProfileImageContainer = FindViewById<ConstraintLayout>(Resource.Id.ProfileImageContainer);
 				ProfileImageScroll = FindViewById<TouchConstraintLayout>(Resource.Id.ProfileImageScroll);
+				CircleContainer = FindViewById<LinearLayout>(Resource.Id.CircleContainer);
+				MenuContainer = FindViewById<Android.Support.V7.Widget.Toolbar>(Resource.Id.MenuContainer);
 				Footer = FindViewById<ConstraintLayout>(Resource.Id.Footer);
 				Description = FindViewById<TextView>(Resource.Id.Description);
 				LocationTime = FindViewById<TextView>(Resource.Id.LocationTime);
@@ -197,6 +201,8 @@ namespace LocationConnection
 				c.view = MainLayout;
 				res = Resources;
 				locationReceiver = new LocationReceiver();
+				SetSupportActionBar(MenuContainer);
+				SupportActionBar.SetDisplayShowTitleEnabled(false);
 
 				MapStreet.Click += MapStreet_Click;
 				MapSatellite.Click += MapSatellite_Click;
@@ -238,6 +244,7 @@ namespace LocationConnection
 				ProfileImageScroll.ScrollX = 0;
 				footerHeight = -1;
 				mapHeight = -1;
+				cancelImageLoading = false;
 
 				c.CW("OnResume IntentData.profileViewPageType " + IntentData.profileViewPageType);
 				pageType = IntentData.profileViewPageType;
@@ -345,6 +352,8 @@ namespace LocationConnection
 			base.OnPause();
 			if (!ListActivity.initialized) { return; }
 
+			cancelImageLoading = true;
+
 			if (pageType == Constants.ProfileViewType_Self && (bool)Session.UseLocation && c.IsLocationEnabled())
 			{
 				UnregisterReceiver(locationReceiver);
@@ -355,6 +364,85 @@ namespace LocationConnection
 				c.SaveSettings();
 			}
 			refreshTimer.Stop();
+		}
+
+		public override bool OnCreateOptionsMenu(IMenu menu)
+		{
+			if (c.IsLoggedIn())
+			{
+				MenuInflater.Inflate(Resource.Menu.menu_profileview, menu);
+			}
+			return base.OnCreateOptionsMenu(menu);
+		}
+
+		public override bool OnOptionsItemSelected(IMenuItem item)
+		{
+			switch (item.ItemId)
+			{
+				case Resource.Id.MenuReport:
+					Report();
+					break;
+				case Resource.Id.MenuBlock:
+					Block();
+					break;
+			}
+			return base.OnOptionsItemSelected(item);
+		}
+
+		private async void Report()
+		{
+			string dialogResponse = await c.DisplayCustomDialog(res.GetString(Resource.String.ConfirmAction), res.GetString(Resource.String.ReportDialogText),
+				res.GetString(Resource.String.DialogYes), res.GetString(Resource.String.DialogNo));
+
+			if (dialogResponse == res.GetString(Resource.String.DialogYes))
+			{
+				string responseString = await c.MakeRequest("action=reportprofileview&ID=" + Session.ID + "&SessionID=" + Session.SessionID + "&TargetID=" + displayUser.ID);
+				if (responseString.Substring(0, 2) == "OK")
+				{
+					c.Snack(Resource.String.UserReported, null);
+				}
+				else
+				{
+					c.ReportError(responseString);
+				}
+			}
+		}
+
+		private async void Block()
+		{
+			string dialogResponse = await c.DisplayCustomDialog(res.GetString(Resource.String.ConfirmAction), res.GetString(Resource.String.BlockDialogText),
+				res.GetString(Resource.String.DialogYes), res.GetString(Resource.String.DialogNo));
+
+			if (dialogResponse == res.GetString(Resource.String.DialogYes))
+			{
+				if (IsUpdatingTo(displayUser.ID))
+				{
+					RemoveUpdatesTo(displayUser.ID);
+				}
+				if (IsUpdatingFrom(displayUser.ID))
+				{
+					RemoveUpdatesFrom(displayUser.ID);
+				}
+
+				long unixTimestamp = c.Now();
+				string responseString = await c.MakeRequest("action=blockprofileview&ID=" + Session.ID + "&SessionID=" + Session.SessionID + "&TargetID=" + displayUser.ID + "&time=" + unixTimestamp);
+				if (responseString.Substring(0, 2) == "OK")
+				{
+					ListActivity.viewProfiles.RemoveAt(ListActivity.viewIndex);
+					if (ListActivity.viewIndex >= 0 && ListActivity.viewIndex < ListActivity.listProfiles.Count)
+					{
+						ListActivity.listProfiles.RemoveAt(ListActivity.viewIndex);
+					}
+					ListActivity.viewIndex--;
+					ListActivity.absoluteIndex--;
+					ListActivity.totalResultCount--;
+					NextButton_Click(null, null);
+				}
+				else
+				{
+					c.ReportError(responseString);
+				}
+			}
 		}
 
 		private void LoadStandalone(int targetID)
@@ -640,8 +728,6 @@ namespace LocationConnection
 
 		private void EditSelf_Click(object sender, EventArgs e)
 		{
-			CancelTask();
-
 			Intent i = new Intent(this, typeof(ProfileEditActivity));
 			i.SetFlags(ActivityFlags.ReorderToFront);
 			StartActivity(i);
@@ -699,7 +785,7 @@ namespace LocationConnection
 				{
 					for (int i = 0; i < counterCircles.Count; i++)
 					{
-						ProfileImageContainer.RemoveView(counterCircles[i]);
+						CircleContainer.RemoveView(counterCircles[i]);
 					}
 				}
 				counterCircles = new List<View>();
@@ -727,6 +813,8 @@ namespace LocationConnection
 					SetMap();
 				}
 
+				currentID = (int)Session.ID;
+
 				AddCircles(Session.Pictures.Length);
 
 				System.IO.DirectoryInfo di = new DirectoryInfo(CacheDir.AbsolutePath);
@@ -735,13 +823,16 @@ namespace LocationConnection
 					file.Delete();
 				}
 
-				//Task does not get cancelled here by calling cts.Cancel() where cts is CancellationTokenSource
-				cancelImageLoading = false; 
+				//Unlike on iOS, Task does not get cancelled here by calling cts.Cancel() where cts is CancellationTokenSource
 				Task.Run(() =>
 				{
 					for (int i = 0; i < Session.Pictures.Length; i++)
 					{
-						if (cancelImageLoading) break;
+						if (cancelImageLoading)
+						{
+							c.CW("Cancelling task at self currentID " + currentID + " cancelImageLoading " + cancelImageLoading);
+							break;
+						}
 						LoadPicture(Session.ID.ToString(), Session.Pictures[i], i, true);
 					}
 				});
@@ -819,7 +910,7 @@ namespace LocationConnection
 				{
 					for (int i = 0; i < counterCircles.Count; i++)
 					{
-						ProfileImageContainer.RemoveView(counterCircles[i]);
+						CircleContainer.RemoveView(counterCircles[i]);
 					}
 				}
 
@@ -848,15 +939,23 @@ namespace LocationConnection
 					SetMap();
 				}
 
+				Profile profile = (Profile)CommonMethods.Clone(displayUser); //displayUser changes when pressing Next or Previous button
+				currentID = profile.ID;
+
 				AddCircles(displayUser.Pictures.Length);
 
-				cancelImageLoading = false;
+				c.CW("Starting task at userID " + currentID.ToString() + " cancelImageLoading " + cancelImageLoading);
+				
 				Task.Run(() =>
 				{
-					for (int i = 0; i < displayUser.Pictures.Length; i++)
+					for (int i = 0; i < profile.Pictures.Length; i++)
 					{
-						if (cancelImageLoading) break;
-						LoadPicture(displayUser.ID.ToString(), displayUser.Pictures[i], i, false);
+						if (cancelImageLoading || profile.ID != currentID)
+						{
+							c.CW("Cancelling task at userID " + profile.ID.ToString() + " currentID " + currentID + " cancelImageLoading " + cancelImageLoading);
+							break;
+						}
+						LoadPicture(profile.ID.ToString(), profile.Pictures[i], i, false);
 					}
 				});
 			}
@@ -922,6 +1021,11 @@ namespace LocationConnection
 						{
 							thisMap.MyLocationEnabled = true;
 							thisMap.UiSettings.MyLocationButtonEnabled = true;
+						}
+						else
+						{
+							thisMap.MyLocationEnabled = false;
+							thisMap.UiSettings.MyLocationButtonEnabled = false;
 						}
 
 						LatLng location = new LatLng((double)displayUser.Latitude, (double)displayUser.Longitude);
@@ -1032,10 +1136,13 @@ namespace LocationConnection
 			for(int i=0; i < count; i++)
 			{
 				View v = new View(this);
-				v.Id = 2000 + i;
 
-				ConstraintLayout.LayoutParams p = new ConstraintLayout.LayoutParams(0, ViewGroup.LayoutParams.MatchParent);
-				p.DimensionRatio = "1:1"; p = new ConstraintLayout.LayoutParams((int)(counterCircleSize * pixelDensity), (int)(counterCircleSize * pixelDensity));
+				/*
+				Originally circles were added directly to ProfileImageContainer, but when pressing Next / Previous, the circles would align to the left, except the last one which is in the middle between the second to last and the parent.
+				Layout would only change when a picture is loaded.
+				
+				v.Id = 2000 + i;
+				ConstraintLayout.LayoutParams p = new ConstraintLayout.LayoutParams((int)(counterCircleSize * pixelDensity), (int)(counterCircleSize * pixelDensity));
 				if (i == 0)
 				{
 					p.LeftToLeft = ConstraintLayout.LayoutParams.ParentId;
@@ -1051,17 +1158,32 @@ namespace LocationConnection
 				if (i == count - 1)
 				{
 					p.RightToRight = ConstraintLayout.LayoutParams.ParentId;
-					//p.HorizontalChainStyle= ConstraintLayout.LayoutParams.ChainPacked;
 				}
 				p.BottomToBottom = Resource.Id.ProfileImageScroll;
 				p.BottomMargin = (int)(2 * pixelDensity);
 				p.LeftMargin = (int)(1.5 * pixelDensity);
 				p.RightMargin = (int)(1.5 * pixelDensity);
 				v.LayoutParameters = p;
+				*/
+
+				LinearLayout.LayoutParams p = new LinearLayout.LayoutParams((int)(counterCircleSize * pixelDensity), (int)(counterCircleSize * pixelDensity));
+				p.BottomMargin = (int)(2 * pixelDensity);
+				p.LeftMargin = (int)(1.5 * pixelDensity);
+				p.RightMargin = (int)(1.5 * pixelDensity);
+				v.LayoutParameters = p;
+
+				if (i == 0)
+				{
+					v.SetBackgroundResource(counterCircleSelected);
+				}
+				else
+				{
+					v.SetBackgroundResource(counterCircle);
+				}
+
 				v.Alpha = 0.8f;
 				counterCircles.Add(v);
-
-				ProfileImageContainer.AddView(v);
+				CircleContainer.AddView(v);
 			}
 		}
 
@@ -1091,7 +1213,6 @@ namespace LocationConnection
 		{
 			c.CW("LoadPicture " + folder + " " + picture + " " + index + " " + usecache);
 
-
 			ImageView ProfileImage = (ImageView)ProfileImageScroll.GetChildAt(index);
 			if (usecache)
 			{
@@ -1114,12 +1235,22 @@ namespace LocationConnection
 
 				if (im == null)
 				{
+					if (cancelImageLoading || folder != currentID.ToString())
+					{
+						c.CW("LoadPicture cancelling 1");
+						return;
+					}
 					RunOnUiThread(() => {
 						ProfileImage.SetImageResource(Resource.Drawable.noimage_hd);
 					});
 				}
 				else
 				{
+					if (cancelImageLoading || folder != currentID.ToString())
+					{
+						c.CW("LoadPicture cancelling 2");
+						return;
+					}
 					RunOnUiThread(() => {
 						ProfileImage.SetImageBitmap(im);
 					});
@@ -1397,12 +1528,7 @@ namespace LocationConnection
 					else
 					{
 						newIndex = currentPic + 1;
-						
 					}
-					/*if (!rippleRunning)
-					{
-						AnimateRipple(touchCurrentX, touchCurrentY + ProfileImageScroll.GetY(), 0, 0, true);
-					}*/
 				}
 				else //previous
 				{
@@ -1414,10 +1540,6 @@ namespace LocationConnection
 					{
 						newIndex = currentPic - 1;
 					}
-					/*if (!rippleRunning)
-					{
-						AnimateRipple(touchCurrentX, touchCurrentY + ProfileImageScroll.GetY(), 0, 0, false);
-					}*/
 				}
 
 				newPos = PicToPos(newIndex);
@@ -1750,8 +1872,6 @@ namespace LocationConnection
 			ListActivity.viewIndex--;
 			ListActivity.absoluteIndex--;
 
-			CancelTask();
-
 			c.CW("PreviousButton_Click viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " viewProfiles.Count " + ListActivity.viewProfiles.Count + " listProfiles.Count " + ListActivity.listProfiles.Count);
 
 			if (ListActivity.viewIndex >= 0)
@@ -1760,7 +1880,7 @@ namespace LocationConnection
 				displayUser = ListActivity.viewProfiles[ListActivity.viewIndex];
 				mapSet = false;
 				ProfileImageScroll.ScrollX = 0;
-				c.CW("Loading previous user");
+				//c.CW("Loading previous user");
 				LoadUser();
 			}
 			else
@@ -1776,8 +1896,6 @@ namespace LocationConnection
 			ListActivity.viewIndex++;
 			ListActivity.absoluteIndex++;
 
-			CancelTask();
-
 			c.CW("NextButton_Click viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " viewProfiles.Count " + ListActivity.viewProfiles.Count + " listProfiles.Count " + ListActivity.listProfiles.Count);
 
 			if (ListActivity.viewIndex < ListActivity.viewProfiles.Count)
@@ -1786,7 +1904,7 @@ namespace LocationConnection
 				displayUser = ListActivity.viewProfiles[ListActivity.viewIndex];
 				mapSet = false;
 				ProfileImageScroll.ScrollX = 0;
-				c.CW("Loading next user");
+				//c.CW("Loading next user");
 				LoadUser();
 			}
 			else
@@ -1800,7 +1918,7 @@ namespace LocationConnection
 		private void PrevLoadAction()
 		{
 			//c.LogActivity("PrevLoadAction viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " absoluteStartIndex " + ListActivity.absoluteStartIndex + " ResultsFrom " + Session.ResultsFrom + " view count " + ListActivity.viewProfiles.Count);
-			c.CW("PrevLoadAction viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " absoluteStartIndex " + ListActivity.absoluteStartIndex + " ResultsFrom " + Session.ResultsFrom + " viewProfiles.Count " + ListActivity.viewProfiles.Count + " totalResultCount " + ListActivity.totalResultCount);
+			//c.CW("PrevLoadAction viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " absoluteStartIndex " + ListActivity.absoluteStartIndex + " ResultsFrom " + Session.ResultsFrom + " viewProfiles.Count " + ListActivity.viewProfiles.Count + " totalResultCount " + ListActivity.totalResultCount);
 			if (ListActivity.viewIndex == 0 && ListActivity.absoluteFirstIndex > 0)
 			{
 				Session.ResultsFrom = ListActivity.absoluteIndex - Constants.MaxResultCount + 1;
@@ -1821,7 +1939,7 @@ namespace LocationConnection
 		private void NextLoadAction()
 		{
 			//c.LogActivity("NextLoadAction viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " absoluteStartIndex " + ListActivity.absoluteStartIndex + " ResultsFrom " + Session.ResultsFrom + " view count " + ListActivity.viewProfiles.Count);
-			c.CW("NextLoadAction viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " absoluteStartIndex " + ListActivity.absoluteStartIndex + " ResultsFrom " + Session.ResultsFrom + " viewProfiles.Count " + ListActivity.viewProfiles.Count + " totalResultCount " + ListActivity.totalResultCount);
+			//c.CW("NextLoadAction viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " absoluteStartIndex " + ListActivity.absoluteStartIndex + " ResultsFrom " + Session.ResultsFrom + " viewProfiles.Count " + ListActivity.viewProfiles.Count + " totalResultCount " + ListActivity.totalResultCount);
 			if (ListActivity.viewIndex == ListActivity.viewProfiles.Count - 1 && ListActivity.totalResultCount > ListActivity.absoluteIndex + 1) //list will be loaded
 			{
 				Session.ResultsFrom = ListActivity.absoluteIndex + 2;
@@ -1841,8 +1959,6 @@ namespace LocationConnection
 
 		public override void OnBackPressed()
 		{
-			CancelTask();
-
 			if (Session.ListType == "hid")
 			{
 				Session.ResultsFrom = 1;
@@ -1894,8 +2010,6 @@ namespace LocationConnection
 							res.GetString(Resource.String.DialogYes), res.GetString(Resource.String.DialogNo));
 						if (dialogResponse == res.GetString(Resource.String.DialogYes))
 						{
-							CancelTask();
-
 							Intent i = new Intent(this, typeof(ChatOneActivity));
 							i.SetFlags(ActivityFlags.ReorderToFront);
 							StartActivity(i);
@@ -1934,8 +2048,6 @@ namespace LocationConnection
 						Session.CurrentMatch.TargetName = displayUser.Name;
 						Session.CurrentMatch.TargetPicture = displayUser.Pictures[0];
 
-						CancelTask();
-
 						Intent i = new Intent(this, typeof(ChatOneActivity));
 						i.SetFlags(ActivityFlags.ReorderToFront);
 						StartActivity(i);
@@ -1947,8 +2059,6 @@ namespace LocationConnection
 				}
 				else
 				{
-					CancelTask();
-
 					Intent i = new Intent(this, typeof(ChatOneActivity));
 					i.SetFlags(ActivityFlags.ReorderToFront);
 					StartActivity(i);
@@ -2196,11 +2306,6 @@ namespace LocationConnection
 			Math.Cos(Math.PI / 180 * lat1) * Math.Cos(Math.PI / 180 * lat2) * Math.Cos(Math.PI / 180 * long2 - Math.PI / 180 * long1)
 			+ Math.Sin(Math.PI / 180 * lat1) * Math.Sin(Math.PI / 180 * lat2)
 			), 1);
-		}
-
-		private void CancelTask()
-		{
-			cancelImageLoading = true;
 		}
 	}
 }

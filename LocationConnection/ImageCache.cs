@@ -78,6 +78,11 @@ namespace LocationConnection
 
             if (Exists(saveName))
             {
+                if (context is ProfileViewActivity && (((ProfileViewActivity)context).currentID.ToString() != userID || ((ProfileViewActivity)context).cancelImageLoading))
+                {
+                    Console.WriteLine("------------------ ImageCache: not loading saved image");
+                    return;
+                }
                 context.RunOnUiThread(() => {
                     if (imageView is ImageView)
                     {
@@ -95,6 +100,11 @@ namespace LocationConnection
             }
             else
             {
+                if (context is ProfileViewActivity && (((ProfileViewActivity)context).currentID.ToString() != userID || ((ProfileViewActivity)context).cancelImageLoading))
+                {
+                    Console.WriteLine("------------------ ImageCache: not loading loadingimage");
+                    return;
+                }
                 context.RunOnUiThread(() => {
                     if (imageView is ImageView)
                     {
@@ -139,6 +149,12 @@ namespace LocationConnection
                 {
                     Save(saveName, bytes);
                     Bitmap bmp = BitmapFactory.DecodeByteArray(bytes, 0, bytes.Length);
+
+                    if (context is ProfileViewActivity && (((ProfileViewActivity)context).currentID.ToString() != userID || ((ProfileViewActivity)context).cancelImageLoading))
+                    {
+                        Console.WriteLine("------------------- ImageCache: not loading new image");
+                        return;
+                    }
                     context.RunOnUiThread(() =>
                     {
                         if (imageView is ImageView)
@@ -159,6 +175,11 @@ namespace LocationConnection
                 }
                 else
                 {
+                    if (context is ProfileViewActivity && (((ProfileViewActivity)context).currentID.ToString() != userID || ((ProfileViewActivity)context).cancelImageLoading))
+                    {
+                        Console.WriteLine("------------------- ImageCache: not loading noimage");
+                        return;
+                    }
                     context.RunOnUiThread(() =>
                     {
                         if (imageView is ImageView)

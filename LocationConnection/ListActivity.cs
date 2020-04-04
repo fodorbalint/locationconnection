@@ -677,6 +677,11 @@ namespace LocationConnection
 					inAppLocationRate = (int)Settings.InAppLocationRate;
 				}
 
+				if (!(bool)Session.UseLocation || !c.IsLocationEnabled()) //the user might have turned off location while having current location checked
+				{
+					SetDistanceSourceAddress();
+				}
+
 				long unixTimestamp = c.Now();
 
 				//getting location if expired

@@ -263,11 +263,9 @@ namespace LocationConnection
 
 		public override bool OnOptionsItemSelected(IMenuItem item)
 		{
-			int id = item.ItemId;
-
 			if (!(Session.CurrentMatch is null) && !(Session.CurrentMatch.Friend is null)) //if data loaded, whether coming from intent or chat list
 			{
-				switch (id)
+				switch (item.ItemId)
 				{
 					case Resource.Id.MenuLocationUpdates:
 						if (IsUpdatingTo((int)Session.CurrentMatch.TargetID))
@@ -291,6 +289,12 @@ namespace LocationConnection
 						break;
 					case Resource.Id.MenuUnmatch:
 						Unmatch();
+						break;
+					case Resource.Id.MenuReport:
+						Report();
+						break;
+					case Resource.Id.MenuBlock:
+						Block();
 						break;
 
 				}
@@ -721,6 +725,77 @@ namespace LocationConnection
 						}
 					}
 					Session.CurrentMatch = null;
+					OnBackPressed();
+				}
+				else
+				{
+					c.ReportError(responseString);
+				}
+			}
+		}
+
+		private async void Report()
+		{
+			string dialogResponse = await c.DisplayCustomDialog(res.GetString(Resource.String.ConfirmAction), res.GetString(Resource.String.ReportDialogText),
+				res.GetString(Resource.String.DialogYes), res.GetString(Resource.String.DialogNo));
+
+			if (dialogResponse == res.GetString(Resource.String.DialogYes))
+			{
+				string responseString = await c.MakeRequest("action=reportchatone&ID=" + Session.ID + "&SessionID=" + Session.SessionID + "&TargetID=" + Session.CurrentMatch.TargetID + "&MatchID=" + Session.CurrentMatch.MatchID);
+				if (responseString.Substring(0, 2) == "OK")
+				{
+					c.Snack(Resource.String.UserReported, null);
+				}
+				else
+				{
+					c.ReportError(responseString);
+				}
+			}
+		}
+
+		private async void Block()
+		{
+			string dialogResponse = await c.DisplayCustomDialog(res.GetString(Resource.String.ConfirmAction), res.GetString(Resource.String.BlockDialogText),
+				res.GetString(Resource.String.DialogYes), res.GetString(Resource.String.DialogNo));
+
+			if (dialogResponse == res.GetString(Resource.String.DialogYes))
+			{
+				if (IsUpdatingTo((int)Session.CurrentMatch.TargetID))
+				{
+					RemoveUpdatesTo((int)Session.CurrentMatch.TargetID);
+				}
+				if (IsUpdatingFrom((int)Session.CurrentMatch.TargetID))
+				{
+					RemoveUpdatesFrom((int)Session.CurrentMatch.TargetID);
+				}
+
+				long unixTimestamp = c.Now();
+				string responseString = await c.MakeRequest("action=blockchatone&ID=" + Session.ID + "&SessionID=" + Session.SessionID + "&TargetID=" + Session.CurrentMatch.TargetID + "&time=" + unixTimestamp);
+				if (responseString.Substring(0, 2) == "OK")
+				{
+					if (!(ListActivity.listProfiles is null))
+					{
+						for (int i = 0; i < ListActivity.listProfiles.Count; i++)
+						{
+							if (ListActivity.listProfiles[i].ID == Session.CurrentMatch.TargetID)
+							{
+								ListActivity.listProfiles.RemoveAt(i);
+								break;
+							}
+						}
+					}
+					if (!(ListActivity.viewProfiles is null))
+					{
+						for (int i = 0; i < ListActivity.viewProfiles.Count; i++)
+						{
+							if (ListActivity.viewProfiles[i].ID == Session.CurrentMatch.TargetID)
+							{
+								ListActivity.viewProfiles.RemoveAt(i);
+								break;
+							}
+						}
+					}
+
 					OnBackPressed();
 				}
 				else

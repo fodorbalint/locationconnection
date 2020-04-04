@@ -42,31 +42,37 @@
 				android:layout_height="70dp"
 				android:id="@+id/ChatTargetImage" />
             <TextView
-				android:layout_width="wrap_content"
+				android:layout_width="0px"
 				android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintLeft_toRightOf="@+id/ChatTargetImage"
+                app:layout_constraintRight_toRightOf="parent"
                 android:layout_marginTop="4dp"
                 android:layout_marginLeft="10dp"
+                android:ellipsize="end"
                 android:singleLine="true"                    
 				android:textStyle="bold"
                 android:theme="@style/BlackTextMediumNormal"
 				android:id="@+id/TargetName" />
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="0px"
 				android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@+id/TargetName"
                 app:layout_constraintLeft_toRightOf="@+id/ChatTargetImage"
+                app:layout_constraintRight_toRightOf="parent"
                 android:layout_marginLeft="10dp"
+                android:ellipsize="end"
 				android:theme="@style/BlackTextSmallNormal"
                 android:singleLine="true"
 				android:id="@+id/MatchDate" />
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="0px"
 				android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@+id/MatchDate"
                 app:layout_constraintLeft_toRightOf="@+id/ChatTargetImage"
+                app:layout_constraintRight_toRightOf="parent"
                 android:layout_marginLeft="10dp"
+                android:ellipsize="end"
 				android:theme="@style/BlackTextSmallNormal"
                 android:singleLine="true"
 				android:id="@+id/UnmatchDate" />

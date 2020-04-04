@@ -39,18 +39,21 @@
 			android:layout_height="0px"
 			android:layout_weight="1"
 			android:paddingLeft="5.14dp"
+			android:paddingRight="5.14dp"
 			android:gravity="center_vertical" />
 		<LinearLayout
 			android:layout_width="match_parent"
 			android:layout_height="0px"
 			android:layout_weight="1"
 			android:paddingLeft="5.14dp"
+			android:paddingRight="5.14dp"
 			android:gravity="center_vertical" />
 		<LinearLayout
 			android:layout_width="match_parent"
 			android:layout_height="0px"
 			android:layout_weight="1"
 			android:paddingLeft="5.14dp"
+			android:paddingRight="5.14dp"
 			android:gravity="center_vertical" />
 	</LinearLayout>
 </android.support.constraint.ConstraintLayout>

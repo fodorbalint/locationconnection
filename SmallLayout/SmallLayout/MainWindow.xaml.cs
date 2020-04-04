@@ -20,15 +20,13 @@ using System.Windows.Threading;
 
 namespace SmallLayout
 {
-	/// <summary>
-	/// Interaction logic for MainWindow.xaml
-	/// </summary>
+	//map buttons have to be reverted.
 	public partial class MainWindow : Window
 	{
 		List<string> layoutFiles;
 		List<string> drawableFiles;
-		string layoutDir = @"c:\Users\fodor\Documents\GitHub\locationconnection\LocationConnection\Resources\layout\";
-		string drawableDir = @"c:\Users\fodor\Documents\GitHub\locationconnection\LocationConnection\Resources\drawable\";
+		string layoutDir = @"c:\Users\fodor\LocationConnection Android\LocationConnection\Resources\layout\";
+		string drawableDir = @"c:\Users\fodor\LocationConnection Android\LocationConnection\Resources\drawable\";
 		int fileCount;
 		int counter;
 		float mulitplyBy;
@@ -48,7 +46,7 @@ namespace SmallLayout
 			layoutFiles = new List<string>(Directory.GetFiles(layoutDir, @"*_normal.xml"));
 			drawableFiles = new List<string>(Directory.GetFiles(drawableDir, @"*_normal.xml"));
 
-			FileList.ItemsSource=new List<string>(layoutFiles.Concat(drawableFiles));
+			FileList.ItemsSource = new List<string>(layoutFiles.Concat(drawableFiles));
 			fileCount = layoutFiles.Count + drawableFiles.Count;
 			StatusText.Text = fileCount + " files loaded.";
 		}
@@ -82,7 +80,7 @@ namespace SmallLayout
 			int offset = 0;
 
 			StatusText.Text = "Processing " + counter + " / " + fileCount;
-			DoEvents();
+			DoEvents(); //updates layout
 			string text = File.ReadAllText(file);
 			string newFile = file.Replace("_normal", "_small");
 			string newText = text.Replace(@"_normal""", @"_small""");

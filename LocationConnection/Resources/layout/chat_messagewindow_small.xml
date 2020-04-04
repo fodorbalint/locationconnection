@@ -1,12 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingRight="2dp">
+    android:paddingLeft="8.57dp"
+    android:paddingRight="8.57dp"
+    android:id="@+id/MainLayout">
 	<View
 		android:layout_width="0px"
-		android:layout_height="0px"
+		android:layout_height="0dp"
 		android:layout_weight="20"
 		android:id="@+id/SpacerLeft" />
 	<LinearLayout
@@ -18,19 +20,19 @@
 		<TextView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:padding="10dp"
-			android:theme="@style/BlackTextSmallNormal"
+			android:padding="8.57dp"
+			android:theme="@style/BlackTextSmallSmall"
             android:id="@+id/MessageText" />
         <TextView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:padding="3dp"
-            android:theme="@style/GrayTextXSmallNormal"
+			android:padding="2.57dp"
+            android:theme="@style/GrayTextXSmallSmall"
 			android:id="@+id/TimeText" />
 	</LinearLayout>
 	<View
 		android:layout_width="0px"
-		android:layout_height="0px"
+		android:layout_height="0dp"
 		android:layout_weight="20"
 		android:id="@+id/SpacerRight" />
 </LinearLayout>

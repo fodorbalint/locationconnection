@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--For all properties see: http://developer.android.com/guide/topics/resources/menu-resource.html-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="@string/MenuReport" 
+		android:showAsAction="always"
+		android:id="@+id/MenuReport" />
+        
+	<item android:title="@string/MenuBlock" 
+		android:showAsAction="always"
+		android:id="@+id/MenuBlock" />
+</menu>
