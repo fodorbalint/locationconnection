@@ -115,7 +115,7 @@ namespace LocationConnection
 					if (IntentData.authError)
 					{
 						IntentData.authError = false;
-						snack = c.SnackIndef(Resource.String.LoggedOut, null);
+						snack = c.SnackIndef(Resource.String.LoggedOut);
 					}
 					LoginEmail.Text = "";
 					LoginPassword.Text = "";
@@ -180,7 +180,7 @@ namespace LocationConnection
 				}
 				else if (responseString.Substring(0, 6) == "ERROR_")
 				{
-					c.Snack(Resources.GetIdentifier(responseString.Substring(6), "string", PackageName), null);
+					c.Snack(Resources.GetIdentifier(responseString.Substring(6), "string", PackageName));
 				}
 				else
 				{
@@ -190,7 +190,7 @@ namespace LocationConnection
 			}
 			else
 			{
-				c.Snack(checkFormMessage, null);
+				c.Snack(checkFormMessage);
 			}
 		}
 
@@ -263,7 +263,7 @@ namespace LocationConnection
 			}
 			else
 			{
-				c.Snack(checkFormMessage, null);
+				c.Snack(checkFormMessage);
 			}
 		}
 

@@ -21,7 +21,6 @@ using Android.Support.V4.Content;
 using Android.Views;
 using Android.Views.Animations;
 using Android.Widget;
-using FFImageLoading;
 
 namespace LocationConnection
 {
@@ -255,7 +254,7 @@ namespace LocationConnection
 				}
 				else
 				{
-					c.Snack(Resource.String.StorageNotGranted, null);
+					c.Snack(Resource.String.StorageNotGranted);
 				}
 			}
 			else if (requestCode == 2) //Location
@@ -269,7 +268,7 @@ namespace LocationConnection
 				}
 				else
 				{
-					c.Snack(Resource.String.LocationNotGranted, null);
+					c.Snack(Resource.String.LocationNotGranted);
 				}
 			}
 			else
@@ -333,7 +332,7 @@ namespace LocationConnection
 				string imageName = selectedFileStr.Substring(selectedFileStr.LastIndexOf("/") + 1);
 				if (uploadedImages.IndexOf(imageName) != -1)
 				{
-					c.Snack(Resource.String.ImageExists, null);
+					c.Snack(Resource.String.ImageExists);
 					return;
 				}
 				imagesUploading = true;
@@ -539,7 +538,7 @@ namespace LocationConnection
 					}
 					else if (responseString.Substring(0, 6) == "ERROR_")
 					{
-						c.Snack(Resources.GetIdentifier(responseString.Substring(6), "string", PackageName), null);
+						c.Snack(Resources.GetIdentifier(responseString.Substring(6), "string", PackageName));
 					}
 					else
 					{
@@ -555,7 +554,7 @@ namespace LocationConnection
 			}
 			else
 			{
-				c.Snack(checkFormMessage, null);
+				c.Snack(checkFormMessage);
 			}
 		}
 
@@ -657,7 +656,7 @@ namespace LocationConnection
 					if (responseString == "OK")
 					{
 						Session.ActiveAccount = false;
-						c.Snack(Resource.String.Deactivated, null);
+						c.Snack(Resource.String.Deactivated);
 						DeactivateAccount.Text = res.GetString(Resource.String.ActivateAccount);
 					}
 					else
@@ -674,7 +673,7 @@ namespace LocationConnection
 				if (responseString == "OK")
 				{
 					Session.ActiveAccount = true;
-					c.Snack(Resource.String.Activated, null);
+					c.Snack(Resource.String.Activated);
 					DeactivateAccount.Text = res.GetString(Resource.String.DeactivateAccount);
 				}
 				else

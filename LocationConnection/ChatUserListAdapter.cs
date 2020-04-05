@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.Graphics;
@@ -11,7 +11,6 @@ using Android.Runtime;
 using Android.Support.Constraints;
 using Android.Views;
 using Android.Widget;
-using FFImageLoading;
 
 namespace LocationConnection
 {
@@ -19,7 +18,7 @@ namespace LocationConnection
 	{
 		ChatListActivity context;
 		List<MatchItem> items;	
-		//static int getCount;
+		static int getCount;
 
 		public ChatUserListAdapter(ChatListActivity context, List<MatchItem> items)
 		{
@@ -102,16 +101,28 @@ namespace LocationConnection
 						lin.SetBackgroundColor(Color.ParseColor("#809dd7fb"));
 					}
 				}
+				if (Settings.DisplaySize == 1)
+				{
+					t.SetTextAppearance(Resource.Style.TextSmallNormal);
+				}
+				else
+				{
+					t.SetTextAppearance(Resource.Style.TextSmallSmall);
+				}
 				lin.AddView(t);
 			}
 
 			//runs 9, 26, 39 times for 1, 2 or 3 match. Images flicker before they show normally. FFimageLoading is a better choice here. (It was abandoned, because sometimes it says "Image not found"
-			/*getCount++;
+			getCount++;
 			context.c.CW("GetView loading cache " + getCount);
 			ImageCache im = new ImageCache(context);
-			im.LoadImage(Image, items[position].TargetID.ToString(), items[position].TargetPicture, false);*/
+			//Task.Run(() => { //images flickers for a moment before loading
+				im.LoadImage(Image, items[position].TargetID.ToString(), items[position].TargetPicture, false);
+			//});
 
-			string url;
+			//Requires Xamarin.FFImageLoading
+
+			/*string url;
 			if (Constants.isTestDB)
 			{
 				url = Constants.HostName + Constants.UploadFolderTest + "/" + items[position].TargetID + "/" + Constants.SmallImageSize + "/" + items[position].TargetPicture;
@@ -123,7 +134,7 @@ namespace LocationConnection
 			
 			ImageService im = new ImageService();
 			im.LoadUrl(url).LoadingPlaceholder(Constants.loadingImage, FFImageLoading.Work.ImageSource.CompiledResource).ErrorPlaceholder(Constants.noImage, FFImageLoading.Work.ImageSource.CompiledResource).Into(Image);
-
+			*/
 			return view;
 		}
 	}

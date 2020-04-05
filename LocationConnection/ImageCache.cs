@@ -16,17 +16,15 @@ namespace LocationConnection
 {
     public class ImageCache
     {
-        Activity context;
-        string cacheDir;
+        BaseActivity context;
+        static List<string> imagesInProgress = new List<string>();
 
-        public ImageCache(Activity context)
+        public ImageCache(BaseActivity context)
         {
             this.context = context;
         }
 
         public Bitmap LoadBitmap(string userID, string picture) { //used for the map only
-
-            cacheDir = context.CacheDir.AbsolutePath;
 
             string saveName = userID + "_" + Constants.SmallImageSize.ToString() + "_" + picture;
 
@@ -61,8 +59,6 @@ namespace LocationConnection
 
         public void LoadImage(ImageView imageView, string userID, string picture, bool isLarge = false, bool temp = false)
         {
-            cacheDir = (isLarge) ? CommonMethods.largeCacheFolder : context.CacheDir.AbsolutePath; //large images are deleted during activity change from the default cache folder. Small images are deleted upon app restart.
-
             string subFolder;
 
             if (isLarge)
@@ -76,11 +72,12 @@ namespace LocationConnection
 
             string saveName = userID + "_" + subFolder + "_" + picture;
 
+            context.c.CW("Cache imagesInprogress count " + imagesInProgress.Count);
+
             if (Exists(saveName))
             {
                 if (context is ProfileViewActivity && (((ProfileViewActivity)context).currentID.ToString() != userID || ((ProfileViewActivity)context).cancelImageLoading))
                 {
-                    Console.WriteLine("------------------ ImageCache: not loading saved image");
                     return;
                 }
                 context.RunOnUiThread(() => {
@@ -102,9 +99,9 @@ namespace LocationConnection
             {
                 if (context is ProfileViewActivity && (((ProfileViewActivity)context).currentID.ToString() != userID || ((ProfileViewActivity)context).cancelImageLoading))
                 {
-                    Console.WriteLine("------------------ ImageCache: not loading loadingimage");
                     return;
                 }
+
                 context.RunOnUiThread(() => {
                     if (imageView is ImageView)
                     {
@@ -144,7 +141,17 @@ namespace LocationConnection
                     }
                 }
 
+                if (imagesInProgress.IndexOf(saveName) != -1)
+                {
+                    context.c.CW("Cache cancelled loading " + saveName);
+                    return;
+                }
+                imagesInProgress.Add(saveName);
+
                 byte[] bytes = CommonMethods.GetImageDataFromUrl(url);
+
+                imagesInProgress.Remove(saveName);
+
                 if (bytes != null)
                 {
                     Save(saveName, bytes);
@@ -152,7 +159,7 @@ namespace LocationConnection
 
                     if (context is ProfileViewActivity && (((ProfileViewActivity)context).currentID.ToString() != userID || ((ProfileViewActivity)context).cancelImageLoading))
                     {
-                        Console.WriteLine("------------------- ImageCache: not loading new image");
+                        context.c.CW("Cache not loading new image");
                         return;
                     }
                     context.RunOnUiThread(() =>
@@ -177,7 +184,7 @@ namespace LocationConnection
                 {
                     if (context is ProfileViewActivity && (((ProfileViewActivity)context).currentID.ToString() != userID || ((ProfileViewActivity)context).cancelImageLoading))
                     {
-                        Console.WriteLine("------------------- ImageCache: not loading noimage");
+                        context.c.CW("Cache not loading noimage");
                         return;
                     }
                     context.RunOnUiThread(() =>
@@ -211,19 +218,19 @@ namespace LocationConnection
         private void Save(string imageName, byte[] data)
         {
             
-            string fileName = System.IO.Path.Combine(cacheDir, imageName);
+            string fileName = System.IO.Path.Combine(CommonMethods.cacheFolder, imageName);
             try
             {
                 using FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate);
                 fs.Write(data, 0, data.Length);
-                //Console.WriteLine("----- cache Saved to: " + fileName + " " + File.Exists(fileName));
+                context.c.CW("Cache saving " + fileName);
             }
             catch (Exception ex)
             {
                 try
                 {
-                    System.IO.File.AppendAllLines(CommonMethods.logFile, new string[] { DateTime.UtcNow.ToString(@"yyyy-MM-dd HH\:mm\:ss.fff") + " Error saving image: " + ex.Message });
-                    Console.WriteLine("----- Error saving: " + ex.Message);
+                    context.c.LogActivity(" Error saving image: " + ex.Message);
+                    context.c.CW("Error saving image: " + ex.Message);
                 }
                 catch
                 {
@@ -233,14 +240,15 @@ namespace LocationConnection
 
         private Bitmap Load(string imageName)
         {
-            string fileName = System.IO.Path.Combine(cacheDir, imageName);
+            string fileName = System.IO.Path.Combine(CommonMethods.cacheFolder, imageName);
+            context.c.CW("Cache loading " + fileName);
             return BitmapFactory.DecodeFile(fileName);
         }
 
         public bool Exists(string imageName)
         {
-            string fileName = System.IO.Path.Combine(cacheDir, imageName);
-            //Console.WriteLine("----- cache Exists? " + fileName + " " + File.Exists(fileName));
+            string fileName = System.IO.Path.Combine(CommonMethods.cacheFolder, imageName);
+            //context.c.CW("----- cache Exists? " + fileName + " " + File.Exists(fileName));
             return File.Exists(fileName);
         }
     }

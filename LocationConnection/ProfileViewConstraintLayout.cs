@@ -38,7 +38,7 @@ namespace LocationConnection
 		{
 			//newConfig.ScreenWidthDp gives 2557 instead of 2560 and 1598 instead of 1600
 
-			context.GetScreenMetrics();
+			context.GetScreenMetrics(false);
 			int pic = context.PosToPic(context.ProfileImageScroll.ScrollX);
 			int newScrollX = pic * BaseActivity.screenWidth;
 

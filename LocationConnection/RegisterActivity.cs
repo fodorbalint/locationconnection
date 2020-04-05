@@ -171,9 +171,10 @@ namespace LocationConnection
 			try
 			{
 				base.OnResume();
+
 				if (!ListActivity.initialized) { return; }
 
-				GetScreenMetrics();
+				GetScreenMetrics(false);
 				ImagesUploaded.SetTileSize();
 
 				MainLayout.RequestFocus();
@@ -331,7 +332,7 @@ namespace LocationConnection
 				}
 				else
 				{
-					c.Snack(Resource.String.StorageNotGranted, null);
+					c.Snack(Resource.String.StorageNotGranted);
 				}
 			}
 			else if (requestCode == 2) //Location
@@ -345,7 +346,7 @@ namespace LocationConnection
 				}
 				else
 				{
-					c.Snack(Resource.String.LocationNotGranted, null);
+					c.Snack(Resource.String.LocationNotGranted);
 				}
 			}
 			else
@@ -442,7 +443,7 @@ namespace LocationConnection
 				string imageName = selectedFileStr.Substring(selectedFileStr.LastIndexOf("/") + 1);
 				if (uploadedImages.IndexOf(imageName) != -1)
 				{
-					c.Snack(Resource.String.ImageExists, null);
+					c.Snack(Resource.String.ImageExists);
 					return;
 				}
 				imagesUploading = true;
@@ -534,7 +535,7 @@ namespace LocationConnection
 				}
 				else if (responseString.Substring(0, 6) == "ERROR_")
 				{
-					c.Snack(Resources.GetIdentifier(responseString.Substring(6), "string", PackageName), null);
+					c.Snack(Resources.GetIdentifier(responseString.Substring(6), "string", PackageName));
 				}
 				else
                 {
@@ -544,7 +545,7 @@ namespace LocationConnection
 			}
             else
             {
-                c.Snack(checkFormMessage, null);
+                c.Snack(checkFormMessage);
             }
         }
 

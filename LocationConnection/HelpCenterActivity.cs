@@ -147,7 +147,7 @@ namespace LocationConnection
 					MessageSend.Visibility = ViewStates.Gone;
 					QuestionsScroll.Visibility = ViewStates.Visible;
 					MainLayout.RequestFocus();
-					c.Snack(Resource.String.HelpCenterSent, null);
+					c.Snack(Resource.String.HelpCenterSent);
 				}
 				else
 				{

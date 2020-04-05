@@ -14,7 +14,6 @@ using Android.Runtime;
 using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
-using FFImageLoading;
 using Android.Gms.Common;
 using Firebase.Messaging;
 using Firebase.Iid;
@@ -301,7 +300,7 @@ namespace LocationConnection
 			}
 			else
 			{
-				c.Snack(Resource.String.ChatOneDataLoading, null);
+				c.Snack(Resource.String.ChatOneDataLoading);
 			}
 
 			return base.OnOptionsItemSelected(item);
@@ -312,7 +311,10 @@ namespace LocationConnection
 			TargetName.Text = Session.CurrentMatch.TargetName;
 
 			ImageCache im = new ImageCache(this);
-			im.LoadImage(ChatTargetImage, Session.CurrentMatch.TargetID.ToString(), Session.CurrentMatch.TargetPicture, false);
+			Task.Run(() => {
+				im.LoadImage(ChatTargetImage, Session.CurrentMatch.TargetID.ToString(), Session.CurrentMatch.TargetPicture, false);
+			});
+			
 		}
 
 		private void LoadMessages(string responseString, bool merge)
@@ -556,7 +558,7 @@ namespace LocationConnection
 				}
 				else if (responseString.Substring(0, 6) == "ERROR_")
 				{
-					c.SnackStr(res.GetString(Resources.GetIdentifier(responseString.Substring(6), "string", PackageName)).Replace("[name]", Session.CurrentMatch.TargetName), null);
+					c.SnackStr(res.GetString(Resources.GetIdentifier(responseString.Substring(6), "string", PackageName)).Replace("[name]", Session.CurrentMatch.TargetName));
 				}
 				else
 				{
@@ -608,7 +610,7 @@ namespace LocationConnection
 			{
 				if (Session.LocationShare < 1)
 				{
-					c.SnackStr(res.GetString(Resource.String.EnableLocationLevelFriend).Replace("[name]", Session.CurrentMatch.TargetName),2);
+					c.SnackStr(res.GetString(Resource.String.EnableLocationLevelFriend).Replace("[name]", Session.CurrentMatch.TargetName));
 					return;
 				}
 			}
@@ -617,7 +619,7 @@ namespace LocationConnection
 				if (Session.LocationShare < 2)
 				{
 					c.SnackStr(res.GetString(Resource.String.EnableLocationLevelMatch).Replace("[name]", Session.CurrentMatch.TargetName)
-						.Replace("[sex]", (Session.CurrentMatch.Sex == 0) ? res.GetString(Resource.String.SexHer) : res.GetString(Resource.String.SexHim)), 3);
+						.Replace("[sex]", (Session.CurrentMatch.Sex == 0) ? res.GetString(Resource.String.SexHer) : res.GetString(Resource.String.SexHim)));
 					return;
 				}
 			}
@@ -626,14 +628,14 @@ namespace LocationConnection
 
 			StopLocationUpdates();
 			StartLocationUpdates((int)Session.InAppLocationRate * 1000);
-			c.Snack(Resource.String.LocationUpdatesToStart, null);
+			c.Snack(Resource.String.LocationUpdatesToStart);
 		}
 
 		private void StopRealTimeLocation()
 		{
 			RemoveUpdatesTo((int)Session.CurrentMatch.TargetID);
 			MenuLocationUpdates.SetTitle(Resource.String.MenuStartLocationUpdates);
-			c.Snack(Resource.String.LocationUpdatesToEnd, null);
+			c.Snack(Resource.String.LocationUpdatesToEnd);
 			EndLocationShare((int)Session.CurrentMatch.TargetID);
 		}
 
@@ -647,7 +649,7 @@ namespace LocationConnection
 				if (responseString == "OK")
 				{
 					Session.CurrentMatch.Friend = true;
-					c.Snack(Resource.String.FriendAdded, null);
+					c.Snack(Resource.String.FriendAdded);
 					MenuFriend.SetTitle(Resource.String.MenuRemoveFriend);
 				}
 				else
@@ -662,7 +664,7 @@ namespace LocationConnection
 				if (responseString == "OK")
 				{
 					Session.CurrentMatch.Friend = false;
-					c.Snack(Resource.String.FriendRemoved, null);
+					c.Snack(Resource.String.FriendRemoved);
 					MenuFriend.SetTitle(Resource.String.MenuAddFriend);
 				}
 				else
@@ -744,7 +746,7 @@ namespace LocationConnection
 				string responseString = await c.MakeRequest("action=reportchatone&ID=" + Session.ID + "&SessionID=" + Session.SessionID + "&TargetID=" + Session.CurrentMatch.TargetID + "&MatchID=" + Session.CurrentMatch.MatchID);
 				if (responseString.Substring(0, 2) == "OK")
 				{
-					c.Snack(Resource.String.UserReported, null);
+					c.Snack(Resource.String.UserReported);
 				}
 				else
 				{

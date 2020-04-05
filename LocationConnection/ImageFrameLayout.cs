@@ -18,7 +18,6 @@ using Android.Util;
 using Android.Views;
 using Android.Views.Animations;
 using Android.Widget;
-using FFImageLoading;
 
 namespace LocationConnection
 {
@@ -74,7 +73,7 @@ namespace LocationConnection
 
 		protected override void OnConfigurationChanged(Configuration newConfig)
 		{
-			context.GetScreenMetrics();
+			context.GetScreenMetrics(false);
 			SetTileSize();
 			Reposition();
 			RefitImagesContainer();
@@ -116,14 +115,17 @@ namespace LocationConnection
 			DeleteUploadedImage.Click += DeleteUploadedImage_Click;
 
 			ImageCache im = new ImageCache(context);
-			if (context is ProfileEditActivity)
-			{
-				im.LoadImage(UploadedImage, Session.ID.ToString(), picture);
-			}
-			else
-			{
-				im.LoadImage(UploadedImage, RegisterActivity.regsessionid, picture, false, true);
-			}
+
+			Task.Run(() => {
+				if (context is ProfileEditActivity)
+				{
+					im.LoadImage(UploadedImage, Session.ID.ToString(), picture);
+				}
+				else
+				{
+					im.LoadImage(UploadedImage, RegisterActivity.regsessionid, picture, false, true);
+				}
+			});			
 
 			LayoutParams p0 = new LayoutParams((int)tileSize, (int)tileSize);
 			UploadedImageContainer.LayoutParameters = p0;
@@ -148,12 +150,12 @@ namespace LocationConnection
 
 			if (context.imagesUploading)
 			{
-				context.c.Snack(Resource.String.ImagesUploading, null);
+				context.c.Snack(Resource.String.ImagesUploading);
 				return;
 			}
 			else if (context.imagesDeleting)
 			{
-				context.c.Snack(Resource.String.ImagesDeleting, null);
+				context.c.Snack(Resource.String.ImagesDeleting);
 				return;
 			}
 
@@ -161,7 +163,7 @@ namespace LocationConnection
 			{
 				if (context.uploadedImages.Count == 1)
 				{
-					context.c.Snack(Resource.String.LastImageToDelete, null);
+					context.c.Snack(Resource.String.LastImageToDelete);
 					return;
 				}
 			}

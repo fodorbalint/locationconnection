@@ -124,7 +124,7 @@ namespace LocationConnection
 				{
 					RunOnUiThread(() =>
 					{
-						c.SnackStr(Session.SnackMessage.Replace("[name]", Session.CurrentMatch.TargetName), null);
+						c.SnackStr(Session.SnackMessage.Replace("[name]", Session.CurrentMatch.TargetName));
 					});					
 					Session.SnackMessage = null;
 				}
@@ -132,7 +132,7 @@ namespace LocationConnection
 				{
 					RunOnUiThread(() =>
 					{
-						c.SnackStr(Session.SnackMessage, null);
+						c.SnackStr(Session.SnackMessage);
 					});				
 					Session.SnackMessage = null;
 				}
@@ -152,7 +152,7 @@ namespace LocationConnection
 			c.LogActivity(LocalClassName.Split(".")[1] + " OnPause");
 		}
 
-		public void GetScreenMetrics()
+		public void GetScreenMetrics(bool setDisplaySize)
 		{
 			Android.Util.DisplayMetrics metrics = new Android.Util.DisplayMetrics();
 			WindowManager.DefaultDisplay.GetMetrics(metrics);
@@ -164,13 +164,16 @@ namespace LocationConnection
 			XDpPerIn = metrics.Xdpi / pixelDensity;
 			DpWidth = screenWidth / pixelDensity;
 
-			if (DpWidth >= 360)
+			if (setDisplaySize)
 			{
-				Settings.DisplaySize = 1;
-			}
-			else
-			{
-				Settings.DisplaySize = 0;
+				if (DpWidth >= 360)
+				{
+					Settings.DisplaySize = 1;
+				}
+				else
+				{
+					Settings.DisplaySize = 0;
+				}
 			}
 
 			c.LogActivity(" screenWidth " + screenWidth + " screenHeight " + screenHeight + " pixelDensity " + pixelDensity

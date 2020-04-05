@@ -53,7 +53,6 @@ using Android.Views;
 using Android.Views.Animations;
 using Android.Views.InputMethods;
 using Android.Widget;
-using FFImageLoading;
 using Xamarin.Essentials;
 using static Android.Gms.Maps.GoogleMap;
 
@@ -162,7 +161,7 @@ namespace LocationConnection
 
 				thisInstance = this;
 				initialized = true;
-				GetScreenMetrics();
+				GetScreenMetrics(true);
 				c.LoadSettings(false); //overwrites DisplaySize
 
 				if (File.Exists(c.errorFile))
@@ -180,13 +179,13 @@ namespace LocationConnection
 				IsPlayServicesAvailable();
 				CreateNotificationChannel();
 
-				c.CW(" Directory.Exists(CommonMethods.largeCacheFolder) " + Directory.Exists(CommonMethods.largeCacheFolder));
-				if (!Directory.Exists(CommonMethods.largeCacheFolder)) {
-					Directory.CreateDirectory(CommonMethods.largeCacheFolder);
+				c.CW(" Directory.Exists(CommonMethods.cacheFolder) " + Directory.Exists(CommonMethods.cacheFolder));
+				if (!Directory.Exists(CommonMethods.cacheFolder)) {
+					Directory.CreateDirectory(CommonMethods.cacheFolder);
 				}
 				else
 				{
-					CommonMethods.EmptyFolder(CommonMethods.largeCacheFolder);
+					CommonMethods.EmptyFolder(CommonMethods.cacheFolder);
 				}
 
 				if (!c.IsLoggedIn() && File.Exists(c.loginSessionFile))
@@ -284,7 +283,7 @@ namespace LocationConnection
 								else
 								{
 									RunOnUiThread(() => {
-										snack = c.SnackIndef(Resource.String.LocationDisabledButUsingLocation, 3);
+										snack = c.SnackIndef(Resource.String.LocationDisabledButUsingLocation);
 									});									
 								}
 							}
@@ -321,7 +320,7 @@ namespace LocationConnection
 										SetResultStatus();
 									}
 									string error = responseString.Substring(6);
-									snack = c.SnackIndefStr(res.GetString(res.GetIdentifier(error, "string", PackageName)), null);
+									snack = c.SnackIndefStr(res.GetString(res.GetIdentifier(error, "string", PackageName)));
 									if (error == "LoginFailed") // this is the only error we can get
 									{
 										File.Delete(c.loginSessionFile);
@@ -660,7 +659,7 @@ namespace LocationConnection
 				{
 					if ((bool)Session.UseLocation && !c.IsLocationEnabled())
 					{
-						snack = c.SnackIndef(Resource.String.LocationDisabledButUsingLocation, 3);
+						snack = c.SnackIndef(Resource.String.LocationDisabledButUsingLocation);
 					}
 					inAppLocationRate = (int)Session.InAppLocationRate;
 				}
@@ -787,10 +786,12 @@ namespace LocationConnection
 		{
 			StatusImage.Visibility = ViewStates.Visible;
 			StatusText.Visibility = ViewStates.Gone;
-			string url;
 
 			ImageCache im = new ImageCache(this);
-			im.LoadImage(StatusImage, Session.ID.ToString(), Session.Pictures[0]);
+			
+			Task.Run(() => {
+				im.LoadImage(StatusImage, Session.ID.ToString(), Session.Pictures[0]);
+			});
 			
 			MenuChatList.Visibility = ViewStates.Visible;
 			MenuChatListBg.Visibility = ViewStates.Visible;
@@ -1124,7 +1125,7 @@ namespace LocationConnection
 			if (backCounter == 0)
 			{
 				backCounter++;
-				c.Snack(Resource.String.BackPressedInfo, null);
+				c.Snack(Resource.String.BackPressedInfo);
 			}
 			else
 			{
@@ -1252,7 +1253,7 @@ namespace LocationConnection
 					mapToSet = false;
 					Session.UseLocation = false;
 					SetDistanceSourceAddress();
-					c.Snack(Resource.String.LocationNotGranted, null); //in the dialog the user choose to turn on location, but now denied it. Message needs to be shown.
+					c.Snack(Resource.String.LocationNotGranted); //in the dialog the user choose to turn on location, but now denied it. Message needs to be shown.
 				}
 				//activity will resume, we need to refresh the list.
 				Session.LastDataRefresh = null;
@@ -1330,7 +1331,7 @@ namespace LocationConnection
 					{
 						if (c.snackPermanentText != Resource.String.LocationTimeout) //prevents duplicate apperance
 						{
-							c.SnackIndef(Resource.String.LocationTimeout, 4);
+							c.SnackIndef(Resource.String.LocationTimeout);
 						}
 					});
 				}
@@ -1798,11 +1799,11 @@ namespace LocationConnection
 					}
 					else if (responseString == "ZERO_RESULTS")
 					{
-						c.Snack(Resource.String.AddressNoResult, null);
+						c.Snack(Resource.String.AddressNoResult);
 					}
 					else if (responseString == "OVER_QUERY_LIMIT")
 					{
-						c.SnackIndef(Resource.String.OverQueryLimit, 5);
+						c.SnackIndef(Resource.String.OverQueryLimit);
 					}
 					else //Network error, authorization error or other geocoding status code
 					{
@@ -2289,7 +2290,7 @@ namespace LocationConnection
 						SetResultStatus();
 						c.LogActivity("Exiting loadlist GeoFilter " + Session.GeoFilter + " GeoSourceOther " + Session.GeoSourceOther
 							+ " own location " + c.IsOwnLocationAvailable() + " other location " + c.IsOtherLocationAvailable());
-						snack = c.SnackIndef(Resource.String.GeoFilterNoLocation, 3);
+						snack = c.SnackIndef(Resource.String.GeoFilterNoLocation);
 						if (ReloadPulldown.Alpha == 1)
 						{
 							HidePulldown();
@@ -2483,6 +2484,7 @@ namespace LocationConnection
 			}
 			addResultsBefore = false;
 			addResultsAfter = false;
+			c.CW("LoadResults end");
 			c.LogActivity("LoadResults end");
 		}
 
@@ -2572,7 +2574,7 @@ namespace LocationConnection
 			{
 				RunOnUiThread(() =>
 				{
-					c.Snack(Resource.String.LocationNotInUse, null);
+					c.Snack(Resource.String.LocationNotInUse);
 					StopLoaderAnim();
 				});
 				return;
@@ -2599,7 +2601,7 @@ namespace LocationConnection
 			{
 				RunOnUiThread(() =>
 				{
-					c.Snack(Resource.String.NoLocationSet, null);
+					c.Snack(Resource.String.NoLocationSet);
 					mapSetting = false;
 					SetResultStatus();
 					StopLoaderAnim();

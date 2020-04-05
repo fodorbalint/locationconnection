@@ -124,7 +124,7 @@ namespace LocationConnection
 				}
 				else
 				{
-					c.Snack(Resource.String.NoLocationRecords, null);
+					c.Snack(Resource.String.NoLocationRecords);
 				}
 
 				adapter = new LocationListAdapter(this, locationList);

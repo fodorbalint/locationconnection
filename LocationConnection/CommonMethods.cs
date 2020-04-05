@@ -41,7 +41,7 @@ namespace LocationConnection
 		private string settingsFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "settings.txt");
 		private string defaultSettingsFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "defaultsettings.txt");
 		public string loginSessionFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "loginsession.txt");
-		public static string largeCacheFolder = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "largeImages");
+		public static string cacheFolder = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "images"); //default cache dir is unreliable, images can be deleted in short time, especially the large images.
 
 		public View view;
         Activity context;
@@ -87,7 +87,7 @@ namespace LocationConnection
 				if (File.Exists(settingsFile))
 				{
 					Type type = typeof(Settings);
-					string[] settingLines = (defaultSettings) ? File.ReadAllLines(defaultSettingsFile) : File.ReadAllLines(settingsFile);
+					string[] settingLines = File.ReadAllLines(settingsFile);
 					foreach (string line in settingLines)
 					{
 						if (line != "" && line[0] != '\'')
@@ -97,6 +97,7 @@ namespace LocationConnection
 							string value = line.Substring(pos + 1).Trim();
 							if (value != "")
 							{
+								//CW("LoadSettings from file " + key + " --- " + value);
 								FieldInfo fieldInfo = type.GetField(key);
 								if (!(fieldInfo is null)) //if that setting still exists in this version of the app
 								{
@@ -120,13 +121,14 @@ namespace LocationConnection
 						FieldInfo defField = typeSDef.GetField(field.Name);
 						if (!(defField is null)) //other address data has no default.
 						{
+							//CW("LoadSettings got from default " + field.Name + " --- " + defField.GetValue(null));
 							field.SetValue(null, defField.GetValue(null));
 						}
 					}
 					str += System.Environment.NewLine;
 				}
 			}
-			else //load default settings
+			else //load default settings, not used
 			{
 				Type typeS = typeof(Settings);
 				Type typeSDef = typeof(SettingsDefault);
@@ -550,21 +552,18 @@ namespace LocationConnection
 
 
 
-		public void Snack(int messageResId, int? maxLines)
+		public void Snack(int messageResId)
 		{
 			Snackbar snack = Snackbar.Make(view, messageResId, Snackbar.LengthLong);
 
 			View snackView = snack.View;
 			TextView t = snackView.FindViewById<TextView>(Resource.Id.snackbar_text);
 			t.SetTextAppearance(textSmall);
-			if (!(maxLines is null))
-			{
-				t.SetMaxLines(5);
-			}
+			t.SetMaxLines(5);
 			snack.Show();
 		}
 
-		public void SnackStr(string message, int? maxLines)
+		public void SnackStr(string message)
 		{
 			//Was used when the global text color was set to black. Not needed anymore, just here for future reference.
 			/*SpannableStringBuilder sbb = new SpannableStringBuilder();
@@ -576,10 +575,7 @@ namespace LocationConnection
 			View snackView = snack.View;
 			TextView t = snackView.FindViewById<TextView>(Resource.Id.snackbar_text);
 			t.SetTextAppearance(textSmall);
-			if (!(maxLines is null))
-			{
-				t.SetMaxLines(5);
-			}
+			t.SetMaxLines(5);
 			snack.Show();
 		}
 
@@ -593,34 +589,38 @@ namespace LocationConnection
 			snack.Show();
 		}
 
-		public Snackbar SnackIndef(int messageResId, int? maxLines) //maximum lines are 5.
+		public Snackbar SnackIndef(int messageResId) //maximum lines are 5.
 		{
 			Snackbar snack = Snackbar.Make(view, messageResId, Snackbar.LengthIndefinite).SetAction("OK", new Action<View>(delegate (View obj) { })).SetActionTextColor(new Color(ContextCompat.GetColor(context, Resource.Color.colorAccentLight)));
 
 			View snackView = snack.View;
 			TextView t = snackView.FindViewById<TextView>(Resource.Id.snackbar_text);
 			t.SetTextAppearance(textSmall);
-			if (!(maxLines is null))
-			{
-				t.SetMaxLines(5);
-			}
+			t.SetMaxLines(5);
 			snack.Show();
 			snackPermanentText = messageResId;
 			return snack;
 		}
 
-		public Snackbar SnackIndefStr(string message, int? maxLines)
+		public Snackbar SnackIndefStr(string message)
 		{
 			Snackbar snack = Snackbar.Make(view, message, Snackbar.LengthIndefinite).SetAction("OK", new Action<View>(delegate (View obj) { })).SetActionTextColor(new Color(ContextCompat.GetColor(context, Resource.Color.colorAccentLight)));
 			View snackView = snack.View;
 			TextView t = snackView.FindViewById<TextView>(Resource.Id.snackbar_text);
 			t.SetTextAppearance(textSmall);
-			if (!(maxLines is null))
-			{
-				t.SetMaxLines(5);
-			}
+			t.SetMaxLines(5);
 			snack.Show();
 			return snack;
+		}
+
+		public void SnackIndefAction(string message, Action<View> action) //used in RegisterCommonMethods
+		{
+			Snackbar snack = Snackbar.Make(view, message, Snackbar.LengthIndefinite).SetAction("OK", action).SetActionTextColor(new Color(ContextCompat.GetColor(context, Resource.Color.colorAccentLight)));
+
+			View snackView = snack.View;
+			TextView t = snackView.FindViewById<TextView>(Resource.Id.snackbar_text);
+			t.SetTextAppearance(textSmall);
+			snack.Show();
 		}
 
 		public Task<string> DisplayCustomDialog(string dialogTitle, string dialogMessage, string dialogPositiveBtnLabel, string dialogNegativeBtnLabel)
@@ -808,11 +808,11 @@ namespace LocationConnection
 			}
 			else if (error == "NoNetwork")
 			{
-				snack = SnackIndef(Resource.String.NoNetwork, null);
+				snack = SnackIndef(Resource.String.NoNetwork);
 			}
 			else if (error == "NetworkTimeout")
 			{
-				snack = SnackIndef(Resource.String.NetworkTimeout, null);
+				snack = SnackIndef(Resource.String.NetworkTimeout);
 			}
 			else {
 				string url = "action=reporterror&ID=" + Session.ID + "&SessionID=" + Session.SessionID;

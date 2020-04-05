@@ -8,7 +8,7 @@
 	</style>
 
     <style name="TextSmallNormal">
-		<item name="android:textSize">12dp</item>
+		<item name="android:textSize">14dp</item>
 	</style>
 	<style name="BlackTextXSmallNormal">
 		<item name="android:textColor">@android:color/black</item>

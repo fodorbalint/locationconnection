@@ -11,7 +11,6 @@ using Android.Runtime;
 using Android.Support.Constraints;
 using Android.Views;
 using Android.Widget;
-using FFImageLoading;
 
 namespace LocationConnection
 {

@@ -153,7 +153,7 @@ namespace LocationConnection
 							title = intent.GetStringExtra("title");
 							if (context is ChatOneActivity && Session.CurrentMatch.TargetID == senderID)
 							{
-								((BaseActivity)context).c.SnackStr(title, null);
+								((BaseActivity)context).c.SnackStr(title);
 							}
 							else if (context is ChatOneActivity)
 							{
@@ -205,7 +205,7 @@ namespace LocationConnection
 							title = intent.GetStringExtra("title");
 							if (context is ChatOneActivity && Session.CurrentMatch.TargetID == senderID)
 							{
-								((BaseActivity)context).c.SnackStr(title, null);
+								((BaseActivity)context).c.SnackStr(title);
 							}
 							else if (context is ChatOneActivity)
 							{
@@ -305,7 +305,7 @@ namespace LocationConnection
 							((BaseActivity)context).RemoveUpdatesFrom(senderID);
 
 							text = senderName + " " + context.Resources.GetString(Resource.String.LocationUpdatesFromEnd);
-							((BaseActivity)context).c.SnackStr(text, null);
+							((BaseActivity)context).c.SnackStr(text);
 						}
 						break;
 				}

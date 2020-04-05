@@ -39,12 +39,12 @@ namespace LocationConnection
 			if (context.Username.Text.Trim() == "")
 			{
 				context.Username.RequestFocus();
-				context.c.Snack(Resource.String.UsernameEmpty, null);
+				context.c.Snack(Resource.String.UsernameEmpty);
 				return;
 			}
 			if (context.Username.Text.Trim() == Session.Username)
 			{
-				context.c.Snack(Resource.String.UsernameSame, null);
+				context.c.Snack(Resource.String.UsernameSame);
 				return;
 			}
 
@@ -53,11 +53,11 @@ namespace LocationConnection
 			string responseString = await context.c.MakeRequest("action=usercheck&Username=" + context.Username.Text.Trim());
 			if (responseString == "OK")
 			{
-				context.c.Snack(Resource.String.UsernameAvailable, null);
+				context.c.Snack(Resource.String.UsernameAvailable);
 			}
 			else if (responseString.Substring(0, 6) == "ERROR_")
 			{
-				context.c.Snack(context.Resources.GetIdentifier(responseString.Substring(6), "string", context.PackageName), null);
+				context.c.Snack(context.Resources.GetIdentifier(responseString.Substring(6), "string", context.PackageName));
 			}
 			else
 			{
@@ -81,8 +81,8 @@ namespace LocationConnection
 						if (ActivityCompat.ShouldShowRequestPermissionRationale(context, Manifest.Permission.ReadExternalStorage)) //shows when the user has once denied the permission, and now requesting it again.
 						{
 							var requiredPermissions = new String[] { Manifest.Permission.ReadExternalStorage };
-							Snackbar.Make(view, Resource.String.StorageRationale, Snackbar.LengthIndefinite)
-								.SetAction("OK", new Action<View>(delegate (View obj) { ActivityCompat.RequestPermissions(context, requiredPermissions, 1); })).Show();
+
+							context.c.SnackIndefAction(context.res.GetString(Resource.String.StorageRationale), new Action<View>(delegate (View obj) { ActivityCompat.RequestPermissions(context, requiredPermissions, 1); }));
 						}
 						else
 						{
@@ -98,17 +98,17 @@ namespace LocationConnection
 				{
 					if (context.imagesUploading)
 					{
-						context.c.Snack(Resource.String.ImagesUploading, null);
+						context.c.Snack(Resource.String.ImagesUploading);
 					}
 					else
 					{
-						context.c.Snack(Resource.String.ImagesDeleting, null);
+						context.c.Snack(Resource.String.ImagesDeleting);
 					}
 				}
 			}
 			else
 			{
-				context.c.SnackStr(context.res.GetString(Resource.String.MaxNumImages) + " " + Constants.MaxNumPictures, null);
+				context.c.SnackStr(context.res.GetString(Resource.String.MaxNumImages) + " " + Constants.MaxNumPictures);
 			}
 		}
 
@@ -214,7 +214,7 @@ namespace LocationConnection
 				}
 				else if (responseString.Substring(0, 6) == "ERROR_")
 				{
-					context.c.Snack(context.Resources.GetIdentifier(responseString.Substring(6), "string", context.PackageName), null);
+					context.c.Snack(context.Resources.GetIdentifier(responseString.Substring(6), "string", context.PackageName));
 				}
 				else
 				{
@@ -248,12 +248,8 @@ namespace LocationConnection
 					if (ActivityCompat.ShouldShowRequestPermissionRationale(context, Manifest.Permission.AccessFineLocation)) //shows when the user has once denied the permission, and now requesting it again.
 					{
 						var requiredPermissions = new String[] { Manifest.Permission.AccessFineLocation };
-						string snackText = context.Resources.GetString(Resource.String.LocationRationale);
-						SpannableStringBuilder sbb = new SpannableStringBuilder();
-						sbb.Append(snackText);
-						sbb.SetSpan(new ForegroundColorSpan(Color.White), 0, snackText.Length, SpanTypes.ExclusiveExclusive);
-						Snackbar.Make(context.MainLayout, sbb, Snackbar.LengthIndefinite)
-							.SetAction("OK", new Action<View>(delegate (View obj) { ActivityCompat.RequestPermissions(context, requiredPermissions, 2); })).Show();
+
+						context.c.SnackIndefAction(context.res.GetString(Resource.String.LocationRationale), new Action<View>(delegate (View obj) { ActivityCompat.RequestPermissions(context, requiredPermissions, 2); }));
 					}
 					else
 					{

@@ -239,8 +239,6 @@ namespace LocationConnection
 		{
 			base.OnPause();
 
-			c.CW("Settings OnPause start");
-
 			if (!ListActivity.initialized) { return; }
 
 			bool changed = false;
@@ -372,7 +370,6 @@ namespace LocationConnection
 			{
 				c.SaveSettings();
 			}
-			c.CW("Settings OnPause end");
 		}
 
 		public override void OnBackPressed()
@@ -389,7 +386,7 @@ namespace LocationConnection
 			}
 			else //create all new activities
 			{
-				c.LogActivity("Changing display size");
+				c.LogActivity("Changing display size to " + Settings.DisplaySize);
 				Intent i = new Intent(this, typeof(ListActivity));
 				i.SetFlags(ActivityFlags.NewTask | ActivityFlags.ClearTask);
 				StartActivity(i);
@@ -536,7 +533,7 @@ namespace LocationConnection
 					MessageEdit.Text = "";
 					SetFormHidden();
 					MainLayout.RequestFocus();
-					c.Snack(Resource.String.SettingsSent, null);
+					c.Snack(Resource.String.SettingsSent);
 				}
 				else
 				{

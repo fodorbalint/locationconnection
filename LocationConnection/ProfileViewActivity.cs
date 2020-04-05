@@ -9,7 +9,6 @@ using Android.Support.Constraints;
 using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Widget;
-using FFImageLoading;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -399,7 +398,7 @@ namespace LocationConnection
 				string responseString = await c.MakeRequest("action=reportprofileview&ID=" + Session.ID + "&SessionID=" + Session.SessionID + "&TargetID=" + displayUser.ID);
 				if (responseString.Substring(0, 2) == "OK")
 				{
-					c.Snack(Resource.String.UserReported, null);
+					c.Snack(Resource.String.UserReported);
 				}
 				else
 				{
@@ -975,8 +974,6 @@ namespace LocationConnection
 				}
 				mapSet = true;
 
-				//c.SnackStr(Settings.MapRatio.ToString(), null);
-
 				if (pageType == Constants.ProfileViewType_Self)
 				{
 					if (Session.Latitude != null && Session.Longitude != null && Session.LocationTime != null) //location available
@@ -1237,7 +1234,6 @@ namespace LocationConnection
 				{
 					if (cancelImageLoading || folder != currentID.ToString())
 					{
-						c.CW("LoadPicture cancelling 1");
 						return;
 					}
 					RunOnUiThread(() => {
@@ -1248,7 +1244,6 @@ namespace LocationConnection
 				{
 					if (cancelImageLoading || folder != currentID.ToString())
 					{
-						c.CW("LoadPicture cancelling 2");
 						return;
 					}
 					RunOnUiThread(() => {
@@ -2102,7 +2097,7 @@ namespace LocationConnection
 				else if (responseString.Substring(0, 6) == "ERROR_") //IsAMatch
 				{
 					string sex = (displayUser.Sex == 0) ? res.GetString(Resource.String.SexHer) : res.GetString(Resource.String.SexHim);
-					c.SnackStr(res.GetString(Resources.GetIdentifier(responseString.Substring(6), "string", PackageName)).Replace("[name]", displayUser.Name).Replace("[sex]", sex), null);
+					c.SnackStr(res.GetString(Resources.GetIdentifier(responseString.Substring(6), "string", PackageName)).Replace("[name]", displayUser.Name).Replace("[sex]", sex));
 				}
 				else
 				{
@@ -2223,7 +2218,7 @@ namespace LocationConnection
 		{
 			if (pageType != Constants.ProfileViewType_Self && displayUser.ID == senderID)
 			{
-				c.SnackStr(message, null);
+				c.SnackStr(message);
 			}
 			else {
 
