@@ -545,7 +545,6 @@ namespace LocationConnection
 		{
 			if (footerHeight != Footer.Height)
 			{
-				c.CW("Footer_LayoutChange");
 				SetHeight();
 				footerHeight = Footer.Height;
 			}
@@ -556,7 +555,6 @@ namespace LocationConnection
 			int newMapHeight = (MapContainer.Visibility == ViewStates.Visible) ? MapContainer.Height : 0;
 			if (mapHeight != newMapHeight)
 			{
-				c.CW("MapContainer_LayoutChange");
 				SetHeight();
 				mapHeight = newMapHeight;
 			}
@@ -567,7 +565,6 @@ namespace LocationConnection
 			int newMapHeight = (MapContainer.Visibility == ViewStates.Visible) ? MapContainer.Height : 0;
 			if (footerHeight != Footer.Height || mapHeight != newMapHeight)
 			{
-				c.CW("ScrollLayout_LayoutChange");
 				SetHeight();
 				footerHeight = Footer.Height;
 				mapHeight = newMapHeight;
@@ -943,7 +940,7 @@ namespace LocationConnection
 
 				AddCircles(displayUser.Pictures.Length);
 
-				c.CW("Starting task at userID " + currentID.ToString() + " cancelImageLoading " + cancelImageLoading);
+				//c.CW("Starting task at userID " + currentID.ToString() + " cancelImageLoading " + cancelImageLoading);
 				
 				Task.Run(() =>
 				{
@@ -1208,8 +1205,6 @@ namespace LocationConnection
 
 		private void LoadPicture(string folder, string picture, int index, bool usecache)
 		{
-			c.CW("LoadPicture " + folder + " " + picture + " " + index + " " + usecache);
-
 			ImageView ProfileImage = (ImageView)ProfileImageScroll.GetChildAt(index);
 			if (usecache)
 			{
@@ -1228,9 +1223,12 @@ namespace LocationConnection
 					url = Constants.HostName + Constants.UploadFolder + "/" + folder + "/" + Constants.LargeImageSize + "/" + picture;
 				}
 
+				c.LogActivity("LoadPicture start ID " + folder + " index " + index );
+				c.CW("LoadPicture start index " + index + " ID " + folder);
 				Bitmap im = CommonMethods.GetImageBitmapFromUrl(url);
-
-				if (im == null)
+				c.LogActivity("LoadPicture end ID " + folder + " index "+ index + " im null " + (im is null) + " currentID " + currentID + " cancelImageLoading " + cancelImageLoading);
+				c.CW("LoadPicture end index " + index + " ID " + folder + " im null " + (im is null) + " currentID " + currentID + " cancelImageLoading " + cancelImageLoading);
+				if (im is null)
 				{
 					if (cancelImageLoading || folder != currentID.ToString())
 					{

@@ -256,6 +256,7 @@ namespace LocationConnection
 					}
 
 					var response = request.GetResponse();
+
 					stw.Stop();
 					CW(stw.ElapsedMilliseconds + " " + url);
 
@@ -768,6 +769,17 @@ namespace LocationConnection
             }
         }
 
+		public static void LogActivityStatic(string message)
+		{
+			try
+			{
+				File.AppendAllLines(logFile, new string[] { DateTime.UtcNow.ToString(@"yyyy-MM-dd HH\:mm\:ss.fff") + "  " + message });
+			}
+			catch
+			{
+			}
+		}
+
 		public void LogLocation(string message)
 		{
 			try
@@ -932,52 +944,199 @@ namespace LocationConnection
 					field.SetValue(newObj, value);
                 }
             }
+			
+			
 			return newObj;
         }
 
 		public static Bitmap GetImageBitmapFromUrl(string url)
 		{
-			Bitmap imageBitmap = null;
+			byte[] data = GetImageDataFromUrl(url);
+			if (!(data is null))
+			{
+				Stopwatch stw = new Stopwatch();
+				stw.Start();
+
+				Bitmap bmp = BitmapFactory.DecodeByteArray(data, 0, data.Length);
+
+				stw.Stop();
+				Console.WriteLine("------------- Decoded in " + stw.ElapsedMilliseconds + " ------------");
+				LogActivityStatic("Decoded in " + stw.ElapsedMilliseconds);
+
+				return bmp;
+			}
+			return null;
+		}
+
+		public static byte[] GetImageDataFromUrl(string url)
+		{
+			try
+			{
+				HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+				request.Timeout = Constants.RequestTimeout;
+				request.Method = "GET";
+
+				Stopwatch stw = new Stopwatch();
+				stw.Start();
+
+				var response = request.GetResponse();
+
+				stw.Stop();
+				Console.WriteLine("-------------" + stw.ElapsedMilliseconds + " " + url);
+				LogActivityStatic("Request in " + stw.ElapsedMilliseconds);
+				stw.Restart();
+
+				byte[] data = ReadToEnd(response.GetResponseStream());
+
+				stw.Stop();
+				Console.WriteLine("------------- Read in " + stw.ElapsedMilliseconds + " -------------- ");
+				LogActivityStatic("Read in " + stw.ElapsedMilliseconds);
+
+				response.Close();
+				return data;
+			}
+			catch
+			{
+				return null;
+			}
+		}
+
+		//https://stackoverflow.com/questions/1080442/how-to-convert-an-stream-into-a-byte-in-c
+		public static byte[] ReadToEnd(System.IO.Stream stream)
+		{
+			long originalPosition = 0;
+
+			if (stream.CanSeek)
+			{
+				originalPosition = stream.Position;
+				stream.Position = 0;
+			}
+
+			try
+			{
+				byte[] readBuffer = new byte[4096];
+
+				int totalBytesRead = 0;
+				int bytesRead;
+
+				while ((bytesRead = stream.Read(readBuffer, totalBytesRead, readBuffer.Length - totalBytesRead)) > 0)
+				{
+					totalBytesRead += bytesRead;
+
+					if (totalBytesRead == readBuffer.Length)
+					{
+						int nextByte = stream.ReadByte();
+						if (nextByte != -1)
+						{
+							byte[] temp = new byte[readBuffer.Length * 2];
+							Buffer.BlockCopy(readBuffer, 0, temp, 0, readBuffer.Length);
+							Buffer.SetByte(temp, totalBytesRead, (byte)nextByte);
+							readBuffer = temp;
+							totalBytesRead++;
+						}
+					}
+				}
+
+				byte[] buffer = readBuffer;
+				if (readBuffer.Length != totalBytesRead)
+				{
+					buffer = new byte[totalBytesRead];
+					Buffer.BlockCopy(readBuffer, 0, buffer, 0, totalBytesRead);
+				}
+				return buffer;
+			}
+			finally
+			{
+				if (stream.CanSeek)
+				{
+					stream.Position = originalPosition;
+				}
+			}
+		}
+
+		// Sometimes picture doesn't load. // Dispose(); was not tried.
+		/*public static Bitmap GetImageBitmapFromUrl(string url)
+		{
 			try
 			{
 				using (var webClient = new WebClient())
 				{
 					var imageBytes = webClient.DownloadData(url);
+					webClient.Dispose();
 					if (imageBytes != null && imageBytes.Length > 0)
 					{
-						imageBitmap = BitmapFactory.DecodeByteArray(imageBytes, 0, imageBytes.Length);
+						return BitmapFactory.DecodeByteArray(imageBytes, 0, imageBytes.Length);
 					}
 				}
 			}
 			catch (Exception ex)
 			{
-				File.AppendAllLines(logFile, new string[] { DateTime.UtcNow.ToString(@"yyyy-MM-dd HH\:mm\:ss.fff") + " Error loading image: " + url + " " + ex.Message });
+				LogActivityStatic(" Error loading image: " + url + " " + ex.Message });
 				Console.WriteLine("Error loading image: " + url + " " + ex.Message);
 			}
-			return imageBitmap;
+			return null;
 		}
 
 		public static byte[] GetImageDataFromUrl(string url)
 		{
-			byte[] imageBytes = null;
 			try
 			{
 				using (var webClient = new WebClient())
 				{
-					imageBytes = webClient.DownloadData(url);
+					byte[] imageBytes = webClient.DownloadData(url);
+					webClient.Dispose();
 					return imageBytes;
 				}
 			}
 			catch (Exception ex)
 			{
-				File.AppendAllLines(logFile, new string[] { DateTime.UtcNow.ToString(@"yyyy-MM-dd HH\:mm\:ss.fff") + " Error loading image: " + url + " " + ex.Message });
+				LogActivityStatic(" Error loading image: " + url + " " + ex.Message });
 				Console.WriteLine("Error loading image: " + url + " " + ex.Message);
 			}
-			return imageBytes;
+			return null;
+		}*/
+
+		/*public static async Task<Bitmap> GetImageBitmapFromUrlAsync(string url)
+		{
+			try
+			{
+				var client = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+				using var httpResponse = await client.GetAsync(url);
+				if (httpResponse.StatusCode == HttpStatusCode.OK)
+				{
+					byte[] result = await httpResponse.Content.ReadAsByteArrayAsync();
+					httpResponse.Dispose();
+					return BitmapFactory.DecodeByteArray(result, 0, result.Length);
+				}
+			}
+			catch (Exception ex)
+			{
+				LogActivityStatic(" Error loading image: " + url + " " + ex.Message });
+				Console.WriteLine("Error loading image: " + url + " " + ex.Message);
+			}
+			return null;
 		}
 
-
-
+		public static async Task<byte[]> GetImageDataFromUrlAsync(string url)
+		{
+			try
+			{
+				var client = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+				using var httpResponse = await client.GetAsync(url);
+				if (httpResponse.StatusCode == HttpStatusCode.OK)
+				{
+					byte[] imageBytes = await httpResponse.Content.ReadAsByteArrayAsync();
+					httpResponse.Dispose();
+					return imageBytes;
+				}
+			}
+			catch (Exception ex)
+			{
+				LogActivityStatic(" Error loading image: " + url + " " + ex.Message });
+				Console.WriteLine("Error loading image: " + url + " " + ex.Message);
+			}
+			return null;
+		}*/
 		public static void EmptyFolder(string dir)
 		{
 			var list = Directory.GetFiles(dir, "*");

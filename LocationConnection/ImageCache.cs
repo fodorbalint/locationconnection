@@ -78,8 +78,9 @@ namespace LocationConnection
             {
                 if (context is ProfileViewActivity && (((ProfileViewActivity)context).currentID.ToString() != userID || ((ProfileViewActivity)context).cancelImageLoading))
                 {
-                    return;
+                    return; 
                 }
+                context.c.LogActivity("Cache from cache " + userID);
                 context.RunOnUiThread(() => {
                     if (imageView is ImageView)
                     {
@@ -143,9 +144,10 @@ namespace LocationConnection
 
                 if (imagesInProgress.IndexOf(saveName) != -1)
                 {
-                    context.c.CW("Cache cancelled loading " + saveName);
+                    context.c.LogActivity("Cache cancelled loading " + userID);                    
                     return;
                 }
+                context.c.LogActivity("Cache loads " + userID);
                 imagesInProgress.Add(saveName);
 
                 byte[] bytes = CommonMethods.GetImageDataFromUrl(url);

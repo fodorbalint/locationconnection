@@ -114,7 +114,7 @@ namespace LocationConnection
 
 			//runs 9, 26, 39 times for 1, 2 or 3 match. Images flicker before they show normally. FFimageLoading is a better choice here. (It was abandoned, because sometimes it says "Image not found"
 			getCount++;
-			context.c.CW("GetView loading cache " + getCount);
+			context.c.LogActivity("GetView loading cache " + getCount + " ID " + items[position].TargetID);
 			ImageCache im = new ImageCache(context);
 			//Task.Run(() => { //images flickers for a moment before loading
 				im.LoadImage(Image, items[position].TargetID.ToString(), items[position].TargetPicture, false);
