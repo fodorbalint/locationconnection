@@ -820,7 +820,7 @@ namespace LocationConnection
 				}
 
 				//Unlike on iOS, Task does not get cancelled here by calling cts.Cancel() where cts is CancellationTokenSource
-				Task.Run(() =>
+				Task.Run(async () =>
 				{
 					for (int i = 0; i < Session.Pictures.Length; i++)
 					{
@@ -829,7 +829,7 @@ namespace LocationConnection
 							c.CW("Cancelling task at self currentID " + currentID + " cancelImageLoading " + cancelImageLoading);
 							break;
 						}
-						LoadPicture(Session.ID.ToString(), Session.Pictures[i], i, true);
+						await LoadPicture(Session.ID.ToString(), Session.Pictures[i], i, true);
 					}
 				});
 			}
@@ -942,7 +942,7 @@ namespace LocationConnection
 
 				//c.CW("Starting task at userID " + currentID.ToString() + " cancelImageLoading " + cancelImageLoading);
 				
-				Task.Run(() =>
+				Task.Run(async () =>
 				{
 					for (int i = 0; i < profile.Pictures.Length; i++)
 					{
@@ -951,7 +951,7 @@ namespace LocationConnection
 							c.CW("Cancelling task at userID " + profile.ID.ToString() + " currentID " + currentID + " cancelImageLoading " + cancelImageLoading);
 							break;
 						}
-						LoadPicture(profile.ID.ToString(), profile.Pictures[i], i, false);
+						await LoadPicture(profile.ID.ToString(), profile.Pictures[i], i, false);
 					}
 				});
 			}
@@ -1203,13 +1203,13 @@ namespace LocationConnection
 			}
 		}
 
-		private void LoadPicture(string folder, string picture, int index, bool usecache)
+		private async Task LoadPicture(string folder, string picture, int index, bool usecache)
 		{
 			ImageView ProfileImage = (ImageView)ProfileImageScroll.GetChildAt(index);
 			if (usecache)
 			{
 				ImageCache im = new ImageCache(this);
-				im.LoadImage(ProfileImage, folder, picture, true);
+				await im.LoadImage(ProfileImage, folder, picture, true);
 			}
 			else
 			{
@@ -1225,9 +1225,21 @@ namespace LocationConnection
 
 				c.LogActivity("LoadPicture start ID " + folder + " index " + index );
 				c.CW("LoadPicture start index " + index + " ID " + folder);
-				Bitmap im = CommonMethods.GetImageBitmapFromUrl(url);
+
+				Bitmap im = null;
+
+				var task = CommonMethods.GetImageBitmapFromUrlAsync(url);
+				System.Threading.CancellationTokenSource cts = new System.Threading.CancellationTokenSource();
+
+				if (await Task.WhenAny(task, Task.Delay(Constants.RequestTimeout, cts.Token)) == task)
+				{
+					cts.Cancel();
+					im = await task;
+				}
+
 				c.LogActivity("LoadPicture end ID " + folder + " index "+ index + " im null " + (im is null) + " currentID " + currentID + " cancelImageLoading " + cancelImageLoading);
 				c.CW("LoadPicture end index " + index + " ID " + folder + " im null " + (im is null) + " currentID " + currentID + " cancelImageLoading " + cancelImageLoading);
+				
 				if (im is null)
 				{
 					if (cancelImageLoading || folder != currentID.ToString())

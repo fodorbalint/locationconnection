@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
@@ -17,14 +18,14 @@ namespace LocationConnection
     public class ImageCache
     {
         BaseActivity context;
-        static List<string> imagesInProgress = new List<string>();
+        public static volatile List<string> imagesInProgress = new List<string>(); //using list is unreliable, when I add  103 to 1|4|7|104|6, it becames 1|4|7|104|6|6. Sometimes an empty stirng is present. Adding volatile did not help. 
 
         public ImageCache(BaseActivity context)
         {
             this.context = context;
         }
 
-        public Bitmap LoadBitmap(string userID, string picture) { //used for the map only
+        public async Task<Bitmap> LoadBitmap(string userID, string picture) { //used for the map only
 
             string saveName = userID + "_" + Constants.SmallImageSize.ToString() + "_" + picture;
 
@@ -44,7 +45,17 @@ namespace LocationConnection
                     url = Constants.HostName + Constants.UploadFolder + "/" + userID + "/" + Constants.SmallImageSize.ToString() + "/" + picture;
                 }
 
-                byte[] bytes = CommonMethods.GetImageDataFromUrl(url);
+                byte[] bytes = null;
+
+                var task = CommonMethods.GetImageDataFromUrlAsync(url);
+                CancellationTokenSource cts = new CancellationTokenSource();
+
+                if (await Task.WhenAny(task, Task.Delay(Constants.RequestTimeout, cts.Token)) == task)
+                {
+                    cts.Cancel();
+                    bytes = await task;
+                }
+
                 if (bytes != null)
                 {
                     Save(saveName, bytes);
@@ -52,168 +63,144 @@ namespace LocationConnection
                 }
                 else
                 {
-                    return null;
+                    return BitmapFactory.DecodeResource(context.Resources, Resource.Drawable.noimage);
                 }
             }
         }
 
-        public void LoadImage(ImageView imageView, string userID, string picture, bool isLarge = false, bool temp = false)
+        public async Task LoadImage(ImageView imageView, string userID, string picture, bool isLarge = false, bool temp = false)
         {
-            string subFolder;
-
-            if (isLarge)
+            try
             {
-                subFolder = Constants.LargeImageSize.ToString();
-            }
-            else
-            {
-                subFolder = Constants.SmallImageSize.ToString();
-            }
+                string subFolder;
 
-            string saveName = userID + "_" + subFolder + "_" + picture;
-
-            context.c.CW("Cache imagesInprogress count " + imagesInProgress.Count);
-
-            if (Exists(saveName))
-            {
-                if (context is ProfileViewActivity && (((ProfileViewActivity)context).currentID.ToString() != userID || ((ProfileViewActivity)context).cancelImageLoading))
+                if (isLarge)
                 {
-                    return; 
-                }
-                context.c.LogActivity("Cache from cache " + userID);
-                context.RunOnUiThread(() => {
-                    if (imageView is ImageView)
-                    {
-                        ((ImageView)imageView).SetImageBitmap(Load(saveName));
-                    }
-                    /*else if (imageView is Button)
-                    {
-                        ((Button)imageView).SetBackgroundImage(Load(saveName), UIControlState.Normal);
-                    }*/
-                    /*else if (imageView is MKAnnotationView)
-                    {
-                        ((MKAnnotationView)imageView).Image = Load(saveName);
-                    }*/
-                });
-            }
-            else
-            {
-                if (context is ProfileViewActivity && (((ProfileViewActivity)context).currentID.ToString() != userID || ((ProfileViewActivity)context).cancelImageLoading))
-                {
-                    return;
-                }
-
-                context.RunOnUiThread(() => {
-                    if (imageView is ImageView)
-                    {
-                        ((ImageView)imageView).SetImageResource(Resource.Drawable.loadingimage);
-                    }
-                    /*else if (imageView is UIButton)
-                    {
-                        ((UIButton)imageView).SetBackgroundImage(UIImage.FromBundle(Constants.loadingImage), UIControlState.Normal);
-                    }
-                    else if (imageView is MKAnnotationView)
-                    {
-                        ((MKAnnotationView)imageView).Image = UIImage.FromBundle(Constants.loadingImage);
-                    }*/
-                });
-
-                string url;
-                if (!temp)
-                {
-                    if (Constants.isTestDB)
-                    {
-                        url = Constants.HostName + Constants.UploadFolderTest + "/" + userID + "/" + subFolder + "/" + picture;
-                    }
-                    else
-                    {
-                        url = Constants.HostName + Constants.UploadFolder + "/" + userID + "/" + subFolder + "/" + picture;
-                    }
+                    subFolder = Constants.LargeImageSize.ToString();
                 }
                 else
                 {
-                    if (Constants.isTestDB)
-                    {
-                        url = Constants.HostName + Constants.TempUploadFolderTest + "/" + userID + "/" + subFolder + "/" + picture;
-                    }
-                    else
-                    {
-                        url = Constants.HostName + Constants.TempUploadFolder + "/" + userID + "/" + subFolder + "/" + picture;
-                    }
+                    subFolder = Constants.SmallImageSize.ToString();
                 }
 
-                if (imagesInProgress.IndexOf(saveName) != -1)
+                string saveName = userID + "_" + subFolder + "_" + picture;
+
+
+                if (Exists(saveName))
                 {
-                    context.c.LogActivity("Cache cancelled loading " + userID);                    
-                    return;
-                }
-                context.c.LogActivity("Cache loads " + userID);
-                imagesInProgress.Add(saveName);
-
-                byte[] bytes = CommonMethods.GetImageDataFromUrl(url);
-
-                imagesInProgress.Remove(saveName);
-
-                if (bytes != null)
-                {
-                    Save(saveName, bytes);
-                    Bitmap bmp = BitmapFactory.DecodeByteArray(bytes, 0, bytes.Length);
-
                     if (context is ProfileViewActivity && (((ProfileViewActivity)context).currentID.ToString() != userID || ((ProfileViewActivity)context).cancelImageLoading))
                     {
-                        context.c.CW("Cache not loading new image");
                         return;
                     }
-                    context.RunOnUiThread(() =>
-                    {
-                        if (imageView is ImageView)
-                        {
-                            ((ImageView)imageView).SetImageBitmap(bmp);
-                        }
-                        /*
-                        else if (imageView is UIButton)
-                        {
-                            ((UIButton)imageView).SetBackgroundImage(UIImage.LoadFromData(task.Result), UIControlState.Normal);
-                        }
-                        else if (imageView is MKAnnotationView)
-                        {
-                            ((MKAnnotationView)imageView).Image = UIImage.LoadFromData(task.Result);
-                        }
-                        */
+
+                    context.RunOnUiThread(() => {
+                        imageView.SetImageBitmap(Load(saveName));
                     });
                 }
                 else
                 {
                     if (context is ProfileViewActivity && (((ProfileViewActivity)context).currentID.ToString() != userID || ((ProfileViewActivity)context).cancelImageLoading))
                     {
-                        context.c.CW("Cache not loading noimage");
                         return;
                     }
-                    context.RunOnUiThread(() =>
+
+                    context.RunOnUiThread(() => {
+                        imageView.SetImageResource(Resource.Drawable.loadingimage);
+                    });
+
+                    string url;
+                    if (!temp)
                     {
-                        if (imageView is ImageView)
+                        if (Constants.isTestDB)
+                        {
+                            url = Constants.HostName + Constants.UploadFolderTest + "/" + userID + "/" + subFolder + "/" + picture;
+                        }
+                        else
+                        {
+                            url = Constants.HostName + Constants.UploadFolder + "/" + userID + "/" + subFolder + "/" + picture;
+                        }
+                    }
+                    else
+                    {
+                        if (Constants.isTestDB)
+                        {
+                            url = Constants.HostName + Constants.TempUploadFolderTest + "/" + userID + "/" + subFolder + "/" + picture;
+                        }
+                        else
+                        {
+                            url = Constants.HostName + Constants.TempUploadFolder + "/" + userID + "/" + subFolder + "/" + picture;
+                        }
+                    }
+
+                    if (imagesInProgress.IndexOf(saveName) != -1)
+                    {
+                        //context.c.CW("Cancelled loading ID " + userID + " arr " + string.Join('|', imagesInProgress)); 
+                        //context.c.LogActivity("Cancelled loading ID " + userID + " arr " + string.Join('|', imagesInProgress));
+
+                        return;
+                    }
+
+                    //context.c.CW("Requesting ID " + userID + " arr " + string.Join('|', imagesInProgress));
+                    //context.c.LogActivity("Requesting ID " + userID + " arr " + string.Join('|', imagesInProgress));
+
+                    imagesInProgress.Add(saveName);
+
+                    byte[] bytes = null;
+
+                    var task = CommonMethods.GetImageDataFromUrlAsync(url);
+                    CancellationTokenSource cts = new CancellationTokenSource();
+
+                    if (await Task.WhenAny(task, Task.Delay(Constants.RequestTimeout, cts.Token)) == task)
+                    {
+                        cts.Cancel();
+                        bytes = await task;
+                    }
+
+                    if (imagesInProgress.IndexOf(saveName) != -1)
+                    {
+                        imagesInProgress.Remove(saveName);
+                    }
+
+                    //context.c.CW("Completed " + userID + " arr " + string.Join('|', imagesInProgress));
+                    //context.c.LogActivity("Completed " + userID + " arr " + string.Join('|', imagesInProgress));
+
+                    if (bytes != null)
+                    {
+                        Save(saveName, bytes);
+                        Bitmap bmp = BitmapFactory.DecodeByteArray(bytes, 0, bytes.Length);
+
+                        if (context is ProfileViewActivity && (((ProfileViewActivity)context).currentID.ToString() != userID || ((ProfileViewActivity)context).cancelImageLoading))
+                        {
+                            return;
+                        }
+                        context.RunOnUiThread(() =>
+                        {
+                            imageView.SetImageBitmap(bmp);
+                        });
+                    }
+                    else
+                    {
+                        if (context is ProfileViewActivity && (((ProfileViewActivity)context).currentID.ToString() != userID || ((ProfileViewActivity)context).cancelImageLoading))
+                        {
+                            return;
+                        }
+                        context.RunOnUiThread(() =>
                         {
                             if (isLarge)
                             {
-                                ((ImageView)imageView).SetImageResource(Resource.Drawable.noimage_hd);
+                                imageView.SetImageResource(Resource.Drawable.noimage_hd);
                             }
                             else
                             {
-                                ((ImageView)imageView).SetImageResource(Resource.Drawable.noimage);
+                                imageView.SetImageResource(Resource.Drawable.noimage);
                             }
-                        }
-                        /*
-                        else if (imageView is UIButton)
-                        {
-                            ((UIButton)imageView).SetBackgroundImage(UIImage.FromBundle(Constants.noImage), UIControlState.Normal);
-                        }
-                        else if (imageView is MKAnnotationView)
-                        {
-                            ((MKAnnotationView)imageView).Image = UIImage.FromBundle(Constants.noImage);
-                        }
-                        */
-                    });
+                        });
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                context.c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
             }
         }
 
@@ -226,6 +213,7 @@ namespace LocationConnection
                 using FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate);
                 fs.Write(data, 0, data.Length);
                 context.c.CW("Cache saving " + fileName);
+                context.c.LogActivity("Cache saving " + fileName);
             }
             catch (Exception ex)
             {
@@ -244,13 +232,15 @@ namespace LocationConnection
         {
             string fileName = System.IO.Path.Combine(CommonMethods.cacheFolder, imageName);
             context.c.CW("Cache loading " + fileName);
+            context.c.LogActivity("Cache loading " + fileName);
             return BitmapFactory.DecodeFile(fileName);
         }
 
         public bool Exists(string imageName)
         {
             string fileName = System.IO.Path.Combine(CommonMethods.cacheFolder, imageName);
-            //context.c.CW("----- cache Exists? " + fileName + " " + File.Exists(fileName));
+            context.c.CW("Cache exists? " + fileName + " " + File.Exists(fileName));
+            context.c.LogActivity("Cache exists? " + fileName + " " + File.Exists(fileName));
             return File.Exists(fileName);
         }
     }

@@ -116,16 +116,16 @@ namespace LocationConnection
 
 			ImageCache im = new ImageCache(context);
 
-			Task.Run(() => {
+			Task.Run(async () => {
 				if (context is ProfileEditActivity)
 				{
-					im.LoadImage(UploadedImage, Session.ID.ToString(), picture);
+					await im.LoadImage(UploadedImage, Session.ID.ToString(), picture);
 				}
 				else
 				{
-					im.LoadImage(UploadedImage, RegisterActivity.regsessionid, picture, false, true);
+					await im.LoadImage(UploadedImage, RegisterActivity.regsessionid, picture, false, true);
 				}
-			});			
+			});					
 
 			LayoutParams p0 = new LayoutParams((int)tileSize, (int)tileSize);
 			UploadedImageContainer.LayoutParameters = p0;

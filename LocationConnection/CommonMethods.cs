@@ -54,6 +54,8 @@ namespace LocationConnection
 		private float logAlertPadding;
 		private int textSmall;
 
+		private static HttpClient client = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+
 		public CommonMethods(Activity context)
 		{
 			this.context = context;
@@ -945,11 +947,12 @@ namespace LocationConnection
                 }
             }
 			
-			
 			return newObj;
         }
 
-		public static Bitmap GetImageBitmapFromUrl(string url)
+		//Image loading optimization. Of 3 methods, HttpClient is the fastest.
+
+		/*public static Bitmap GetImageBitmapFromUrl(string url)
 		{
 			byte[] data = GetImageDataFromUrl(url);
 			if (!(data is null))
@@ -966,9 +969,9 @@ namespace LocationConnection
 				return bmp;
 			}
 			return null;
-		}
+		}*/
 
-		public static byte[] GetImageDataFromUrl(string url)
+		/*public static byte[] GetImageDataFromUrl(string url)
 		{
 			try
 			{
@@ -982,7 +985,7 @@ namespace LocationConnection
 				var response = request.GetResponse();
 
 				stw.Stop();
-				Console.WriteLine("-------------" + stw.ElapsedMilliseconds + " " + url);
+				Console.WriteLine("------------ Load in " + stw.ElapsedMilliseconds);
 				LogActivityStatic("Request in " + stw.ElapsedMilliseconds);
 				stw.Restart();
 
@@ -991,18 +994,43 @@ namespace LocationConnection
 				stw.Stop();
 				Console.WriteLine("------------- Read in " + stw.ElapsedMilliseconds + " -------------- ");
 				LogActivityStatic("Read in " + stw.ElapsedMilliseconds);
-
-				response.Close();
 				return data;
 			}
-			catch
+			catch (Exception ex)
 			{
+				Console.WriteLine("-------- Error loading image at " + url + ": " + ex.Message);
+				LogActivityStatic("Error loading image at " + url + ": " + ex.Message);
+
 				return null;
 			}
-		}
+		}*/
 
+		/*private static byte[] ReadFully(Stream input)
+		{
+			try
+			{
+				int bytesBuffer = 1024;
+				byte[] buffer = new byte[bytesBuffer];
+				using (MemoryStream ms = new MemoryStream())
+				{
+					int readBytes;
+					while ((readBytes = input.Read(buffer, 0, buffer.Length)) > 0)
+					{
+						ms.Write(buffer, 0, readBytes);
+					}
+					return ms.ToArray();
+				}
+			}
+			catch (Exception ex)
+			{
+				// Exception handling here:  Response.Write("Ex.: " + ex.Message);
+				return null;
+			}
+		}*/
+
+		//takes 1.5 - 2 times more time than using HttpClient
 		//https://stackoverflow.com/questions/1080442/how-to-convert-an-stream-into-a-byte-in-c
-		public static byte[] ReadToEnd(System.IO.Stream stream)
+		/*public static byte[] ReadToEnd(System.IO.Stream stream)
 		{
 			long originalPosition = 0;
 
@@ -1052,7 +1080,7 @@ namespace LocationConnection
 					stream.Position = originalPosition;
 				}
 			}
-		}
+		}*/
 
 		// Sometimes picture doesn't load. // Dispose(); was not tried.
 		/*public static Bitmap GetImageBitmapFromUrl(string url)
@@ -1071,47 +1099,69 @@ namespace LocationConnection
 			}
 			catch (Exception ex)
 			{
-				LogActivityStatic(" Error loading image: " + url + " " + ex.Message });
+				LogActivityStatic(" Error loading image: " + url + " " + ex.Message);
 				Console.WriteLine("Error loading image: " + url + " " + ex.Message);
 			}
 			return null;
-		}
+		}*/
 
-		public static byte[] GetImageDataFromUrl(string url)
+		/*public static byte[] GetImageDataFromUrl(string url)
 		{
 			try
 			{
 				using (var webClient = new WebClient())
 				{
+					Stopwatch stw = new Stopwatch();
+					stw.Start();
+
 					byte[] imageBytes = webClient.DownloadData(url);
+
+					stw.Stop();
+					Console.WriteLine("------------- Load/Read in " + stw.ElapsedMilliseconds + " -------------- ");
+					LogActivityStatic("Load/Read in " + stw.ElapsedMilliseconds);
+
 					webClient.Dispose();
 					return imageBytes;
 				}
 			}
 			catch (Exception ex)
 			{
-				LogActivityStatic(" Error loading image: " + url + " " + ex.Message });
+				LogActivityStatic(" Error loading image: " + url + " " + ex.Message);
 				Console.WriteLine("Error loading image: " + url + " " + ex.Message);
 			}
 			return null;
 		}*/
 
-		/*public static async Task<Bitmap> GetImageBitmapFromUrlAsync(string url)
+		public static async Task<Bitmap> GetImageBitmapFromUrlAsync(string url)
 		{
 			try
 			{
-				var client = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+				/*Stopwatch stw = new Stopwatch();
+				stw.Start();*/
+
 				using var httpResponse = await client.GetAsync(url);
+
+				/*stw.Stop();
+				Console.WriteLine("------------- Load in " + stw.ElapsedMilliseconds + " " + url + " -------------- " + System.Environment.NewLine);
+				LogActivityStatic("Load in " + stw.ElapsedMilliseconds + " " + url);
+				stw.Restart();*/
+
 				if (httpResponse.StatusCode == HttpStatusCode.OK)
 				{
+
 					byte[] result = await httpResponse.Content.ReadAsByteArrayAsync();
+
+					/*stw.Stop();
+					Console.WriteLine("------------- Read in " + stw.ElapsedMilliseconds + " -------------- " + System.Environment.NewLine);
+					LogActivityStatic("Read in " + stw.ElapsedMilliseconds);*/
+
 					httpResponse.Dispose();
 					return BitmapFactory.DecodeByteArray(result, 0, result.Length);
 				}
 			}
 			catch (Exception ex)
 			{
-				LogActivityStatic(" Error loading image: " + url + " " + ex.Message });
+				LogActivityStatic(" Error loading image: " + url + " " + ex.Message);
 				Console.WriteLine("Error loading image: " + url + " " + ex.Message);
 			}
 			return null;
@@ -1121,32 +1171,46 @@ namespace LocationConnection
 		{
 			try
 			{
-				var client = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+				/*Stopwatch stw = new Stopwatch();
+				stw.Start();*/
+
 				using var httpResponse = await client.GetAsync(url);
+
+				/*stw.Stop();
+				LogActivityStatic("Load in " + stw.ElapsedMilliseconds + " " + url);
+				Console.WriteLine("------------- Load in " + stw.ElapsedMilliseconds + " " + url + "-------------- " + System.Environment.NewLine);
+				stw.Restart();*/
+
 				if (httpResponse.StatusCode == HttpStatusCode.OK)
-				{
+				{				
 					byte[] imageBytes = await httpResponse.Content.ReadAsByteArrayAsync();
+
+					/*stw.Stop();
+					LogActivityStatic("Read in " + stw.ElapsedMilliseconds);
+					Console.WriteLine("------------- Read in " + stw.ElapsedMilliseconds + " -------------- "); //most often it takes 0 ms, or just a few.*/
+
 					httpResponse.Dispose();
 					return imageBytes;
 				}
 			}
 			catch (Exception ex)
 			{
-				LogActivityStatic(" Error loading image: " + url + " " + ex.Message });
+				LogActivityStatic(" Error loading image: " + url + " " + ex.Message);
 				Console.WriteLine("Error loading image: " + url + " " + ex.Message);
 			}
 			return null;
-		}*/
+		}
+
 		public static void EmptyFolder(string dir)
 		{
 			var list = Directory.GetFiles(dir, "*");
-			Console.WriteLine("--------------- Emptyfolder: " + list.Length);
+			//Console.WriteLine("--------------- Emptyfolder: " + list.Length);
 			if (list.Length > 0)
 			{
 				for (int i = 0; i < list.Length; i++)
 				{
 					File.Delete(list[i]);
-					Console.WriteLine("-------------- Deleted from folder: " + list[i]);
+					//Console.WriteLine("-------------- Deleted from folder: " + list[i]);
 				}
 			}
 		}

@@ -19,7 +19,7 @@ namespace LocationConnection
     {
         List<Profile> profiles;
         ListActivity context;
-        static int loadCount;
+        public static int loadCount;
 
         public UserSearchListAdapter(ListActivity context, List<Profile> profiles)
         {
@@ -36,17 +36,23 @@ namespace LocationConnection
         public override View GetView(int position, View convertView, ViewGroup parent)
         {
             loadCount++;
+            int localLoadCount = loadCount;
 
             View view = convertView;
             if (view == null) view = context.LayoutInflater.Inflate(Resource.Layout.list_item, null);
 
-            context.c.CW("GetView " + loadCount + " ---- " + profiles[position].ID);
+            //context.c.CW("GetView " + loadCount + " ---- " + profiles[position].ID);
+            //context.c.LogActivity("GetView " + loadCount + " ---- " + profiles[position].ID);
 
-            ImageView ListImage = view.FindViewById<ImageView>(Resource.Id.ListImage);
             //When switching from map to list, if during map view, I opened or closed the filters, we will sometimes see an upward / downward animation.
+            //multiple of this task begins at the same time, and ImageCache.imageInProgress is not written fast enough, so there will be repeated loadings if I do not insert a start delay
+            ImageView ListImage = view.FindViewById<ImageView>(Resource.Id.ListImage);
             ImageCache im = new ImageCache(context);
-            Task.Run(() => { //takes a long time to load
-                im.LoadImage(ListImage, profiles[position].ID.ToString(), profiles[position].Pictures[0]);
+            Task.Run(async () => {
+                //context.c.CW("Starting task count " + localLoadCount + " ---- ID " + profiles[position].ID);
+                //context.c.LogActivity("Starting task count" + localLoadCount + " ---- ID " + profiles[position].ID);
+                await Task.Delay(localLoadCount * 15);
+                await im.LoadImage(ListImage, profiles[position].ID.ToString(), profiles[position].Pictures[0]);
             });
 
             //Requires Xamarin.FFImageLoading

@@ -171,6 +171,7 @@ namespace LocationConnection
 				ImagesUploaded.RefitImagesContainer();
 				ImagesUploaded.drawOrder = new List<int>();
 
+				ImageCache.imagesInProgress = new List<string>();
 				int i = 0;
 				foreach (string image in uploadedImages)
 				{

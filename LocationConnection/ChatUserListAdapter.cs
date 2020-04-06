@@ -17,8 +17,8 @@ namespace LocationConnection
 	class ChatUserListAdapter : BaseAdapter<string>
 	{
 		ChatListActivity context;
-		List<MatchItem> items;	
-		static int getCount;
+		List<MatchItem> items;
+		public static int loadCount;
 
 		public ChatUserListAdapter(ChatListActivity context, List<MatchItem> items)
 		{
@@ -37,6 +37,9 @@ namespace LocationConnection
 
 		public override View GetView(int position, View convertView, ViewGroup parent)
 		{
+			loadCount++;
+			int localLoadCount = loadCount;
+
 			View view = convertView;
 			if (view == null)
 			{
@@ -112,15 +115,13 @@ namespace LocationConnection
 				lin.AddView(t);
 			}
 
-			//runs 9, 26, 39 times for 1, 2 or 3 match. Images flicker before they show normally. FFimageLoading is a better choice here. (It was abandoned, because sometimes it says "Image not found"
-			getCount++;
-			context.c.LogActivity("GetView loading cache " + getCount + " ID " + items[position].TargetID);
 			ImageCache im = new ImageCache(context);
-			//Task.Run(() => { //images flickers for a moment before loading
-				im.LoadImage(Image, items[position].TargetID.ToString(), items[position].TargetPicture, false);
-			//});
+			Task.Run(async () => {
+				await Task.Delay(localLoadCount * 15);
+				await im.LoadImage(Image, items[position].TargetID.ToString(), items[position].TargetPicture, false);
+			});
 
-			//Requires Xamarin.FFImageLoading
+			//Requires Xamarin.FFImageLoading. Nit perfect, sometimes image is not found.
 
 			/*string url;
 			if (Constants.isTestDB)

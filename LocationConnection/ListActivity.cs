@@ -650,6 +650,8 @@ namespace LocationConnection
 				if (!(listProfiles is null)) //adapter gets null on resuming Activity, list is not shown, even though profiles still exists.
 				{
 					adapter = new UserSearchListAdapter(this, listProfiles);
+					ImageCache.imagesInProgress = new List<string>();
+					UserSearchListAdapter.loadCount = 0;
 					UserSearchList.Adapter = adapter;
 					usersLoaded = true;
 				}
@@ -789,8 +791,9 @@ namespace LocationConnection
 
 			ImageCache im = new ImageCache(this);
 			
-			Task.Run(() => {
-				im.LoadImage(StatusImage, Session.ID.ToString(), Session.Pictures[0]);
+			Task.Run(async () => {
+				c.LogActivity("Loggedinlayout loading image " + ImageCache.imagesInProgress);
+				await im.LoadImage(StatusImage, Session.ID.ToString(), Session.Pictures[0]);
 			});
 			
 			MenuChatList.Visibility = ViewStates.Visible;
@@ -2439,6 +2442,8 @@ namespace LocationConnection
 						RunOnUiThread(() =>
 						{
 							NoResult.Visibility = ViewStates.Gone;
+							ImageCache.imagesInProgress = new List<string>();
+							UserSearchListAdapter.loadCount = 0;
 							UserSearchList.Adapter = adapter;
 						});
 					}				
@@ -2559,7 +2564,7 @@ namespace LocationConnection
 			}
 		}
 
-		private void SetMap()
+		private async void SetMap()
 		{
 			MarkerOptions markerOptions;
 
@@ -2627,7 +2632,8 @@ namespace LocationConnection
 				if (profile.Latitude != null && profile.Longitude != null && profile.LocationTime != null) //location available
 				{
 					ImageCache im = new ImageCache(this);
-					Bitmap imageBitmap = im.LoadBitmap(profile.ID.ToString(), profile.Pictures[0]);
+					c.LogActivity("Loading bitmap " + profile.ID + " " + profile.Username);
+					Bitmap imageBitmap = await im.LoadBitmap(profile.ID.ToString(), profile.Pictures[0]);
 					Bitmap smallMarker = Bitmap.CreateScaledBitmap(imageBitmap, (int)(Settings.MapIconSize * pixelDensity), (int)(Settings.MapIconSize * pixelDensity), false);
 					LatLng location = new LatLng((double)profile.Latitude, (double)profile.Longitude);
 					markerOptions = new MarkerOptions();
@@ -2640,6 +2646,7 @@ namespace LocationConnection
 						Marker marker = thisMap.AddMarker(markerOptions);
 						profileMarkers.Add(marker);
 					});
+					c.LogActivity("Bitmap added " + profile.ID + " " + profile.Username + " " + smallMarker);
 				}
 			}
 

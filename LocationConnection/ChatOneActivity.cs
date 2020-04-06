@@ -311,8 +311,8 @@ namespace LocationConnection
 			TargetName.Text = Session.CurrentMatch.TargetName;
 
 			ImageCache im = new ImageCache(this);
-			Task.Run(() => {
-				im.LoadImage(ChatTargetImage, Session.CurrentMatch.TargetID.ToString(), Session.CurrentMatch.TargetPicture, false);
+			Task.Run(async () => {
+				await im.LoadImage(ChatTargetImage, Session.CurrentMatch.TargetID.ToString(), Session.CurrentMatch.TargetPicture, false);
 			});
 			
 		}

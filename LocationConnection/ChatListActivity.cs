@@ -100,6 +100,8 @@ namespace LocationConnection
 						ServerParser<MatchItem> parser = new ServerParser<MatchItem>(responseString);
 						matchList = parser.returnCollection;
 						adapter = new ChatUserListAdapter(this, matchList);
+						ImageCache.imagesInProgress = new List<string>();
+						ChatUserListAdapter.loadCount = 0;
 						ChatUserList.Adapter = adapter;
 						NoofMatches.Text = (matchList.Count == 1) ? "1 " + res.GetString(Resource.String.ChatListMatch) : matchList.Count + " " + res.GetString(Resource.String.ChatListMatches);
 					}
