@@ -1201,34 +1201,35 @@ namespace LocationConnection
 			return null;
 		}
 
-		public static void EmptyFolder(string dir)
+		public static void TruncateFolder(string dir)
 		{
+			DateTime dt = DateTime.UtcNow.ToLocalTime();
+
 			var list = Directory.GetFiles(dir, "*");
-			//Console.WriteLine("--------------- Emptyfolder: " + list.Length);
 			if (list.Length > 0)
 			{
+				int j = 0;
 				for (int i = 0; i < list.Length; i++)
 				{
-					File.Delete(list[i]);
-					//Console.WriteLine("-------------- Deleted from folder: " + list[i]);
+					string file = list[i];
+					DateTime modificationTime = File.GetLastWriteTime(file); //local time
+					Console.WriteLine("-------------- Checking file: " + file + " " + modificationTime.ToString() + " " + dt.ToString() + " seconds: " + dt.Subtract(modificationTime).TotalSeconds);
+					if (dt.Subtract(modificationTime).TotalSeconds > Constants.CacheKeepTime)
+					{
+						File.Delete(file);
+						j++;						
+					}
+				}
+				if (j == 0)
+				{
+					LogActivityStatic("Image cache up to date");
+				}
+				else
+				{
+					LogActivityStatic("Deleted " + j + " images from cache");
 				}
 			}
 		}
-		/*
-		 * Alternatively, but this is async:
-		var client = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
-		using var httpResponse = await client.GetAsync(url);
-		if (httpResponse.StatusCode == HttpStatusCode.OK)
-		{
-			byte[] result = await httpResponse.Content.ReadAsByteArrayAsync();
-			return BitmapFactory.DecodeByteArray(result, 0, result.Length);
-		}
-		else
-		{
-			//Url is Invalid
-			return null;
-		}
-		*/
 
 		/*
 		protected void CreateLocationRequest()

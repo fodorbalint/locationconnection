@@ -1223,8 +1223,8 @@ namespace LocationConnection
 					url = Constants.HostName + Constants.UploadFolder + "/" + folder + "/" + Constants.LargeImageSize + "/" + picture;
 				}
 
-				c.LogActivity("LoadPicture start ID " + folder + " index " + index );
-				c.CW("LoadPicture start index " + index + " ID " + folder);
+				//c.LogActivity("LoadPicture start ID " + folder + " index " + index );
+				//c.CW("LoadPicture start index " + index + " ID " + folder);
 
 				Bitmap im = null;
 
@@ -1237,8 +1237,8 @@ namespace LocationConnection
 					im = await task;
 				}
 
-				c.LogActivity("LoadPicture end ID " + folder + " index "+ index + " im null " + (im is null) + " currentID " + currentID + " cancelImageLoading " + cancelImageLoading);
-				c.CW("LoadPicture end index " + index + " ID " + folder + " im null " + (im is null) + " currentID " + currentID + " cancelImageLoading " + cancelImageLoading);
+				//c.LogActivity("LoadPicture end ID " + folder + " index "+ index + " im null " + (im is null) + " currentID " + currentID + " cancelImageLoading " + cancelImageLoading);
+				//c.CW("LoadPicture end index " + index + " ID " + folder + " im null " + (im is null) + " currentID " + currentID + " cancelImageLoading " + cancelImageLoading);
 				
 				if (im is null)
 				{

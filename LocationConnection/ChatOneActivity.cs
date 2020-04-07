@@ -180,6 +180,7 @@ namespace LocationConnection
 
 		public async void RefreshPage()
 		{
+			imm.HideSoftInputFromWindow(ChatEditMessage.WindowToken, 0);
 			MainLayout.RequestFocus();
 			ChatEditMessage.Text = "";
 

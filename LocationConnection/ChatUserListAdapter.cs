@@ -18,7 +18,6 @@ namespace LocationConnection
 	{
 		ChatListActivity context;
 		List<MatchItem> items;
-		public static int loadCount;
 
 		public ChatUserListAdapter(ChatListActivity context, List<MatchItem> items)
 		{
@@ -37,9 +36,6 @@ namespace LocationConnection
 
 		public override View GetView(int position, View convertView, ViewGroup parent)
 		{
-			loadCount++;
-			int localLoadCount = loadCount;
-
 			View view = convertView;
 			if (view == null)
 			{
@@ -95,6 +91,16 @@ namespace LocationConnection
 				LinearLayout lin = (LinearLayout)ChatItems.GetChildAt(j);
 				j++;
 				t.SetTextColor(Color.Black);
+
+				if (Settings.DisplaySize == 1)
+				{
+					t.SetTextAppearance(Resource.Style.TextSmallNormal);
+				}
+				else
+				{
+					t.SetTextAppearance(Resource.Style.TextSmallSmall);
+				}
+
 				if (senderID != Session.ID)
 				{
 					t.SetTypeface(null, TypefaceStyle.Bold);
@@ -104,20 +110,12 @@ namespace LocationConnection
 						lin.SetBackgroundColor(Color.ParseColor("#809dd7fb"));
 					}
 				}
-				if (Settings.DisplaySize == 1)
-				{
-					t.SetTextAppearance(Resource.Style.TextSmallNormal);
-				}
-				else
-				{
-					t.SetTextAppearance(Resource.Style.TextSmallSmall);
-				}
+				
 				lin.AddView(t);
 			}
 
 			ImageCache im = new ImageCache(context);
 			Task.Run(async () => {
-				await Task.Delay(localLoadCount * 15);
 				await im.LoadImage(Image, items[position].TargetID.ToString(), items[position].TargetPicture, false);
 			});
 

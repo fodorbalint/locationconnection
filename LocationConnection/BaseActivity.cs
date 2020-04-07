@@ -176,7 +176,7 @@ namespace LocationConnection
 				}
 			}
 
-			c.LogActivity(" screenWidth " + screenWidth + " screenHeight " + screenHeight + " pixelDensity " + pixelDensity
+			c.LogActivity(" ScreenWidth " + screenWidth + " ScreenHeight " + screenHeight + " PixelDensity " + pixelDensity
 				+ " XPxPerIn " + XPxPerIn + " XDpPerIn " + XDpPerIn + " DpWidth " + DpWidth);
 		}
 
@@ -335,10 +335,13 @@ namespace LocationConnection
 			string firstLine = lines[0];
 			int sep1Pos = firstLine.IndexOf("|");
 			long locationTime = long.Parse(firstLine.Substring(0, sep1Pos));
+
+			int j = 0;
 			if (locationTime < unixTimestamp - Constants.LocationKeepTime)
 			{
+				j++;
 				List<string> newLines = new List<string>();
-				for(int i=1; i < lines.Length; i++)
+				for(int i = 1; i < lines.Length; i++)
 				{
 					string line = lines[i];
 					sep1Pos = line.IndexOf("|");
@@ -346,6 +349,10 @@ namespace LocationConnection
 					if (locationTime >= unixTimestamp - Constants.LocationKeepTime)
 					{
 						newLines.Add(line);
+					}
+					else
+					{
+						j++;
 					}
 				}
 				if (newLines.Count != 0)
@@ -356,6 +363,14 @@ namespace LocationConnection
 				{
 					File.Delete(c.locationLogFile);
 				}
+			}
+			if (j == 0)
+			{
+				c.LogActivity("Location log up to date");
+			}
+			else
+			{
+				c.LogActivity("Removed " + j + " items from location log");
 			}
 		}
 
@@ -373,8 +388,10 @@ namespace LocationConnection
 				int sep2Pos = firstLine.IndexOf(" ", sep1Pos + 1);
 				DateTime logTime = DateTime.ParseExact(firstLine.Substring(0, sep2Pos), format, provider);
 
+				int j = 0;
 				if (dt.Subtract(logTime).TotalSeconds > Constants.SystemLogKeepTime)
 				{
+					j++;
 					List<string> newLines = new List<string>();
 					for (int i = 1; i < lines.Length; i++)
 					{
@@ -387,8 +404,20 @@ namespace LocationConnection
 						{
 							newLines.Add(line);
 						}
+						else
+						{
+							j++;
+						}
 					}
 					File.WriteAllLines(CommonMethods.logFile, newLines);
+				}
+				if (j == 0)
+				{
+					c.LogActivity("System log up to date");
+				}
+				else
+				{
+					c.LogActivity("Removed " + j + " items from system log");
 				}
 			}
 			catch

@@ -108,7 +108,7 @@ namespace LocationConnection
 			}
 			else
 			{
-				context.c.SnackStr(context.res.GetString(Resource.String.MaxNumImages) + " " + Constants.MaxNumPictures);
+				context.c.SnackStr(context.res.GetString(Resource.String.MaxNumImages) + " " + Constants.MaxNumPictures + ".");
 			}
 		}
 

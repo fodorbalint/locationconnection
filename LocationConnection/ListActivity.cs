@@ -179,13 +179,12 @@ namespace LocationConnection
 				IsPlayServicesAvailable();
 				CreateNotificationChannel();
 
-				c.CW(" Directory.Exists(CommonMethods.cacheFolder) " + Directory.Exists(CommonMethods.cacheFolder));
 				if (!Directory.Exists(CommonMethods.cacheFolder)) {
 					Directory.CreateDirectory(CommonMethods.cacheFolder);
 				}
 				else
 				{
-					CommonMethods.EmptyFolder(CommonMethods.cacheFolder);
+					CommonMethods.TruncateFolder(CommonMethods.cacheFolder);
 				}
 
 				if (!c.IsLoggedIn() && File.Exists(c.loginSessionFile))
@@ -535,24 +534,16 @@ namespace LocationConnection
 		{
 			try {
 				base.OnResume();
-				if (!ListActivity.initialized) { return; }
+				if (!initialized) { return; }
 
-				/*Android.Content.Res.TypedArray styledAttributes = this.Theme.ObtainStyledAttributes(new int[1] { Resource.Attribute.actionBarSize });
-				float px = styledAttributes.GetDimension(0, 0);*/
-
-				Stopwatch stw1 = new Stopwatch();
-				stw1.Start();
 				if (File.Exists(c.locationLogFile))
 				{
 					TruncateLocationLog();
 				}
-				c.LogActivity("Truncated location file " + stw1.ElapsedMilliseconds);
-				stw1.Restart();
 				TruncateSystemLog();
-				c.LogActivity("Truncated log file " + stw1.ElapsedMilliseconds);
-				stw1.Stop();
 
 				c.LogActivity("Logged in: " + c.IsLoggedIn());
+
 				if (c.IsLoggedIn())
 				{
 					LoggedInLayout();
@@ -651,7 +642,6 @@ namespace LocationConnection
 				{
 					adapter = new UserSearchListAdapter(this, listProfiles);
 					ImageCache.imagesInProgress = new List<string>();
-					UserSearchListAdapter.loadCount = 0;
 					UserSearchList.Adapter = adapter;
 					usersLoaded = true;
 				}
@@ -792,7 +782,6 @@ namespace LocationConnection
 			ImageCache im = new ImageCache(this);
 			
 			Task.Run(async () => {
-				c.LogActivity("Loggedinlayout loading image " + ImageCache.imagesInProgress);
 				await im.LoadImage(StatusImage, Session.ID.ToString(), Session.Pictures[0]);
 			});
 			
@@ -2352,8 +2341,8 @@ namespace LocationConnection
 		{
 			try
 			{
-				c.CW(" LoadListSearch listLoading " + listLoading);
-				c.LogActivity(" LoadListSearch listLoading " + listLoading);
+				c.CW("LoadListSearch listLoading " + listLoading);
+				c.LogActivity("LoadListSearch listLoading " + listLoading);
 
 				if (listLoading)
 				{
@@ -2443,7 +2432,6 @@ namespace LocationConnection
 						{
 							NoResult.Visibility = ViewStates.Gone;
 							ImageCache.imagesInProgress = new List<string>();
-							UserSearchListAdapter.loadCount = 0;
 							UserSearchList.Adapter = adapter;
 						});
 					}				
@@ -2632,7 +2620,6 @@ namespace LocationConnection
 				if (profile.Latitude != null && profile.Longitude != null && profile.LocationTime != null) //location available
 				{
 					ImageCache im = new ImageCache(this);
-					c.LogActivity("Loading bitmap " + profile.ID + " " + profile.Username);
 					Bitmap imageBitmap = await im.LoadBitmap(profile.ID.ToString(), profile.Pictures[0]);
 					Bitmap smallMarker = Bitmap.CreateScaledBitmap(imageBitmap, (int)(Settings.MapIconSize * pixelDensity), (int)(Settings.MapIconSize * pixelDensity), false);
 					LatLng location = new LatLng((double)profile.Latitude, (double)profile.Longitude);
@@ -2646,7 +2633,6 @@ namespace LocationConnection
 						Marker marker = thisMap.AddMarker(markerOptions);
 						profileMarkers.Add(marker);
 					});
-					c.LogActivity("Bitmap added " + profile.ID + " " + profile.Username + " " + smallMarker);
 				}
 			}
 

@@ -29,9 +29,11 @@ namespace LocationConnection
 
             string saveName = userID + "_" + Constants.SmallImageSize.ToString() + "_" + picture;
 
-            if (Exists(saveName))
+            if (Exists(saveName)) //images when loaded from the cache does not always appear 
             {
+                await Task.Delay(100); //without delay, not all pictures appear. A minimum of 70 ms required, 60 ms can fail.
                 return Load(saveName);
+
             }
             else
             {
@@ -212,8 +214,8 @@ namespace LocationConnection
             {
                 using FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate);
                 fs.Write(data, 0, data.Length);
-                context.c.CW("Cache saving " + fileName);
-                context.c.LogActivity("Cache saving " + fileName);
+                //context.c.CW("Cache saving " + fileName);
+                //context.c.LogActivity("Cache saving " + fileName);
             }
             catch (Exception ex)
             {
@@ -231,16 +233,16 @@ namespace LocationConnection
         private Bitmap Load(string imageName)
         {
             string fileName = System.IO.Path.Combine(CommonMethods.cacheFolder, imageName);
-            context.c.CW("Cache loading " + fileName);
-            context.c.LogActivity("Cache loading " + fileName);
+            //context.c.CW("Cache loading " + fileName);
+            //context.c.LogActivity("Cache loading " + fileName);
             return BitmapFactory.DecodeFile(fileName);
         }
 
         public bool Exists(string imageName)
         {
             string fileName = System.IO.Path.Combine(CommonMethods.cacheFolder, imageName);
-            context.c.CW("Cache exists? " + fileName + " " + File.Exists(fileName));
-            context.c.LogActivity("Cache exists? " + fileName + " " + File.Exists(fileName));
+            //context.c.CW("Cache exists? " + fileName + " " + File.Exists(fileName));
+            //context.c.LogActivity("Cache exists? " + fileName + " " + File.Exists(fileName));
             return File.Exists(fileName);
         }
     }

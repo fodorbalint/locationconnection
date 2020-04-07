@@ -450,7 +450,10 @@ namespace LocationConnection
 		private void TS_Elapsed(object sender, ElapsedEventArgs e)
 		{
 			((Timer)sender).Stop();
-			this.RunOnUiThread(() => { MainScroll.FullScroll(FocusSearchDirection.Down); });
+			this.RunOnUiThread(() => {
+				MainScroll.FullScroll(FocusSearchDirection.Down);
+				MainLayout.RequestFocus(); //Description text gets focus without this
+			});
 		}
 
 		private async void Save_Click(object sender, EventArgs e) //Update intro, sex and open section data. Reset closed section data

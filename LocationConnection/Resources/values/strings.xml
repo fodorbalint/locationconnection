@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Location Connection</string>
 	<string name="app_name_short">Connection</string>
-    <string name="versionInfo">Version: 2. April 2020\n\nCreated by Balint Fodor\n\nContact: fodorbalint@gmail.com\nlocationconnection.me\n\nPrivacy policy:\nhttps://locationconnection.me/?page=legal#privacy\n\nSource code:\nhttps://github.com/fodorbalint?tab=repositories</string>
+    <string name="versionInfo">Version: 7. April 2020\n\nCreated by Balint Fodor\n\nContact: fodorbalint@gmail.com\nlocationconnection.me\n\nPrivacy policy:\nhttps://locationconnection.me/?page=legal#privacy\n\nSource code:\nhttps://github.com/fodorbalint?tab=repositories</string>
 
 	<!-- General -->
 
@@ -104,7 +104,7 @@
     <string name="Description">Introduction:</string>	
 	
 	<string name="Location">Use location</string>
-	<string name="LocationExplanation">Location enables you to find people in your area.\nWhen sharing your location with others, you will have to manually update it on your profile page every time you want to make changes.\nThese settings can be changed later on your profile edit page.</string>
+	<string name="LocationExplanation">Used for showing a map region, determining the distance between you and the search results, or narrowing the search results by distance.\nThese settings can be changed later on your profile edit page.</string>
 	<string name="LocationRationale">Location enables you to find people in your area.</string>
 	<string name="LocationNotGranted">Location permission was not granted.</string>
 	<string name="LocationEnable">Enable location access or change your settings.</string>

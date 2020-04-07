@@ -51,6 +51,7 @@ namespace LocationConnection
 		public static int BackgroundLocationRateMax = 3600;
 		public const int LocationKeepTime = 60 * 60 * 24;
 		public const int SystemLogKeepTime = 60 * 5;
+		public const int CacheKeepTime = 60 * 60 * 24;
 
 		public const bool isTestDB = true;
 		public const int MaxResultCount = 100;
