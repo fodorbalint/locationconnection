@@ -927,12 +927,7 @@ namespace LocationConnection
 			}			
 		}
 
-		public static string UnescapeBraces(string input)
-		{
-			return input.Replace(@"\{", "{").Replace(@"\}", "}").Replace(@"\""", @"""");
-		}
-
-        public static object Clone(object obj)
+		public static object Clone(object obj)
         {
 			Type type = obj.GetType();
 			object newObj = Activator.CreateInstance(type);

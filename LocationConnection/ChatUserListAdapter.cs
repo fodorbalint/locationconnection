@@ -74,6 +74,7 @@ namespace LocationConnection
 			for (int i = items[position].Chat.Length-1; i >= 0; i--)
 			{
 				string messageItem = items[position].Chat[i];
+
 				int sep1Pos = messageItem.IndexOf('|');
 				int sep2Pos = messageItem.IndexOf('|', sep1Pos + 1);
 				int sep3Pos = messageItem.IndexOf('|', sep2Pos + 1);
@@ -81,13 +82,13 @@ namespace LocationConnection
 				int sep5Pos = messageItem.IndexOf('|', sep4Pos + 1);
 				int senderID = int.Parse(messageItem.Substring(sep1Pos + 1, sep2Pos - sep1Pos - 1));
 				long readTime = long.Parse(messageItem.Substring(sep4Pos + 1, sep5Pos - sep4Pos - 1));
-				string message = messageItem.Substring(sep5Pos + 1);
-				
+				string message = messageItem.Substring(sep5Pos + 1);				
+
 				TextView t = new TextView(context);
 				t.SetSingleLine();
 				t.Ellipsize = Android.Text.TextUtils.TruncateAt.End;
 				t.LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent);
-				t.Text = CommonMethods.UnescapeBraces(message.Replace(System.Environment.NewLine, " "));
+				t.Text = message.Replace(System.Environment.NewLine, " ");
 				LinearLayout lin = (LinearLayout)ChatItems.GetChildAt(j);
 				j++;
 				t.SetTextColor(Color.Black);

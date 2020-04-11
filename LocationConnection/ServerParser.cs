@@ -44,7 +44,7 @@ namespace LocationConnection
 							quotaPos = inputString.IndexOf('"', valueSeekStart);
 							valueSeekStart = quotaPos + 1;
 						} while (inputString[quotaPos - 1] == '\\'); //end character of the enclosed string cannot be backslash for this to work
-						value = inputString.Substring(colonPos + 2, quotaPos - colonPos - 2);
+						value = inputString.Substring(colonPos + 2, quotaPos - colonPos - 2).Replace(@"\""", @"""");
 						seekPos = quotaPos + 1; //space is not allowed after the closing quote                    
 					}
 					else
