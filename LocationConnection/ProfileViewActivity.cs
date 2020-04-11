@@ -306,14 +306,19 @@ namespace LocationConnection
 							LikeButton.Visibility = ViewStates.Gone;
 						}
 
-						//c.LogActivity("--------OnResume start --------");
 						if (ListActivity.viewProfiles.Count > Constants.MaxResultCount)
 						{
 							c.LogActivity("Error: ListActivity.viewProfiles.Count is greater than " + Constants.MaxResultCount + ": " + ListActivity.viewProfiles.Count);
 						}
+
+						if (ListActivity.viewIndex >= ListActivity.viewProfiles.Count) //when blocking a user from chat window, but returning to profileview list
+                        {
+							OnBackPressed();
+							return;
+                        }
+
 						PrevLoadAction();
 						NextLoadAction();
-						//c.LogActivity("--------OnResume end --------");
 						displayUser = ListActivity.viewProfiles[ListActivity.viewIndex];
 						
 						Session.CurrentMatch = null;
@@ -427,15 +432,45 @@ namespace LocationConnection
 				string responseString = await c.MakeRequest("action=blockprofileview&ID=" + Session.ID + "&SessionID=" + Session.SessionID + "&TargetID=" + displayUser.ID + "&time=" + unixTimestamp);
 				if (responseString.Substring(0, 2) == "OK")
 				{
-					ListActivity.viewProfiles.RemoveAt(ListActivity.viewIndex);
-					if (ListActivity.viewIndex >= 0 && ListActivity.viewIndex < ListActivity.listProfiles.Count)
-					{
-						ListActivity.listProfiles.RemoveAt(ListActivity.viewIndex);
+					if (pageType == Constants.ProfileViewType_List) {
+						ListActivity.viewProfiles.RemoveAt(ListActivity.viewIndex);
+						if (ListActivity.viewIndex >= 0 && ListActivity.viewIndex < ListActivity.listProfiles.Count)
+						{
+							ListActivity.listProfiles.RemoveAt(ListActivity.viewIndex);
+						}
+						ListActivity.viewIndex--;
+						ListActivity.absoluteIndex--;
+						ListActivity.totalResultCount--;
+						NextButton_Click(null, null);
 					}
-					ListActivity.viewIndex--;
-					ListActivity.absoluteIndex--;
-					ListActivity.totalResultCount--;
-					NextButton_Click(null, null);
+					else
+					{
+						if (!(ListActivity.listProfiles is null))
+						{
+							for (int i = 0; i < ListActivity.listProfiles.Count; i++)
+							{
+								if (ListActivity.listProfiles[i].ID == displayUser.ID)
+								{
+									ListActivity.listProfiles.RemoveAt(i);
+									break;
+								}
+							}
+						}
+						if (!(ListActivity.viewProfiles is null))
+						{
+							for (int i = 0; i < ListActivity.viewProfiles.Count; i++)
+							{
+								if (ListActivity.viewProfiles[i].ID == displayUser.ID)
+								{
+									ListActivity.viewProfiles.RemoveAt(i);
+									break;
+								}
+							}
+						}
+						IntentData.blockedID = displayUser.ID;
+						OnBackPressed();
+					}					
+					
 				}
 				else
 				{
@@ -489,9 +524,13 @@ namespace LocationConnection
 				userLoaded = true;
 				LoadUser();
 			}
-			else if (responseString.Substring(0, 6) == "ERROR_") // ERROR_UserPassive
+			else if (responseString.Substring(0, 6) == "ERROR_") // UserPassive, MatchNotFound or UserNotAvailable 
 			{
 				Session.SnackMessage = res.GetString(Resources.GetIdentifier(responseString.Substring(6), "string", PackageName));
+				if (responseString.Substring(6) == "UserNotAvailable")
+				{
+					IntentData.blockedID = targetID;
+				}
 				OnBackPressed();
 			}
 			else
@@ -545,6 +584,7 @@ namespace LocationConnection
 		{
 			if (footerHeight != Footer.Height)
 			{
+				c.CW("Footer_LayoutChange");
 				SetHeight();
 				footerHeight = Footer.Height;
 			}
@@ -555,6 +595,7 @@ namespace LocationConnection
 			int newMapHeight = (MapContainer.Visibility == ViewStates.Visible) ? MapContainer.Height : 0;
 			if (mapHeight != newMapHeight)
 			{
+				c.CW("MapContainer_LayoutChange");
 				SetHeight();
 				mapHeight = newMapHeight;
 			}
@@ -565,6 +606,7 @@ namespace LocationConnection
 			int newMapHeight = (MapContainer.Visibility == ViewStates.Visible) ? MapContainer.Height : 0;
 			if (footerHeight != Footer.Height || mapHeight != newMapHeight)
 			{
+				c.CW("ScrollLayout_LayoutChange");
 				SetHeight();
 				footerHeight = Footer.Height;
 				mapHeight = newMapHeight;
@@ -575,9 +617,13 @@ namespace LocationConnection
 		{
 			int currentScrollHeight = GetScrollHeight();
 
-			//c.CW("SetHeight currentScrollHeight " + currentScrollHeight + " MainLayout.Height " + MainLayout.Height);
+			Rect r = new Rect();
+			MainLayout.GetWindowVisibleDisplayFrame(r);
+			int screenHeight = MainLayout.RootView.Height;
+			int keyboardHeight = screenHeight - r.Bottom;
+			c.CW("SetHeight currentScrollHeight " + currentScrollHeight + " MainLayout.Height " + MainLayout.Height + " " + keyboardHeight); //for when returning from profile edit with the keyboard open			
 
-			totalScrollHeight = currentScrollHeight - MainLayout.Height;
+			totalScrollHeight = currentScrollHeight - MainLayout.Height - keyboardHeight;
 
 			if (totalScrollHeight < 0)
 			{
@@ -592,9 +638,9 @@ namespace LocationConnection
 				CastShadows(ScrollLayout.ScrollY);
 			}
 
-			if (currentScrollHeight < MainLayout.Height)
+			if (currentScrollHeight < MainLayout.Height + keyboardHeight)
 			{
-				int value = screenWidth + MainLayout.Height - currentScrollHeight;
+				int value = screenWidth + MainLayout.Height + keyboardHeight - currentScrollHeight;
 
 				var p = new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, value);
 				p.TopToBottom = Resource.Id.HeaderBackground;

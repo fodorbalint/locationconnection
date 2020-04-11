@@ -31,8 +31,8 @@ namespace LocationConnection
 		public new View MainLayout;
 		Android.Support.V7.Widget.Toolbar PageToolbar;
 		ConstraintLayout ChatViewProfile;
-		public ListView ChatMessageWindow;		
-		IMenuItem MenuFriend, MenuLocationUpdates;
+		public ListView ChatMessageWindow;
+		IMenuItem MenuFriend, MenuLocationUpdates, MenuUnmatch, MenuReport, MenuBlock;
 		ImageButton ChatOneBack, ChatSendMessage;
 		ImageView ChatTargetImage;
 		TextView TargetName, MatchDate, UnmatchDate;
@@ -208,6 +208,9 @@ namespace LocationConnection
 			MenuInflater.Inflate(Resource.Menu.menu_chatone, menu);
 			MenuLocationUpdates = menu.FindItem(Resource.Id.MenuLocationUpdates);
 			MenuFriend = menu.FindItem(Resource.Id.MenuFriend);
+			MenuUnmatch = menu.FindItem(Resource.Id.MenuUnmatch);
+			MenuReport = menu.FindItem(Resource.Id.MenuReport);
+			MenuBlock = menu.FindItem(Resource.Id.MenuBlock);
 			menuCreated = true;
 
 			SetMenu();
@@ -230,35 +233,21 @@ namespace LocationConnection
 			{
 				targetID = (int)Session.CurrentMatch.TargetID;
 			}
-
-			if ((bool)Session.UseLocation && c.IsLocationEnabled())
+			
+			if (IsUpdatingTo(targetID))
 			{
-				MenuLocationUpdates.SetVisible(true);
-				if (IsUpdatingTo(targetID))
-				{
-					MenuLocationUpdates.SetTitle(Resource.String.MenuStopLocationUpdates);
-				}
-				else
-				{
-					MenuLocationUpdates.SetTitle(Resource.String.MenuStartLocationUpdates);
-				}
+				MenuLocationUpdates.SetTitle(Resource.String.MenuStopLocationUpdates);
 			}
 			else
 			{
-				MenuLocationUpdates.SetVisible(false);
+				MenuLocationUpdates.SetTitle(Resource.String.MenuStartLocationUpdates);
 			}
 
-			if (!(Session.CurrentMatch is null))
-			{
-				if (Session.CurrentMatch.UnmatchDate is null)
-				{
-					MenuFriend.SetVisible(true);
-				}
-				else
-				{
-					MenuFriend.SetVisible(false);
-				}
-			}
+			MenuLocationUpdates.SetVisible(false);
+			MenuFriend.SetVisible(false);
+			MenuUnmatch.SetVisible(false);
+			MenuReport.SetVisible(false);
+			MenuBlock.SetVisible(false);
 		}
 
 		public override bool OnOptionsItemSelected(IMenuItem item)
@@ -348,16 +337,35 @@ namespace LocationConnection
 			
 			DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds((long)Session.CurrentMatch.MatchDate).ToLocalTime();
 			MatchDate.Text = res.GetString(Resource.String.Matched) + ": " + dt.ToString("dd MMMM yyyy HH:mm");
+
+			
+
 			if (!(Session.CurrentMatch.UnmatchDate is null))
 			{
 				dt = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds((long)Session.CurrentMatch.UnmatchDate).ToLocalTime();
 				UnmatchDate.Text = res.GetString(Resource.String.Unmatched) + ": " + dt.ToString("dd MMMM yyyy HH:mm");
 				MenuFriend.SetVisible(false);
+				if (Session.CurrentMatch.TargetID == IntentData.blockedID)
+				{
+					IntentData.blockedID = null;
+					MenuUnmatch.SetVisible(false);
+					MenuReport.SetVisible(false);
+					MenuBlock.SetVisible(false);
+				}
+				else
+				{
+					MenuUnmatch.SetVisible(true);
+					MenuReport.SetVisible(true);
+					MenuBlock.SetVisible(true);
+				}
 			}
 			else
 			{
 				UnmatchDate.Text = "";
 				MenuFriend.SetVisible(true);
+				MenuUnmatch.SetVisible(true);
+				MenuReport.SetVisible(true);
+				MenuBlock.SetVisible(true);
 			}
 
 			if ((bool)Session.CurrentMatch.Active)
@@ -798,7 +806,6 @@ namespace LocationConnection
 							}
 						}
 					}
-
 					OnBackPressed();
 				}
 				else

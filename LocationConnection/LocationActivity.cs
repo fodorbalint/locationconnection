@@ -360,7 +360,6 @@ namespace LocationConnection
 				AddCircle(location);
 				MoveMap(location, false);
 			}
-
 			else if (locationList.Count == 0)
 			{
 				item.isSelected = true;

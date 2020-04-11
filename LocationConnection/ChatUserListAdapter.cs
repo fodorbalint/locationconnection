@@ -74,7 +74,6 @@ namespace LocationConnection
 			for (int i = items[position].Chat.Length-1; i >= 0; i--)
 			{
 				string messageItem = items[position].Chat[i];
-
 				int sep1Pos = messageItem.IndexOf('|');
 				int sep2Pos = messageItem.IndexOf('|', sep1Pos + 1);
 				int sep3Pos = messageItem.IndexOf('|', sep2Pos + 1);

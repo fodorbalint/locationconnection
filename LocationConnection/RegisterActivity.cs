@@ -500,7 +500,7 @@ namespace LocationConnection
 
 				string url = "action=register&Sex=" + (Sex.SelectedItemId - 1) + "&Email=" + c.UrlEncode(Email.Text.Trim()) + "&Password=" + c.UrlEncode(Password.Text.Trim())
 					+ "&Username=" + c.UrlEncode(Username.Text.Trim()) + "&Name=" + c.UrlEncode(Name.Text.Trim())
-					+ "&Pictures=" + c.UrlEncode(string.Join("|", uploadedImages)) + "&Description=" + c.UrlEncode(Description.Text.Trim()) + "&UseLocation=" + UseLocationSwitch.Checked
+					+ "&Pictures=" + c.UrlEncode(string.Join("|", uploadedImages)) + "&Description=" + c.UrlEncode(Description.Text) + "&UseLocation=" + UseLocationSwitch.Checked
 					+ "&LocationShare=" + locationShare + "&DistanceShare=" + distanceShare + "&regsessionid=" + regsessionid;
 
 				if (File.Exists(firebaseTokenFile)) //sends the token whether it was sent from this device or not
@@ -595,13 +595,23 @@ namespace LocationConnection
                 Username.RequestFocus();
                 return false;
             }
-            if (Name.Text.Trim() == "")
+			if (Username.Text.Trim().Substring(Username.Text.Trim().Length - 1) == "\\")
+			{
+				checkFormMessage = Resource.String.UsernameBackslash;
+				return false;
+			}
+			if (Name.Text.Trim() == "")
             {
                 checkFormMessage = Resource.String.NameEmpty;
                 Name.RequestFocus();
                 return false;
             }
-            if (uploadedImages.Count == 0)
+			if (Name.Text.Trim().Substring(Name.Text.Trim().Length - 1) == "\\")
+			{
+				checkFormMessage = Resource.String.NameBackslash;
+				return false;
+			}
+			if (uploadedImages.Count == 0)
             {
                 checkFormMessage = Resource.String.ImagesEmpty;
                 Images.RequestFocus();
@@ -613,7 +623,12 @@ namespace LocationConnection
                 Description.RequestFocus();
                 return false;
             }
-            return true;            
+			if (Description.Text.Substring(Description.Text.Length - 1) == "\\")
+			{
+				checkFormMessage = Resource.String.DescriptionBackslash;
+				return false;
+			}
+			return true;            
         }
 
 		private async void Reset_Click(object sender, EventArgs e)

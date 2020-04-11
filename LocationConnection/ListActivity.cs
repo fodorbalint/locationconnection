@@ -569,8 +569,7 @@ namespace LocationConnection
 				listTypeShown = false;
 				addResultsBefore = false;
 				addResultsAfter = false;
-
-				SetViews();
+				
 				//c.CW("Onresume, after setting views: listTypeClicked " + listTypeClicked + " searchInClicked " + searchInClicked);
 				//c.LogActivity("Onresume, after setting views: listTypeClicked " + listTypeClicked + " searchInClicked " + searchInClicked);
 				MainLayout.RequestFocus();
@@ -672,7 +671,9 @@ namespace LocationConnection
 				{
 					SetDistanceSourceAddress();
 				}
-
+				
+				SetViews();
+				
 				long unixTimestamp = c.Now();
 
 				//getting location if expired

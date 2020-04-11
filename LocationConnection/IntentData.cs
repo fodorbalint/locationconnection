@@ -16,5 +16,6 @@ namespace LocationConnection
 		public static bool authError;
 		public static string error;
 		public static int? senderID;
+		public static int? blockedID;
 	}
 }

@@ -570,6 +570,11 @@ namespace LocationConnection
 				Description.RequestFocus();
 				return false;
 			}
+			if (Description.Text.Substring(Description.Text.Length-1) == "\\")
+			{
+				checkFormMessage = Resource.String.DescriptionBackslash;
+				return false;
+			}
 
 			if (EditAccountDataSection.Visibility == ViewStates.Visible) {
 				if (Email.Text.Trim() == "")
@@ -598,10 +603,20 @@ namespace LocationConnection
 					Username.RequestFocus();
 					return false;
 				}
+				if (Username.Text.Trim().Substring(Username.Text.Trim().Length - 1) == "\\")
+				{
+					checkFormMessage = Resource.String.UsernameBackslash;
+					return false;
+				}
 				if (Name.Text.Trim() == "")
 				{
 					checkFormMessage = Resource.String.NameEmpty;
 					Name.RequestFocus();
+					return false;
+				}
+				if (Name.Text.Trim().Substring(Name.Text.Trim().Length - 1) == "\\")
+				{
+					checkFormMessage = Resource.String.NameBackslash;
 					return false;
 				}
 			}

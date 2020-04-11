@@ -76,6 +76,8 @@
 	<string name="PictureTooLarge">The uploaded image exceeds the 20 MB limit.</string>
 	<string name="PasswordMismatch">Incorrect password. Log out to reset it.</string>
 	<string name="UserPassive">[name] is not active.</string>
+    <string name="MatchNotFound">Match not found.</string>
+	<string name="UserNotAvailable">User not available.</string>
 
 	<!-- Registration / Profile Edit-->
 	
@@ -142,6 +144,9 @@
 	<string name="NameEmpty">Name must be filled in.</string>
 	<string name="ImagesEmpty">At least one image must be uploaded.</string>
 	<string name="DescriptionEmpty">Introduction must be filled in.</string>
+	<string name="UsernameBackslash">Last character of username cannot be \\</string>
+	<string name="NameBackslash">Last character of name cannot be \\</string>
+	<string name="DescriptionBackslash">Last character of introduction cannot be \\</string>
 
 	<!-- Profile Edit only -->
 
@@ -363,7 +368,6 @@
 	
 	<!-- Chat one -->
 
-    <string name="MatchNotFound">Match not found.</string>
     <string name="ChatOneDataLoading">Wait until data is loaded.</string>
     <string name="ChangeUpdateCriteria">For real-time updates, location refresh frequency must be at most 60 seconds, with accuracy set to precise. Apply these settings now?</string>
     <string name="LocationUpdatesToStart">Location updates started.</string>
