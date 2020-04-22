@@ -338,13 +338,12 @@ namespace LocationConnection
 			DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds((long)Session.CurrentMatch.MatchDate).ToLocalTime();
 			MatchDate.Text = res.GetString(Resource.String.Matched) + ": " + dt.ToString("dd MMMM yyyy HH:mm");
 
-			
-
 			if (!(Session.CurrentMatch.UnmatchDate is null))
 			{
 				dt = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds((long)Session.CurrentMatch.UnmatchDate).ToLocalTime();
 				UnmatchDate.Text = res.GetString(Resource.String.Unmatched) + ": " + dt.ToString("dd MMMM yyyy HH:mm");
 				MenuFriend.SetVisible(false);
+				
 				if (Session.CurrentMatch.TargetID == IntentData.blockedID)
 				{
 					IntentData.blockedID = null;

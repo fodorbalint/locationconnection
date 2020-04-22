@@ -113,6 +113,7 @@ namespace LocationConnection
 			ImageButton DeleteUploadedImage = UploadedImageContainer.FindViewById<ImageButton>(Resource.Id.DeleteUploadedImage);
 
 			DeleteUploadedImage.Click += DeleteUploadedImage_Click;
+			DeleteUploadedImage.Touch += DeleteUploadedImage_Touch;
 
 			ImageCache im = new ImageCache(context);
 
@@ -137,6 +138,36 @@ namespace LocationConnection
 
 			LayoutParameters.Width = (int)(BaseActivity.screenWidth - 20 * BaseActivity.pixelDensity);
 			LayoutParameters.Height = (int)((pos - pos % numColumns) / numColumns * (tileSize + tileSpacing * BaseActivity.pixelDensity) + tileSize);
+		}
+
+		private void DeleteUploadedImage_Touch(object sender, TouchEventArgs e)
+		{
+			switch (e.Event.Action)
+			{
+				case MotionEventActions.Down:
+					if (Settings.DisplaySize == 1)
+					{
+						((ImageButton)sender).SetImageResource(Resource.Drawable.ic_delete_pressed_normal);
+					}
+					else
+					{
+						((ImageButton)sender).SetImageResource(Resource.Drawable.ic_delete_pressed_small);
+					}
+					break;
+				case MotionEventActions.Up:
+				case MotionEventActions.Cancel:
+					if (Settings.DisplaySize == 1)
+					{
+						((ImageButton)sender).SetImageResource(Resource.Drawable.ic_delete_normal);
+					}
+					else
+					{
+						((ImageButton)sender).SetImageResource(Resource.Drawable.ic_delete_small);
+					}
+					break;
+				
+			}
+			e.Handled = false;
 		}
 
 		private async void DeleteUploadedImage_Click(object sender, EventArgs e)

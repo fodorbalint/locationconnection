@@ -845,7 +845,7 @@ namespace LocationConnection
 				}
 				else
 				{
-					RegisterDate.Text = dt.ToString("d. MMMM yyyy");
+					RegisterDate.Text = dt.ToString("d MMMM yyyy");
 				}
 
 				LoadEmptyPictures(Session.Pictures.Length);
@@ -971,7 +971,7 @@ namespace LocationConnection
 				}
 				else
 				{
-					RegisterDate.Text = dt.ToString("d. MMMM yyyy");
+					RegisterDate.Text = dt.ToString("d MMMM yyyy");
 				}
 
 				LoadEmptyPictures(displayUser.Pictures.Length);
@@ -1105,7 +1105,7 @@ namespace LocationConnection
 					{
 						if (!(displayUser.Distance is null))
 						{
-							LocationTime.Visibility = ViewStates.Invisible;
+							LocationTime.Visibility = ViewStates.Gone;
 							DistanceText.Visibility = ViewStates.Visible;
 							DistanceText.Text = res.GetString(Resource.String.ProfileViewDistance) + " " + c.GetTimeDiffStr(displayUser.LocationTime, false) + ": " + displayUser.Distance + " km ";
 						}
