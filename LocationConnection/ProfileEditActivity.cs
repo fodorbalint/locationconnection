@@ -289,66 +289,6 @@ namespace LocationConnection
 			});	
 		}
 
-		protected async override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
-		{
-			base.OnActivityResult(requestCode, resultCode, data);
-			if (requestCode == 1 && resultCode == Result.Ok)
-			{
-				if (imagesUploading) //can happen if we click on the upload button twice fast enough
-				{
-					return;
-				}
-				Android.Net.Uri selectedFile = data.Data;
-				string selectedFileStr;
-
-				string path = selectedFile.Path;
-				if (path.IndexOf(":") != -1) //fix #1
-				{
-					int colonPos = path.IndexOf(":");
-					path = path.Substring(colonPos + 1);
-				}
-				if (!File.Exists(path))
-				{
-					string str = Regex.Replace(selectedFile.Path, @"/document/([A-Z\d]{4}-[A-Z\d]{4}):", "/storage/$1/"); // fix #2
-					if (!File.Exists(str))
-					{
-						try
-						{
-							selectedFileStr = c.GetPathToImage(selectedFile);
-						}
-						catch
-						{
-							c.LogError("UploadImagePathNotFound: selectedFile: " + selectedFile + ", selectedFile.Path: " + selectedFile.Path);
-							c.ReportError(res.GetString(Resource.String.UploadImagePathNotFound));
-							return;
-						}
-					}
-					else
-					{
-						selectedFileStr = str;
-					}
-				}
-				else
-				{
-					selectedFileStr = path;
-				}
-				string imageName = selectedFileStr.Substring(selectedFileStr.LastIndexOf("/") + 1);
-				if (uploadedImages.IndexOf(imageName) != -1)
-				{
-					c.Snack(Resource.String.ImageExists);
-					return;
-				}
-				imagesUploading = true;
-
-				Animation anim = Android.Views.Animations.AnimationUtils.LoadAnimation(this, Resource.Animation.rotate);
-				LoaderCircle.Visibility = ViewStates.Visible;
-				LoaderCircle.StartAnimation(anim);
-
-				ImagesProgressText.Text = res.GetString(Resource.String.ImagesProgressText) + " 0%";
-				await rc.UploadFile(selectedFileStr, "");
-			}
-		}
-
 		private void Description_Touch(object sender, View.TouchEventArgs e)
 		{
 			if (Description.HasFocus)

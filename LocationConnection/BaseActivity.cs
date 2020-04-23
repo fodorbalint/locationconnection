@@ -53,6 +53,7 @@ namespace LocationConnection
 		protected static float XPxPerIn;
 		protected static float XDpPerIn;
 		protected static float DpWidth;
+		public int tweenTime = 300;
 
 		bool initializeError = false;
 

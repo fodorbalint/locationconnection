@@ -32,7 +32,6 @@ namespace LocationConnection
 		ChatUserListAdapter adapter;
 
 		bool rippleRunning;
-		int tweenTime = 300;
 		Timer rippleTimer;
 
 		int statusRoundBackground;

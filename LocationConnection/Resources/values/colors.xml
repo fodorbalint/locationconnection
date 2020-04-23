@@ -34,5 +34,6 @@
     <color name="MapActiveButton">#b8cccccc</color>
     <color name="MapPassiveButton">#b8ffffff</color>
     <color name="IconBackgroundLight">#50ffffff</color>
-    <color name="IconBackgroundDark">#26000000</color> <!-- equals to ContentDarkBackground on white -->    
+    <color name="IconBackgroundDark">#26000000</color> <!-- equals to ContentDarkBackground on white -->
+    <color name="Gray">#808080</color>
 </resources>

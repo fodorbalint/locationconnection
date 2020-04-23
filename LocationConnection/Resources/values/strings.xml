@@ -133,7 +133,6 @@
 	<string name="Reset">Reset</string>
 	<string name="Cancel">Cancel</string>
 
-	<string name="UsernameAvailable">Username available.</string>
 	<string name="MaxNumImages">The maximum number of pictures is</string>
 	<string name="ImageExists">This image already exists.</string>
 	<string name="SexEmpty">Please specify your sex.</string>
@@ -148,6 +147,12 @@
 	<string name="UsernameBackslash">Last character of username cannot be \\</string>
 	<string name="NameBackslash">Last character of name cannot be \\</string>
 	<string name="DescriptionBackslash">Last character of introduction cannot be \\</string>
+
+	<string name="UsernameAvailable">Username available.</string>
+	<string name="ImageEditorLabel">Crop the image to the frame. You can move it with one finger, or zoom with two.</string>
+	<string name="ImageEditorAlert">The image does not fill the frame.</string>
+	<string name="ImageEditorCancel">Cancel</string>
+	<string name="ImageEditorOK">OK</string>
 
 	<!-- Profile Edit only -->
 

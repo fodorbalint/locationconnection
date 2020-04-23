@@ -374,8 +374,8 @@
         app:layout_constraintTop_toBottomOf="@+id/FilterLayout"
         app:layout_constraintBottom_toTopOf="@+id/StatusBar"
         android:numColumns="3"
-        android:verticalSpacing="1.71dp"
-        android:horizontalSpacing="1.71dp"
+        android:verticalSpacing="2dp"
+        android:horizontalSpacing="2dp"
         android:stretchMode="columnWidth"
         android:id="@+id/UserSearchList" />    
 	<LinearLayout

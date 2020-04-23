@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -87,7 +88,7 @@ namespace LocationConnection
                 }
 
                 string saveName = userID + "_" + subFolder + "_" + picture;
-                //string imgID = imageView.ToString().Split("{")[1].Substring(0, 7);
+                string imgID = imageView.ToString().Split("{")[1].Substring(0, 7);
 
                 if (Exists(saveName))
                 {
@@ -105,7 +106,9 @@ namespace LocationConnection
                     }
 
                     context.RunOnUiThread(() => {
-                        imageView.SetImageBitmap(Load(saveName));
+                        imageView.SetImageBitmap(Load(saveName)); //takes 3-4 ms
+                        imageView.Alpha = 0;
+                        imageView.Animate().Alpha(1).SetDuration(context.tweenTime).Start();
                     });
                 }
                 else
@@ -143,20 +146,20 @@ namespace LocationConnection
                         }
                     }
 
-                    if (imagesInProgress.IndexOf(userID) != -1)
+                    if (imagesInProgress.IndexOf(saveName) != -1)
                     {
                         //context.c.CW("Cancelled loading " + userID + " at " + imgID); 
                         //context.c.LogActivity("Cancelled loading " + userID + " at " + imgID);
 
                         //For a chatlist with 3 items, the 4 imageViews are used. The first is called 13 times (with all 3 IDs), the second called once, the third once, and the fourth 24 times (with all 3 IDs).
-                        imageViewToLoadLater[imageView] = userID;
+                        imageViewToLoadLater[imageView] = saveName;
                         return;
                     }
 
                     //context.c.CW("Requesting " + userID + " at " + imgID); //+ " arr " + string.Join('|', imagesInProgress) if used at Completed, "Collection was modified; enumeration operation may not execute" error may occur.
                     //context.c.LogActivity("Requesting " + userID + " at " + imgID);
 
-                    imagesInProgress.Add(userID);
+                    imagesInProgress.Add(saveName);
 
                     byte[] bytes = null;
 
@@ -169,9 +172,9 @@ namespace LocationConnection
                         bytes = await task;
                     }
 
-                    if (imagesInProgress.IndexOf(userID) != -1)
+                    if (imagesInProgress.IndexOf(saveName) != -1)
                     {
-                        imagesInProgress.Remove(userID);
+                        imagesInProgress.Remove(saveName);
                     }
 
                     //context.c.CW("Completed " + userID + " at " + imgID);
@@ -190,11 +193,11 @@ namespace LocationConnection
                         {
                             bool found = false;
 
-                            //string str = "ID loaded: " + userID + " original " + imageView.ToString().Split("{")[1].Substring(0,7);
+                            //string str = "Bitmap loaded: " + userID + " original " + imageView.ToString().Split("{")[1].Substring(0,7);
                             foreach (KeyValuePair<ImageView, string> pair in imageViewToLoadLater)
                             {
                                 //there might be more than one ImageView that set this ID
-                                if (pair.Value == userID)
+                                if (pair.Value == saveName)
                                 {
                                     found = true;
                                     pair.Key.SetImageBitmap(bmp);

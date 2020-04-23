@@ -19,6 +19,7 @@ using System.IO;
 using Android.Text;
 using Android.Text.Style;
 using Android.Graphics;
+using Android.Views.Animations;
 
 namespace LocationConnection
 {
@@ -120,10 +121,39 @@ namespace LocationConnection
 			context.StartActivityForResult(Intent.CreateChooser(i, "Select a picture"), 1);
 		}
 
+		public void StartAnim()
+		{
+			Animation anim = Android.Views.Animations.AnimationUtils.LoadAnimation(context, Resource.Animation.rotate);
+			context.LoaderCircle.Visibility = ViewStates.Visible;
+			context.LoaderCircle.StartAnimation(anim);
+			context.ImagesProgressText.Text = context.res.GetString(Resource.String.ImagesProgressText);
+		}
+		public void ImageEditorCancel_Click(object sender, EventArgs e)
+		{
+			context.ImageEditorFrame.Visibility = ViewStates.Invisible;
+			context.ImageEditor.Visibility = ViewStates.Invisible;
+			context.ImageEditorFrameBorder.Visibility = ViewStates.Invisible;
+			context.ImageEditorControls.Visibility = ViewStates.Invisible;
+		}
+
+		public async void ImageEditorOK_Click(object sender, EventArgs e)
+		{
+			context.ImageEditorFrame.Visibility = ViewStates.Invisible;
+			context.ImageEditor.Visibility = ViewStates.Invisible;
+			context.ImageEditorFrameBorder.Visibility = ViewStates.Invisible;
+			context.ImageEditorControls.Visibility = ViewStates.Invisible;
+
+			await UploadFile(context.selectedFileStr, RegisterActivity.regsessionid); //works for profile edit too
+		}
+
 		public async Task UploadFile(string fileName, string regsessionid) //use Task<int> for return value
 		{
 			try
 			{
+				context.imagesUploading = true;
+
+				StartAnim();
+
 				WebClient client = new WebClient();
 				client.UploadProgressChanged += Client_UploadProgressChanged;
 				client.UploadFileCompleted += Client_UploadFileCompleted;

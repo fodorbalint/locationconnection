@@ -137,7 +137,6 @@ namespace LocationConnection
 		public static int absoluteFirstIndex; //absolute position of first element in the list. Changes as list is expanded backwards.
 
 		private bool rippleRunning;
-		private int tweenTime = 300;
         private int loaderAnimTime = 1300;
 		private Timer rippleTimer;
 
@@ -199,6 +198,7 @@ namespace LocationConnection
 				if (autoLogin)
 				{
 					c.LogActivity("Autologin");
+
 					Task.Run(async () =>
 					{
 						Session.LastDataRefresh = null;
@@ -216,6 +216,7 @@ namespace LocationConnection
 								url += "&token=" + File.ReadAllText(firebaseTokenFile);
 							}
 						}
+
 						RunOnUiThread(() => {
 							//will be applied after OnResume exits on the await call.
 							if (!(RefreshDistance is null) && !(ReloadPulldown is null) && !(LoaderCircle is null))
@@ -230,6 +231,7 @@ namespace LocationConnection
 						});
 
 						string responseString = c.MakeRequestSync(url);
+
 						if (responseString.Substring(0, 2) == "OK")
 						{
 							if (File.Exists(firebaseTokenFile))
@@ -411,6 +413,8 @@ namespace LocationConnection
 				}
 				
 				c.LogActivity("Inflated in " + stw.ElapsedMilliseconds);
+				c.CW("Inflated in " + stw.ElapsedMilliseconds);
+
 				stw.Stop();
 
 				MainLayout = FindViewById<ConstraintLayout>(Resource.Id.MainLayout);
@@ -444,7 +448,9 @@ namespace LocationConnection
 				DistanceLimit = FindViewById<SeekBar>(Resource.Id.DistanceLimit);
 				NoResult = FindViewById<TextView>(Resource.Id.NoResult);
 				MapContainer = FindViewById<LinearLayout>(Resource.Id.MapContainer);
-				mapFragment = (SupportMapFragment)SupportFragmentManager.FindFragmentById(Resource.Id.ListViewMap);
+
+				//mapFragment = (SupportMapFragment)SupportFragmentManager.FindFragmentById(Resource.Id.ListViewMap);
+
 				MapStreet = FindViewById<Button>(Resource.Id.MapStreet);
 				MapSatellite = FindViewById<Button>(Resource.Id.MapSatellite);
 				UserSearchList = FindViewById<GridView>(Resource.Id.UserSearchList);
@@ -461,19 +467,19 @@ namespace LocationConnection
 
 				if (Build.VERSION.SdkInt >= BuildVersionCodes.N)
 				{
-					//ReloadPulldown looks pixelated when rotated, so so xml is used.
+					//ReloadPulldown looks pixelated when rotated, so xml is used.
 					MenuChatListBg.SetBackgroundResource(statusRoundBackground);
 				}
 
-				mapFragment.GetMapAsync(this);
+				//mapFragment.GetMapAsync(this);
 				imm = (InputMethodManager)GetSystemService(Context.InputMethodService);
 				c.view = MainLayout;
 				res = Resources;
 				fusedLocationProviderClient = LocationServices.GetFusedLocationProviderClient(this);
 				ReloadPulldown.SetY(-ReloadPulldown.Height);
-				SetSupportActionBar(MainPageToolbar);				
+				SetSupportActionBar(MainPageToolbar);
 
-                mapLoaded = false;
+				mapLoaded = false;
 				usersLoaded = false;
                 mapToSet = false;
                 listLoading = false;
@@ -1450,7 +1456,7 @@ namespace LocationConnection
 
 		private void MapViewSecond()
 		{
-			c.LogActivity("MapViewSecond mapSet" + mapSet + " mapToSet " + mapToSet);
+			c.LogActivity("MapViewSecond mapSet " + mapSet + " mapToSet " + mapToSet);
 			if (mapLoaded && usersLoaded && !(bool)Settings.IsMapView)
 			{
 				if (!mapSet)
@@ -2125,6 +2131,8 @@ namespace LocationConnection
 			try
 			{
 				c.LogActivity("OnMapReady, usersLoaded " + usersLoaded + " IsMapView " + Settings.IsMapView);
+				c.CW("OnMapReady, usersLoaded " + usersLoaded + " IsMapView " + Settings.IsMapView);
+
 				mapLoaded = true;
 				map.UiSettings.ZoomControlsEnabled = false;
 

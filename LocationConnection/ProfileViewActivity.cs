@@ -49,7 +49,6 @@ namespace LocationConnection
 		float counterCircleSize;
 
 		//image scrolling
-		int tweenTime = 300;
 		int clickTime = 300;
 		int swipeMinDistance = 15;
 		double swipeMinSpeed = 0.2;

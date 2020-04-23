@@ -36,7 +36,6 @@ namespace LocationConnection
 		int circleSize = 30;
 
 		bool rippleRunning;
-		int tweenTime = 300;
 		Timer rippleTimer;
 
 		int icMapmarker;
