@@ -223,6 +223,8 @@ namespace LocationConnection
 					ImagesUploaded.drawOrder = new List<int>();
 
 					ImageCache.imagesInProgress = new List<string>();
+					ImageCache.imageViewToLoadLater = new Dictionary<ImageView, string>();
+
 					int i = 0;
 					foreach (string image in uploadedImages)
 					{
@@ -301,6 +303,7 @@ namespace LocationConnection
 			uploadedImages = new List<string>();
 			ImagesUploaded.RemoveAllViews();
 			ImagesUploaded.RefitImagesContainer();
+
 			Description.Text = "";
 
 			ImagesProgressText.Text = "";
@@ -321,7 +324,21 @@ namespace LocationConnection
 			DistanceShareNone.Checked = true;
 
 			rc.EnableLocationSwitches(false);
+
+			Timer t = new Timer(); //when removing uploaded images, form does not scroll up
+			t.Interval = 1;
+			t.Elapsed += T_Elapsed0;
+			t.Start();
 		}
+
+		private void T_Elapsed0(object sender, ElapsedEventArgs e)
+		{
+			((Timer)sender).Stop();
+			this.RunOnUiThread(() => {
+				MainScroll.SmoothScrollTo(0, 0);
+			});
+		}
+		
 
 		public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)
 		{
@@ -598,6 +615,7 @@ namespace LocationConnection
 			if (Username.Text.Trim().Substring(Username.Text.Trim().Length - 1) == "\\")
 			{
 				checkFormMessage = Resource.String.UsernameBackslash;
+				Username.RequestFocus();
 				return false;
 			}
 			if (Name.Text.Trim() == "")
@@ -609,6 +627,7 @@ namespace LocationConnection
 			if (Name.Text.Trim().Substring(Name.Text.Trim().Length - 1) == "\\")
 			{
 				checkFormMessage = Resource.String.NameBackslash;
+				Name.RequestFocus();
 				return false;
 			}
 			if (uploadedImages.Count == 0)
@@ -626,6 +645,7 @@ namespace LocationConnection
 			if (Description.Text.Substring(Description.Text.Length - 1) == "\\")
 			{
 				checkFormMessage = Resource.String.DescriptionBackslash;
+				Description.RequestFocus();
 				return false;
 			}
 			return true;            

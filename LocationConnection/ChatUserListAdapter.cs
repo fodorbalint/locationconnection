@@ -115,6 +115,7 @@ namespace LocationConnection
 			}
 
 			ImageCache im = new ImageCache(context);
+			//im.LoadImage(Image, items[position].TargetID.ToString(), items[position].TargetPicture, false);
 			Task.Run(async () => {
 				await im.LoadImage(Image, items[position].TargetID.ToString(), items[position].TargetPicture, false);
 			});

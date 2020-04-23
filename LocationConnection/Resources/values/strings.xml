@@ -88,6 +88,7 @@
 		<item>Man</item>
 	</string-array>
 	<string name="Email">Email:</string>
+	<string name="EmailExplanation">A confirmation email will be sent. If you forget your password, you can use this email to reset it.</string>
     <string name="Password">Password:</string>
     <string name="ConfirmPassword">Confirm password:</string>
     <string name="Username">Username:</string>

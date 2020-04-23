@@ -172,6 +172,8 @@ namespace LocationConnection
 				ImagesUploaded.drawOrder = new List<int>();
 
 				ImageCache.imagesInProgress = new List<string>();
+				ImageCache.imageViewToLoadLater = new Dictionary<ImageView, string>();
+
 				int i = 0;
 				foreach (string image in uploadedImages)
 				{

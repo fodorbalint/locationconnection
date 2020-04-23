@@ -203,28 +203,22 @@
     			android:theme="@style/BlackTextSmallNormal"
     			android:id="@+id/Description" />
             <TextView
-    			android:layout_width="0px"
+    			android:layout_width="wrap_content"
     			android:layout_height="wrap_content"
     			app:layout_constraintTop_toBottomOf="@+id/Description"
                 app:layout_constraintLeft_toLeftOf="parent"
-				app:layout_constraintRight_toLeftOf="@+id/DistanceText"
                 android:paddingTop="10dp"
     			android:layout_marginLeft="10dp"
     			android:theme="@style/BlackTextSmallNormal"
-				android:background="#FF9966"
     			android:id="@+id/LocationTime" />
     		<TextView
-    			android:layout_width="0px"
+    			android:layout_width="wrap_content"
     			android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@+id/Description"
-				app:layout_constraintLeft_toRightOf="@+id/LocationTime"
     			app:layout_constraintRight_toRightOf="parent"
                 android:paddingTop="10dp"
-    			android:layout_marginLeft="10dp"
-				android:layout_marginRight="10dp"
-				android:gravity="right"
+    			android:layout_marginRight="10dp"
     			android:theme="@style/BlackTextSmallNormal"
-				android:background="#FF6699"
     			android:id="@+id/DistanceText" />            
         </android.support.constraint.ConstraintLayout>
 		<LinearLayout

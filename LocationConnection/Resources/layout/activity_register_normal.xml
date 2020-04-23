@@ -50,6 +50,14 @@
             android:theme="@style/EditNormal"
             android:id="@+id/Email" />
         <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/Email"
+            android:layout_marginTop="10dp"
+            android:text="@string/EmailExplanation"
+			android:theme="@style/BlackTextSmallNormal"
+            android:id="@+id/EmailExplanationLabel" />
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="@+id/Password"
@@ -59,7 +67,7 @@
         <EditText
             android:layout_width="0px"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/Email"
+            app:layout_constraintTop_toBottomOf="@+id/EmailExplanationLabel"
             app:layout_constraintLeft_toRightOf="@+id/ConfirmPasswordText"
             app:layout_constraintRight_toRightOf="parent"
             android:layout_marginLeft="10dp"

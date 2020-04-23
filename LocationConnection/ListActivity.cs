@@ -641,6 +641,7 @@ namespace LocationConnection
 				{
 					adapter = new UserSearchListAdapter(this, listProfiles);
 					ImageCache.imagesInProgress = new List<string>();
+					ImageCache.imageViewToLoadLater = new Dictionary<ImageView, string>();
 					UserSearchList.Adapter = adapter;
 					usersLoaded = true;
 				}
@@ -2433,6 +2434,7 @@ namespace LocationConnection
 						{
 							NoResult.Visibility = ViewStates.Gone;
 							ImageCache.imagesInProgress = new List<string>();
+							ImageCache.imageViewToLoadLater = new Dictionary<ImageView, string>();
 							UserSearchList.Adapter = adapter;
 						});
 					}				

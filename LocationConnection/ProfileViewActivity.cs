@@ -1107,7 +1107,7 @@ namespace LocationConnection
 						{
 							LocationTime.Visibility = ViewStates.Gone;
 							DistanceText.Visibility = ViewStates.Visible;
-							DistanceText.Text = res.GetString(Resource.String.ProfileViewDistance) + " " + c.GetTimeDiffStr(displayUser.LocationTime, false) + ": " + displayUser.Distance + " km ";
+							DistanceText.Text = res.GetString(Resource.String.ProfileViewDistance) + " " + c.GetTimeDiffStr(displayUser.LocationTime, false) + ": " + displayUser.Distance + " km";
 						}
 						else
 						{

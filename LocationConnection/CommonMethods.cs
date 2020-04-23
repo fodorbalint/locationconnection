@@ -919,7 +919,7 @@ namespace LocationConnection
 		{
 			if (!string.IsNullOrEmpty(input))
 			{
-				return input.Replace("#", "%23").Replace("&", "%26").Replace("+", "%2B");
+				return input.Replace("#", "%23").Replace("&", "%26").Replace("+", "%2B").Replace(" ","%20");
 			}
 			else
 			{
@@ -1208,7 +1208,7 @@ namespace LocationConnection
 				{
 					string file = list[i];
 					DateTime modificationTime = File.GetLastWriteTime(file); //local time
-					Console.WriteLine("-------------- Checking file: " + file + " " + modificationTime.ToString() + " " + dt.ToString() + " seconds: " + dt.Subtract(modificationTime).TotalSeconds);
+					//Console.WriteLine("-------------- Checking file: " + file + " " + modificationTime.ToString() + " " + dt.ToString() + " seconds: " + dt.Subtract(modificationTime).TotalSeconds);
 					if (dt.Subtract(modificationTime).TotalSeconds > Constants.CacheKeepTime)
 					{
 						File.Delete(file);

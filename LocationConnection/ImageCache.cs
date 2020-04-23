@@ -19,6 +19,7 @@ namespace LocationConnection
     {
         BaseActivity context;
         public static volatile List<string> imagesInProgress = new List<string>(); //using list is unreliable, when I add  103 to 1|4|7|104|6, it becames 1|4|7|104|6|6. Sometimes an empty stirng is present. Adding volatile did not help. 
+        public static volatile Dictionary<ImageView, string> imageViewToLoadLater = new Dictionary<ImageView, string>();
 
         public ImageCache(BaseActivity context)
         {
@@ -86,13 +87,21 @@ namespace LocationConnection
                 }
 
                 string saveName = userID + "_" + subFolder + "_" + picture;
-
+                //string imgID = imageView.ToString().Split("{")[1].Substring(0, 7);
 
                 if (Exists(saveName))
                 {
                     if (context is ProfileViewActivity && (((ProfileViewActivity)context).currentID.ToString() != userID || ((ProfileViewActivity)context).cancelImageLoading))
                     {
                         return;
+                    }
+
+                    //context.c.CW("Exists " + userID + " at " + imgID);
+                    //context.c.LogActivity("Exists " + userID + " at " + imgID);
+
+                    if (imageViewToLoadLater.ContainsKey(imageView))
+                    {
+                        imageViewToLoadLater.Remove(imageView);
                     }
 
                     context.RunOnUiThread(() => {
@@ -134,18 +143,20 @@ namespace LocationConnection
                         }
                     }
 
-                    if (imagesInProgress.IndexOf(saveName) != -1)
+                    if (imagesInProgress.IndexOf(userID) != -1)
                     {
-                        //context.c.CW("Cancelled loading ID " + userID + " arr " + string.Join('|', imagesInProgress)); 
-                        //context.c.LogActivity("Cancelled loading ID " + userID + " arr " + string.Join('|', imagesInProgress));
+                        //context.c.CW("Cancelled loading " + userID + " at " + imgID); 
+                        //context.c.LogActivity("Cancelled loading " + userID + " at " + imgID);
 
+                        //For a chatlist with 3 items, the 4 imageViews are used. The first is called 13 times (with all 3 IDs), the second called once, the third once, and the fourth 24 times (with all 3 IDs).
+                        imageViewToLoadLater[imageView] = userID;
                         return;
                     }
 
-                    //context.c.CW("Requesting ID " + userID + " arr " + string.Join('|', imagesInProgress));
-                    //context.c.LogActivity("Requesting ID " + userID + " arr " + string.Join('|', imagesInProgress));
+                    //context.c.CW("Requesting " + userID + " at " + imgID); //+ " arr " + string.Join('|', imagesInProgress) if used at Completed, "Collection was modified; enumeration operation may not execute" error may occur.
+                    //context.c.LogActivity("Requesting " + userID + " at " + imgID);
 
-                    imagesInProgress.Add(saveName);
+                    imagesInProgress.Add(userID);
 
                     byte[] bytes = null;
 
@@ -158,13 +169,13 @@ namespace LocationConnection
                         bytes = await task;
                     }
 
-                    if (imagesInProgress.IndexOf(saveName) != -1)
+                    if (imagesInProgress.IndexOf(userID) != -1)
                     {
-                        imagesInProgress.Remove(saveName);
+                        imagesInProgress.Remove(userID);
                     }
 
-                    //context.c.CW("Completed " + userID + " arr " + string.Join('|', imagesInProgress));
-                    //context.c.LogActivity("Completed " + userID + " arr " + string.Join('|', imagesInProgress));
+                    //context.c.CW("Completed " + userID + " at " + imgID);
+                    //context.c.LogActivity("Completed " + userID + " at " + imgID);
 
                     if (bytes != null)
                     {
@@ -177,7 +188,28 @@ namespace LocationConnection
                         }
                         context.RunOnUiThread(() =>
                         {
-                            imageView.SetImageBitmap(bmp);
+                            bool found = false;
+
+                            //string str = "ID loaded: " + userID + " original " + imageView.ToString().Split("{")[1].Substring(0,7);
+                            foreach (KeyValuePair<ImageView, string> pair in imageViewToLoadLater)
+                            {
+                                //there might be more than one ImageView that set this ID
+                                if (pair.Value == userID)
+                                {
+                                    found = true;
+                                    pair.Key.SetImageBitmap(bmp);
+                                    //str += " newer " + pair.Key.ToString().Split("{")[1].Substring(0, 7);
+                                }
+                            }
+
+                            if (!found)
+                            {
+                                imageView.SetImageBitmap(bmp);
+                            }
+
+                            //context.c.CW(str);
+                            //context.c.LogActivity(str);
+
                         });
                     }
                     else
