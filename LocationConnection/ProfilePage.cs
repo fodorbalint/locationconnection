@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using Android.App;
 using Android.Content;
 using Android.Content.Res;
+using Android.Graphics;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.Constraints;
@@ -29,7 +30,7 @@ namespace LocationConnection
 		public Switch UseLocationSwitch, LocationShareAll, LocationShareLike, LocationShareMatch, LocationShareFriend, LocationShareNone;
 		public Switch DistanceShareAll, DistanceShareLike, DistanceShareMatch, DistanceShareFriend, DistanceShareNone;
 		public View ImageEditorFrame, ImageEditorFrameBorder;
-		public ImageView ImageEditor;
+		public ScaleImageView ImageEditor;
 		public LinearLayout ImageEditorControls;
 		public ImageButton ImageEditorCancel, ImageEditorOK;
 
@@ -38,7 +39,9 @@ namespace LocationConnection
 		public bool imagesDeleting;
 		public Resources res;
 
-		public string selectedFileStr;
+		public string selectedFileStr, selectedImageName;
+		public RegisterCommonMethods rc;
+		public float lastScale;
 
 		public abstract void SaveRegData();
 
@@ -117,17 +120,44 @@ namespace LocationConnection
 				{
 					selectedFileStr = path;
 				}
-				string imageName = selectedFileStr.Substring(selectedFileStr.LastIndexOf("/") + 1);
-				if (uploadedImages.IndexOf(imageName) != -1)
+
+				selectedImageName = selectedFileStr.Substring(selectedFileStr.LastIndexOf("/") + 1);
+
+				if (uploadedImages.IndexOf(selectedImageName) != -1)
 				{
 					c.Snack(Resource.String.ImageExists);
 					return;
 				}
 
-				ImageEditorFrame.Visibility = ViewStates.Visible;
-				ImageEditor.Visibility = ViewStates.Visible;
-				ImageEditorFrameBorder.Visibility = ViewStates.Visible;
-				ImageEditorControls.Visibility = ViewStates.Visible;
+				Bitmap bm = BitmapFactory.DecodeFile(selectedFileStr);
+
+				c.CW(bm.Width + " " + bm.Height);
+
+				float sizeRatio = (float)bm.Width / bm.Height;
+
+				if (sizeRatio == 1)
+				{
+					await rc.UploadFile(selectedFileStr, RegisterActivity.regsessionid); //works for profile edit too
+				}
+				else
+				{
+					ImageEditor.SetContent(bm);
+					ImageEditorControls.Visibility = ViewStates.Visible;
+					ImageEditor.Visibility = ViewStates.Visible;
+					ImageEditorFrame.Visibility = ViewStates.Visible;
+					ImageEditorFrameBorder.Visibility = ViewStates.Visible;
+
+					if (sizeRatio > 1)
+					{
+						ImageEditor.LayoutParameters.Height = ImageEditorFrameBorder.Width;
+						ImageEditor.LayoutParameters.Width = (int)Math.Round(ImageEditorFrameBorder.Width * sizeRatio);
+					}
+					else
+					{
+						ImageEditor.LayoutParameters.Height = (int)Math.Round(ImageEditorFrameBorder.Width / sizeRatio);
+						ImageEditor.LayoutParameters.Width = ImageEditorFrameBorder.Width;
+					}
+				}
 			}
 		}
 	}

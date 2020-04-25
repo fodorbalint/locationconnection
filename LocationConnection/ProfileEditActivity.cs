@@ -33,8 +33,6 @@ namespace LocationConnection
 		Switch Women, Men;
 		public EditText EditOldPassword, EditNewPassword, EditConfirmPassword;
 
-		RegisterCommonMethods<ProfileEditActivity> rc;
-
 		int checkFormMessage;
 
 		protected override void OnCreate(Bundle savedInstanceState)
@@ -115,10 +113,9 @@ namespace LocationConnection
 				ImagesUploaded.SetTileSize();
 				ImagesProgress.Progress = 0;
 				c.view = MainLayout;
-				rc = new RegisterCommonMethods<ProfileEditActivity>(MainLayout, this);
+				rc = new RegisterCommonMethods(this);
 				res = Resources;
 
-				Images.Click += rc.Images_Click;
 				Women.Click += Women_Click;
 				Men.Click += Men_Click;
 
@@ -127,26 +124,10 @@ namespace LocationConnection
 				EditLocationSettings.Click += EditLocationSettings_Click;
 				EditMoreOptions.Click += EditMoreOptions_Click;
 
-				CheckUsername.Click += rc.CheckUsername_Click;
-
-				UseLocationSwitch.Click += rc.UseLocationSwitch_Click;
-				LocationShareAll.Click += rc.LocationShareAll_Click;
-				LocationShareLike.Click += rc.LocationShareLike_Click;
-				LocationShareMatch.Click += rc.LocationShareMatch_Click;
-				LocationShareFriend.Click += rc.LocationShareFriend_Click;
-				LocationShareNone.Click += rc.LocationShareNone_Click;
-
-				DistanceShareAll.Click += rc.DistanceShareAll_Click;
-				DistanceShareLike.Click += rc.DistanceShareLike_Click;
-				DistanceShareMatch.Click += rc.DistanceShareMatch_Click;
-				DistanceShareFriend.Click += rc.DistanceShareFriend_Click;
-				DistanceShareNone.Click += rc.DistanceShareNone_Click;
-
 				Save.Click += Save_Click;
 				Cancel.Click += Cancel_Click;
 				DeactivateAccount.Click += DeactivateAccount_Click;
 				DeleteAccount.Click += DeleteAccount_Click;
-				Description.Touch += Description_Touch;
 			}
 			catch (Exception ex)
 			{
@@ -287,16 +268,6 @@ namespace LocationConnection
 				UseLocationSwitch.Checked = true;
 				rc.EnableLocationSwitches(true);
 			});	
-		}
-
-		private void Description_Touch(object sender, View.TouchEventArgs e)
-		{
-			if (Description.HasFocus)
-			{
-				MainScroll.RequestDisallowInterceptTouchEvent(true);
-			}
-			e.Handled = false;
-			base.OnTouchEvent(e.Event);
 		}
 
 		private void Women_Click(object sender, EventArgs e)

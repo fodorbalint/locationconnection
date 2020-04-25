@@ -465,16 +465,17 @@
         android:visibility="invisible"
         android:id="@+id/ImageEditorFrame">        
     </View>
-    <ImageView
+    <LocationConnection.ScaleImageView
         android:layout_width="0px"
 		android:layout_height="0px"
         app:layout_constraintTop_toTopOf="@+id/ImageEditorFrame"
         app:layout_constraintBottom_toBottomOf="@+id/ImageEditorFrame"
         app:layout_constraintLeft_toLeftOf="@+id/ImageEditorFrame"
         app:layout_constraintRight_toRightOf="@+id/ImageEditorFrame"
+        android:background="#000000"
         android:visibility="invisible"
         android:id="@+id/ImageEditor">        
-    </ImageView>
+    </LocationConnection.ScaleImageView>
     <View
         android:layout_width="0px"
 		android:layout_height="0px"

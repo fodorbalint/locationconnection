@@ -47,7 +47,7 @@ namespace LocationConnection
 		EditText EulaText;
 		InputMethodManager imm;
 
-		RegisterCommonMethods<RegisterActivity> rc;
+		//RegisterCommonMethods<RegisterActivity> rc;
 		public BaseAdapter adapter;
 
 		public static string regsessionid; //for use in UploadedListAdapter
@@ -107,7 +107,7 @@ namespace LocationConnection
 
 				ImageEditorFrame = FindViewById<View>(Resource.Id.ImageEditorFrame);
 				ImageEditorFrameBorder = FindViewById<View>(Resource.Id.ImageEditorFrameBorder);
-				ImageEditor = FindViewById<ImageView>(Resource.Id.ImageEditor);
+				ImageEditor = FindViewById<ScaleImageView>(Resource.Id.ImageEditor);
 				ImageEditorControls = FindViewById<LinearLayout>(Resource.Id.ImageEditorControls);
 				ImageEditorCancel = FindViewById<ImageButton>(Resource.Id.ImageEditorCancel);
 				ImageEditorOK = FindViewById<ImageButton>(Resource.Id.ImageEditorOK);
@@ -127,7 +127,7 @@ namespace LocationConnection
 				ImagesUploaded.tileSpacing = 2;
 				ImagesProgress.Progress = 0;
 				c.view = MainLayout;
-				rc = new RegisterCommonMethods<RegisterActivity>(MainLayout, this);
+				rc = new RegisterCommonMethods(this);
 				res = Resources;
 				imm = (InputMethodManager)GetSystemService(Context.InputMethodService);
 
@@ -143,23 +143,6 @@ namespace LocationConnection
 				{
 					regsessionid = File.ReadAllText(regSessionFile);
 				}
-
-				CheckUsername.Click += rc.CheckUsername_Click;
-				Images.Click += rc.Images_Click;
-				Description.Touch += Description_Touch;
-
-				UseLocationSwitch.Click += rc.UseLocationSwitch_Click;
-				LocationShareAll.Click += rc.LocationShareAll_Click;
-				LocationShareLike.Click += rc.LocationShareLike_Click;
-				LocationShareMatch.Click += rc.LocationShareMatch_Click;
-				LocationShareFriend.Click += rc.LocationShareFriend_Click;
-				LocationShareNone.Click += rc.LocationShareNone_Click;
-
-				DistanceShareAll.Click += rc.DistanceShareAll_Click;
-				DistanceShareLike.Click += rc.DistanceShareLike_Click;
-				DistanceShareMatch.Click += rc.DistanceShareMatch_Click;
-				DistanceShareFriend.Click += rc.DistanceShareFriend_Click;
-				DistanceShareNone.Click += rc.DistanceShareNone_Click;
 
 				EulaText.Touch += EulaText_Touch;
 
@@ -389,16 +372,6 @@ namespace LocationConnection
 				UseLocationSwitch.Checked = true;
 				rc.EnableLocationSwitches(true);
 			});
-		}
-
-		private void Description_Touch(object sender, View.TouchEventArgs e)
-		{
-			if (Description.HasFocus)
-			{
-				MainScroll.RequestDisallowInterceptTouchEvent(true);
-			}
-			e.Handled = false;
-			base.OnTouchEvent(e.Event);
 		}
 
 		private void EulaText_Touch(object sender, View.TouchEventArgs e)

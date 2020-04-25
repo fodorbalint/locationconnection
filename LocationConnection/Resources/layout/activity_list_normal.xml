@@ -384,11 +384,11 @@
         app:layout_constraintTop_toBottomOf="@+id/FilterLayout"
         app:layout_constraintBottom_toTopOf="@+id/StatusBar"
 		android:id="@+id/MapContainer">
-		<!--<fragment
+		<fragment
 			android:id="@+id/ListViewMap"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
-			class="com.google.android.gms.maps.SupportMapFragment" />-->
+			class="com.google.android.gms.maps.SupportMapFragment" />
 	</LinearLayout>
     <Button
         android:layout_width="80dp"

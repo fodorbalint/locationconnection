@@ -146,7 +146,7 @@ namespace LocationConnection
                         }
                     }
 
-                    if (imagesInProgress.IndexOf(saveName) != -1)
+                    if (imagesInProgress.IndexOf(saveName) != -1) //saveName must be used, not userID, because on the profile edit page there are multiple pictures from the same user.
                     {
                         //context.c.CW("Cancelled loading " + userID + " at " + imgID); 
                         //context.c.LogActivity("Cancelled loading " + userID + " at " + imgID);

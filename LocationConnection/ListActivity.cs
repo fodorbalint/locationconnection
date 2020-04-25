@@ -449,7 +449,7 @@ namespace LocationConnection
 				NoResult = FindViewById<TextView>(Resource.Id.NoResult);
 				MapContainer = FindViewById<LinearLayout>(Resource.Id.MapContainer);
 
-				//mapFragment = (SupportMapFragment)SupportFragmentManager.FindFragmentById(Resource.Id.ListViewMap);
+				mapFragment = (SupportMapFragment)SupportFragmentManager.FindFragmentById(Resource.Id.ListViewMap);
 
 				MapStreet = FindViewById<Button>(Resource.Id.MapStreet);
 				MapSatellite = FindViewById<Button>(Resource.Id.MapSatellite);
@@ -467,11 +467,11 @@ namespace LocationConnection
 
 				if (Build.VERSION.SdkInt >= BuildVersionCodes.N)
 				{
-					//ReloadPulldown looks pixelated when rotated, so xml is used.
+					//ReloadPulldown looks pixelated when rotated, so png is used.
 					MenuChatListBg.SetBackgroundResource(statusRoundBackground);
 				}
 
-				//mapFragment.GetMapAsync(this);
+				mapFragment.GetMapAsync(this);
 				imm = (InputMethodManager)GetSystemService(Context.InputMethodService);
 				c.view = MainLayout;
 				res = Resources;
@@ -2010,6 +2010,8 @@ namespace LocationConnection
 
 		private void UserSearchList_Touch(object sender, View.TouchEventArgs e)
 		{
+			c.CW("UserSearchList_Touch " + e.Event.Action);
+
 			switch (e.Event.Action)
 			{
 				case MotionEventActions.Down:
