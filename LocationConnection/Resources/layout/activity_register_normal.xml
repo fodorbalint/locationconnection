@@ -472,7 +472,6 @@
         app:layout_constraintBottom_toBottomOf="@+id/ImageEditorFrame"
         app:layout_constraintLeft_toLeftOf="@+id/ImageEditorFrame"
         app:layout_constraintRight_toRightOf="@+id/ImageEditorFrame"
-        android:background="#000000"
         android:visibility="invisible"
         android:id="@+id/ImageEditor">        
     </LocationConnection.ScaleImageView>

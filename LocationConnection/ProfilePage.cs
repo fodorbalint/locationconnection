@@ -141,7 +141,6 @@ namespace LocationConnection
 				}
 				else
 				{
-					ImageEditor.SetContent(bm);
 					ImageEditorControls.Visibility = ViewStates.Visible;
 					ImageEditor.Visibility = ViewStates.Visible;
 					ImageEditorFrame.Visibility = ViewStates.Visible;
@@ -149,14 +148,18 @@ namespace LocationConnection
 
 					if (sizeRatio > 1)
 					{
-						ImageEditor.LayoutParameters.Height = ImageEditorFrameBorder.Width;
-						ImageEditor.LayoutParameters.Width = (int)Math.Round(ImageEditorFrameBorder.Width * sizeRatio);
+						ImageEditor.intrinsicHeight = ImageEditorFrameBorder.Height;
+						ImageEditor.intrinsicWidth = (int)Math.Round(ImageEditorFrameBorder.Width * sizeRatio);
 					}
 					else
 					{
-						ImageEditor.LayoutParameters.Height = (int)Math.Round(ImageEditorFrameBorder.Width / sizeRatio);
-						ImageEditor.LayoutParameters.Width = ImageEditorFrameBorder.Width;
+						ImageEditor.intrinsicHeight = (int)Math.Round(ImageEditorFrameBorder.Width / sizeRatio);
+						ImageEditor.intrinsicWidth = ImageEditorFrameBorder.Width;
 					}
+					ImageEditor.scaleFactor = 1;
+					ImageEditor.xDist = 0;
+					ImageEditor.yDist = 0;
+					ImageEditor.SetContent(bm);					
 				}
 			}
 		}
