@@ -89,6 +89,7 @@ namespace LocationConnection
 					}
 					else if (outOfFrameY) //new distance is smaller
 					{
+						context.c.CW("Out of frame newyDist " + newyDist);
 						if (yDist <= 0 && newyDist > (intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2) //making sure not to go out of frame the opposite end. (when the image is scaled back to 1:1, and moved fast, it can happen)
 						{
 							yDist = (intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2;
@@ -112,15 +113,18 @@ namespace LocationConnection
 
 						if (yDist <= 0 && (-yDist + context.ImageEditorFrameBorder.Height / scaleFactor / 2) > intrinsicHeight / 2) //going out of frame too high
 						{
+
 							yDist = -(intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2;
 							touchStartY += newyDist - -(intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2;
+							context.c.CW("Going out of frame too high Height " + Height + " intrinsicHeight " + intrinsicHeight + " borderH shrunk " + context.ImageEditorFrameBorder.Height / scaleFactor + " yDist " + yDist);
 						}
 						else if (yDist > 0 && (yDist + context.ImageEditorFrameBorder.Height / scaleFactor / 2) > intrinsicHeight / 2) //going out of frame too low
 						{
 							yDist = (intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2;
 							touchStartY += newyDist - (intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2;
 						}
-						// else in frame 						
+						// else in frame 
+						context.c.CW("In frame yDist " + yDist);
 					}
 
 
@@ -167,7 +171,7 @@ namespace LocationConnection
 					prevTouchX = evX;
 					prevTouchY = evY;
 
-					context.c.CW("ImageEditor_Touch Move " + touchStartX + " " + touchStartY + " " + xDist + " " + yDist + " " + outOfFrameX + " " + newxDist);
+					//context.c.CW("ImageEditor_Touch Move " + touchStartX + " " + touchStartY + " " + xDist + " " + yDist + " " + outOfFrameX + " " + newxDist);
 
 					break;
 			}
@@ -187,19 +191,22 @@ namespace LocationConnection
 			canvas.Scale(scaleFactor, scaleFactor);
 
 			Rect frameToDraw = new Rect(0, 0, bm.Width, bm.Height);
-			RectF whereToDraw = new RectF(Width / 2 - intrinsicWidth / 2 + xDist, Height / 2 - intrinsicHeight / 2 + yDist, Width / 2 - intrinsicWidth / 2 + xDist + intrinsicWidth, Height / 2 - intrinsicHeight / 2 + yDist + intrinsicHeight);
+			RectF whereToDraw = new RectF((float)Width / 2 - (float)intrinsicWidth / 2 + xDist, (float)Height / 2 - (float)intrinsicHeight / 2 + yDist, (float)Width / 2 - (float)intrinsicWidth / 2 + xDist + intrinsicWidth, (float)Height / 2 - (float)intrinsicHeight / 2 + yDist + intrinsicHeight);
 
-			context.c.CW("Where to x " + (Width / 2 - intrinsicWidth / 2 + xDist) + " y " + (Height / 2 - intrinsicHeight / 2 + yDist));
+			context.c.CW("Where to x " + ((float)Width / 2 - (float)intrinsicWidth / 2 + xDist) + " y " + ((float)Height / 2 - (float)intrinsicHeight / 2 + yDist) + " right " + ((float)Width / 2 - (float)intrinsicWidth / 2 + xDist + intrinsicWidth) + " bottom " + ((float)Height / 2 - (float)intrinsicHeight / 2 + yDist + intrinsicHeight) + " BorderY " + (context.ImageEditorFrameBorder.GetY() - context.ImageEditor.GetY()) + " BorderH " + context.ImageEditorFrameBorder.Height + " scaleFactor " + scaleFactor);
 
-			Paint paint = new Paint();
-			paint.AntiAlias = true;
-			canvas.DrawBitmap(bm, frameToDraw, whereToDraw, null);
+			Paint paint = new Paint
+			{
+				AntiAlias = true
+			};
+			canvas.DrawBitmap(bm, frameToDraw, whereToDraw, paint);
 
 			canvas.Restore();
 		}
 
 		public bool IsOutOfFrameY()
 		{
+			context.c.CW("IsOutofFrame " + yDist + " " + context.ImageEditorFrameBorder.Height + " " + scaleFactor + " " + intrinsicHeight);
 			if (yDist <= 0 && (-yDist + context.ImageEditorFrameBorder.Height / scaleFactor / 2) > intrinsicHeight / 2 || yDist > 0 && (yDist + context.ImageEditorFrameBorder.Height / scaleFactor / 2) > intrinsicHeight / 2)
 			{
 				return true;

@@ -161,17 +161,26 @@ namespace LocationConnection
 		{
 			if (context.ImageEditor.IsOutOfFrameX() || context.ImageEditor.IsOutOfFrameY())
 			{
-				context.c.Alert(context.res.GetString(Resource.String.ImageEditorAlert));
+				context.c.Alert(context.res.GetString(Resource.String.ImageEditorAlert) + " outX " + context.ImageEditor.IsOutOfFrameX() + " outY " + context.ImageEditor.IsOutOfFrameY());
 				return;
 			}
 
+			float w = context.ImageEditor.bm.Width;
+			float h = context.ImageEditor.bm.Height;
+
+			float x = ((context.ImageEditor.intrinsicWidth - context.ImageEditorFrameBorder.Width / context.ImageEditor.scaleFactor) / 2 - context.ImageEditor.xDist) * w / context.ImageEditor.intrinsicWidth;
+			float y = ((context.ImageEditor.intrinsicHeight - context.ImageEditorFrameBorder.Height / context.ImageEditor.scaleFactor) / 2 - context.ImageEditor.yDist) * h / context.ImageEditor.intrinsicHeight;
+
+			context.c.CW("ImageEditorOK_Click intrinsicWidth " + context.ImageEditor.intrinsicWidth + " intrinsicHeight " + context.ImageEditor.intrinsicHeight + " x " + x + " y " + y + " cropW " + context.ImageEditorFrameBorder.Width * w / context.ImageEditor.intrinsicWidth + " cropH " + context.ImageEditorFrameBorder.Height * h / context.ImageEditor.intrinsicHeight);
+
+			Bitmap.CreateBitmap(context.ImageEditor.bm, (int)Math.Round(x), (int)Math.Round(y), (int)Math.Round(context.ImageEditorFrameBorder.Width * w / context.ImageEditor.intrinsicWidth), (int)Math.Round(context.ImageEditorFrameBorder.Height * h / context.ImageEditor.intrinsicHeight));
 
 			context.ImageEditorFrame.Visibility = ViewStates.Invisible;
 			context.ImageEditor.Visibility = ViewStates.Invisible;
 			context.ImageEditorFrameBorder.Visibility = ViewStates.Invisible;
 			context.ImageEditorControls.Visibility = ViewStates.Invisible;
 
-			await UploadFile(context.selectedFileStr, RegisterActivity.regsessionid); //works for profile edit too
+			//await UploadFile(context.selectedFileStr, RegisterActivity.regsessionid); //works for profile edit too
 		}
 
 		public void StartAnim()
