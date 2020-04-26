@@ -161,7 +161,7 @@ namespace LocationConnection
 		{
 			if (context.ImageEditor.IsOutOfFrameX() || context.ImageEditor.IsOutOfFrameY())
 			{
-				context.c.Alert(context.res.GetString(Resource.String.ImageEditorAlert) + " outX " + context.ImageEditor.IsOutOfFrameX() + " outY " + context.ImageEditor.IsOutOfFrameY());
+				await context.c.Alert(context.res.GetString(Resource.String.ImageEditorAlert));
 				return;
 			}
 
@@ -170,17 +170,45 @@ namespace LocationConnection
 
 			float x = ((context.ImageEditor.intrinsicWidth - context.ImageEditorFrameBorder.Width / context.ImageEditor.scaleFactor) / 2 - context.ImageEditor.xDist) * w / context.ImageEditor.intrinsicWidth;
 			float y = ((context.ImageEditor.intrinsicHeight - context.ImageEditorFrameBorder.Height / context.ImageEditor.scaleFactor) / 2 - context.ImageEditor.yDist) * h / context.ImageEditor.intrinsicHeight;
+			float cropW = context.ImageEditorFrameBorder.Width / context.ImageEditor.scaleFactor * w / context.ImageEditor.intrinsicWidth;
+			float cropH = cropW;
 
-			context.c.CW("ImageEditorOK_Click intrinsicWidth " + context.ImageEditor.intrinsicWidth + " intrinsicHeight " + context.ImageEditor.intrinsicHeight + " x " + x + " y " + y + " cropW " + context.ImageEditorFrameBorder.Width * w / context.ImageEditor.intrinsicWidth + " cropH " + context.ImageEditorFrameBorder.Height * h / context.ImageEditor.intrinsicHeight);
+			//context.c.CW("ImageEditorOK_Click w " + w + " h " + h + " intrinsicWidth " + context.ImageEditor.intrinsicWidth + " intrinsicHeight " + context.ImageEditor.intrinsicHeight + " x " + x + " y " + y + " cropW " + cropW + " cropH " + cropH + " totalX " + (x + cropW) + " totalY " + (y + cropH));
 
-			Bitmap.CreateBitmap(context.ImageEditor.bm, (int)Math.Round(x), (int)Math.Round(y), (int)Math.Round(context.ImageEditorFrameBorder.Width * w / context.ImageEditor.intrinsicWidth), (int)Math.Round(context.ImageEditorFrameBorder.Height * h / context.ImageEditor.intrinsicHeight));
+			Bitmap bm = Bitmap.CreateBitmap(context.ImageEditor.bm, (int)Math.Round(x), (int)Math.Round(y), (int)Math.Round(cropW), (int)Math.Round(cropH));
+
+			string fileName = System.IO.Path.Combine(CommonMethods.cacheFolder, context.selectedImageName);
+			string ext = context.selectedImageName.Substring(context.selectedImageName.LastIndexOf(".") + 1).ToLower();
+
+			try
+			{
+				FileStream stream = new FileStream(fileName, FileMode.Create);
+				if (ext == "jpg" || ext == "jpeg")
+				{
+					bm.Compress(Bitmap.CompressFormat.Jpeg, 100, stream);
+				}
+				else
+				{
+					bm.Compress(Bitmap.CompressFormat.Png, 100, stream);
+				}
+				
+				stream.Close();
+			}
+			catch (Exception ex)
+			{
+				context.c.ReportError("Error while cropping image: " + ex.Message);
+				return;
+			}	
 
 			context.ImageEditorFrame.Visibility = ViewStates.Invisible;
 			context.ImageEditor.Visibility = ViewStates.Invisible;
 			context.ImageEditorFrameBorder.Visibility = ViewStates.Invisible;
 			context.ImageEditorControls.Visibility = ViewStates.Invisible;
 
-			//await UploadFile(context.selectedFileStr, RegisterActivity.regsessionid); //works for profile edit too
+			//FileInfo fi = new FileInfo(fileName);
+			//context.c.CW(fileName + " Image size: " + fi.Length + " " + ext);
+
+			await UploadFile(fileName, RegisterActivity.regsessionid); //works for profile edit too
 		}
 
 		public void StartAnim()
@@ -216,8 +244,6 @@ namespace LocationConnection
 					}
 				}
 				await client.UploadFileTaskAsync(url, fileName);
-				client.UploadProgressChanged -= Client_UploadProgressChanged;
-				client.UploadFileCompleted -= Client_UploadFileCompleted;
 			}
 			catch (Exception ex)
 			{

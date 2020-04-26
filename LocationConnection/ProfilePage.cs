@@ -149,11 +149,11 @@ namespace LocationConnection
 					if (sizeRatio > 1)
 					{
 						ImageEditor.intrinsicHeight = ImageEditorFrameBorder.Height;
-						ImageEditor.intrinsicWidth = (int)Math.Round(ImageEditorFrameBorder.Width * sizeRatio);
+						ImageEditor.intrinsicWidth = ImageEditorFrameBorder.Width * sizeRatio;
 					}
 					else
 					{
-						ImageEditor.intrinsicHeight = (int)Math.Round(ImageEditorFrameBorder.Width / sizeRatio);
+						ImageEditor.intrinsicHeight = ImageEditorFrameBorder.Width / sizeRatio;
 						ImageEditor.intrinsicWidth = ImageEditorFrameBorder.Width;
 					}
 					ImageEditor.scaleFactor = 1;

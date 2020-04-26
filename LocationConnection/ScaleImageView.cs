@@ -20,8 +20,8 @@ namespace LocationConnection
 		private ProfilePage context;
 		private ScaleGestureDetector detector;
 		public float scaleFactor;
-		public int intrinsicWidth;
-		public int intrinsicHeight;
+		public float intrinsicWidth;
+		public float intrinsicHeight;
 		public Bitmap bm;
 
 		float touchStartX, touchStartY;
@@ -29,6 +29,7 @@ namespace LocationConnection
 		float startCenterX, startCenterY;
 		public float xDist, yDist;
 		bool outOfFrameX, outOfFrameY;
+		private bool moveAllowed;
 
 		public ScaleImageView(Context context, IAttributeSet attrs) : base(context, attrs)
 		{
@@ -57,6 +58,11 @@ namespace LocationConnection
 		public override bool OnTouchEvent(MotionEvent e)
 		{
 			detector.OnTouchEvent(e);
+			
+			if (e.PointerCount > 1)
+			{
+				moveAllowed = false;
+			}
 
 			switch (e.Action)
 			{
@@ -70,16 +76,20 @@ namespace LocationConnection
 					outOfFrameY = IsOutOfFrameY();
 					outOfFrameX = IsOutOfFrameX();
 
-					context.c.CW("ImageEditor_Touch Down " + startCenterX + " " + startCenterY + " " + xDist + " " + yDist + " " + outOfFrameX + " " + outOfFrameY);
+					moveAllowed = true;
 
 					break;
 				case MotionEventActions.Move:
+					if (!moveAllowed)
+					{
+						return true;
+					}
 
 					float evX = e.GetX();// + currentCenterX - startCenterX; //coordinates relative to the image's original position
 					float evY = e.GetY();// + currentCenterY - startCenterY;
 
-					float newxDist = startCenterX + evX - touchStartX - Width / 2;
-					float newyDist = startCenterY + evY - touchStartY - Height / 2;
+					float newxDist = startCenterX + (evX - touchStartX) / scaleFactor - Width / 2;
+					float newyDist = startCenterY + (evY - touchStartY) / scaleFactor - Height / 2;
 
 					//context.c.CW("ImageEditor_Touch Move " + newxDist + " " + startCenterX + " " + touchStartX + " " + );
 
@@ -89,7 +99,6 @@ namespace LocationConnection
 					}
 					else if (outOfFrameY) //new distance is smaller
 					{
-						context.c.CW("Out of frame newyDist " + newyDist);
 						if (yDist <= 0 && newyDist > (intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2) //making sure not to go out of frame the opposite end. (when the image is scaled back to 1:1, and moved fast, it can happen)
 						{
 							yDist = (intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2;
@@ -116,7 +125,6 @@ namespace LocationConnection
 
 							yDist = -(intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2;
 							touchStartY += newyDist - -(intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2;
-							context.c.CW("Going out of frame too high Height " + Height + " intrinsicHeight " + intrinsicHeight + " borderH shrunk " + context.ImageEditorFrameBorder.Height / scaleFactor + " yDist " + yDist);
 						}
 						else if (yDist > 0 && (yDist + context.ImageEditorFrameBorder.Height / scaleFactor / 2) > intrinsicHeight / 2) //going out of frame too low
 						{
@@ -124,7 +132,6 @@ namespace LocationConnection
 							touchStartY += newyDist - (intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2;
 						}
 						// else in frame 
-						context.c.CW("In frame yDist " + yDist);
 					}
 
 
@@ -191,9 +198,9 @@ namespace LocationConnection
 			canvas.Scale(scaleFactor, scaleFactor);
 
 			Rect frameToDraw = new Rect(0, 0, bm.Width, bm.Height);
-			RectF whereToDraw = new RectF((float)Width / 2 - (float)intrinsicWidth / 2 + xDist, (float)Height / 2 - (float)intrinsicHeight / 2 + yDist, (float)Width / 2 - (float)intrinsicWidth / 2 + xDist + intrinsicWidth, (float)Height / 2 - (float)intrinsicHeight / 2 + yDist + intrinsicHeight);
+			RectF whereToDraw = new RectF((float)Width / 2 - intrinsicWidth / 2 + xDist, (float)Height / 2 - intrinsicHeight / 2 + yDist, (float)Width / 2 - intrinsicWidth / 2 + xDist + intrinsicWidth, (float)Height / 2 - intrinsicHeight / 2 + yDist + intrinsicHeight);
 
-			context.c.CW("Where to x " + ((float)Width / 2 - (float)intrinsicWidth / 2 + xDist) + " y " + ((float)Height / 2 - (float)intrinsicHeight / 2 + yDist) + " right " + ((float)Width / 2 - (float)intrinsicWidth / 2 + xDist + intrinsicWidth) + " bottom " + ((float)Height / 2 - (float)intrinsicHeight / 2 + yDist + intrinsicHeight) + " BorderY " + (context.ImageEditorFrameBorder.GetY() - context.ImageEditor.GetY()) + " BorderH " + context.ImageEditorFrameBorder.Height + " scaleFactor " + scaleFactor);
+			//context.c.CW("Where to x " + ((float)Width / 2 - intrinsicWidth / 2 + xDist) + " y " + ((float)Height / 2 - intrinsicHeight / 2 + yDist) + " right " + ((float)Width / 2 - intrinsicWidth / 2 + xDist + intrinsicWidth) + " bottom " + ((float)Height / 2 - intrinsicHeight / 2 + yDist + intrinsicHeight) + " BorderY " + (context.ImageEditorFrameBorder.GetY() - context.ImageEditor.GetY()) + " BorderH " + context.ImageEditorFrameBorder.Height + " scaleFactor " + scaleFactor);
 
 			Paint paint = new Paint
 			{
@@ -206,7 +213,15 @@ namespace LocationConnection
 
 		public bool IsOutOfFrameY()
 		{
-			context.c.CW("IsOutofFrame " + yDist + " " + context.ImageEditorFrameBorder.Height + " " + scaleFactor + " " + intrinsicHeight);
+			if (yDist <= 0)
+			{
+				context.c.CW("IsOutofFrameY " + (-yDist + context.ImageEditorFrameBorder.Height / scaleFactor / 2) + " " + intrinsicHeight / 2);
+			}
+			else
+			{
+				context.c.CW("IsOutofFrameY " + (yDist + context.ImageEditorFrameBorder.Height / scaleFactor / 2) + " " + intrinsicHeight / 2);
+			}
+			
 			if (yDist <= 0 && (-yDist + context.ImageEditorFrameBorder.Height / scaleFactor / 2) > intrinsicHeight / 2 || yDist > 0 && (yDist + context.ImageEditorFrameBorder.Height / scaleFactor / 2) > intrinsicHeight / 2)
 			{
 				return true;
@@ -219,6 +234,15 @@ namespace LocationConnection
 
 		public bool IsOutOfFrameX()
 		{
+			if (xDist <= 0)
+			{
+				context.c.CW("IsOutofFrameX " + (-xDist + context.ImageEditorFrameBorder.Width / scaleFactor / 2) + " " + intrinsicWidth / 2);
+			}
+			else
+			{
+				context.c.CW("IsOutofFrameX " + (xDist + context.ImageEditorFrameBorder.Width / scaleFactor / 2) + " " + intrinsicWidth / 2);
+			}
+
 			if (xDist <= 0 && (-xDist + context.ImageEditorFrameBorder.Width / scaleFactor / 2) > intrinsicWidth / 2 || xDist > 0 && (xDist + context.ImageEditorFrameBorder.Width / scaleFactor / 2) > intrinsicWidth / 2)
 			{
 				return true;
@@ -239,7 +263,7 @@ namespace LocationConnection
 			}
 			public override bool OnScale(ScaleGestureDetector detector)
 			{
-				Console.WriteLine("---------------- scaled to " + view.scaleFactor + "---------------");
+				//Console.WriteLine("---------------- scaled to " + view.scaleFactor + "---------------");
 				view.scaleFactor *= detector.ScaleFactor;
 				view.scaleFactor = Math.Max(1f, Math.Min(view.scaleFactor, 3f));
 				view.Invalidate();
