@@ -18,14 +18,21 @@ using Android.Widget;
 namespace LocationConnection
 {
 	[Activity(MainLauncher = false, ConfigurationChanges = Android.Content.PM.ConfigChanges.Orientation | Android.Content.PM.ConfigChanges.ScreenSize)]
-	public class HelpCenterActivity : BaseActivity
+	public class HelpCenterActivity : BaseActivity, TouchActivity
 	{
 		ImageButton HelpCenterBack;
+		Button OpenTutorial;
 		ScrollView QuestionsScroll;
 		LinearLayout QuestionsContainer;
 		TextView HelpCenterFormCaption;
 		Button MessageSend;
 		EditText MessageEdit;
+
+		ConstraintLayout TutorialTopBar, TutorialNavBar;
+		ImageButton TutorialBack, LoadPrevious, LoadNext;
+		TextView TutorialText, TutorialNavText;
+		TouchConstraintLayout TutorialFrame;
+
 		InputMethodManager imm;
 		Android.Content.Res.Resources res;
 		private int blackTextSmall;
@@ -49,18 +56,33 @@ namespace LocationConnection
 
 				MainLayout = FindViewById<ConstraintLayout>(Resource.Id.MainLayout);
 				HelpCenterBack = FindViewById<ImageButton>(Resource.Id.HelpCenterBack);
+				OpenTutorial = FindViewById<Button>(Resource.Id.OpenTutorial);
 				QuestionsScroll = FindViewById<ScrollView>(Resource.Id.QuestionsScroll);
 				QuestionsContainer = FindViewById<LinearLayout>(Resource.Id.QuestionsContainer);
 				HelpCenterFormCaption = FindViewById<TextView>(Resource.Id.HelpCenterFormCaption);
 				MessageEdit = FindViewById<EditText>(Resource.Id.MessageEdit);
 				MessageSend = FindViewById<Button>(Resource.Id.MessageSend);
 
+				TutorialTopBar = FindViewById<ConstraintLayout>(Resource.Id.TutorialTopBar);
+				TutorialNavBar = FindViewById<ConstraintLayout>(Resource.Id.TutorialNavBar);
+				TutorialBack = FindViewById<ImageButton>(Resource.Id.TutorialBack);
+				LoadPrevious = FindViewById<ImageButton>(Resource.Id.LoadPrevious);
+				LoadNext = FindViewById<ImageButton>(Resource.Id.LoadNext);
+				TutorialText = FindViewById<TextView>(Resource.Id.TutorialText);
+				TutorialNavText = FindViewById<TextView>(Resource.Id.TutorialNavText);
+				TutorialFrame = FindViewById<TouchConstraintLayout>(Resource.Id.TutorialFrame);
+
 				MessageEdit.Visibility = ViewStates.Gone;
 				MessageSend.Visibility = ViewStates.Gone;
 
 				HelpCenterBack.Click += HelpCenterBack_Click;
+				OpenTutorial.Click += OpenTutorial_Click;
 				HelpCenterFormCaption.Click += HelpCenterFormCaption_Click;
 				MessageSend.Click += MessageSend_Click;
+
+				TutorialBack.Click += TutorialBack_Click;
+				LoadPrevious.Click += LoadPrevious_Click;
+				LoadNext.Click += LoadNext_Click;
 
 				imm = (InputMethodManager)GetSystemService(Context.InputMethodService);
 				Window.SetSoftInputMode(SoftInput.AdjustResize);
@@ -71,6 +93,45 @@ namespace LocationConnection
 			{
 				c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 			}
+		}
+
+		private void LoadNext_Click(object sender, EventArgs e)
+		{
+			//throw new NotImplementedException();
+		}
+
+		private void LoadPrevious_Click(object sender, EventArgs e)
+		{
+			//throw new NotImplementedException();
+		}
+
+		private void TutorialBack_Click(object sender, EventArgs e)
+		{
+			TutorialTopBar.Visibility = ViewStates.Invisible;
+			TutorialFrame.Visibility = ViewStates.Invisible;
+			TutorialNavBar.Visibility = ViewStates.Invisible;
+			OpenTutorial.Visibility = ViewStates.Visible;
+		}
+
+		private void OpenTutorial_Click(object sender, EventArgs e)
+		{
+			TutorialTopBar.Visibility = ViewStates.Visible;
+			TutorialFrame.Visibility = ViewStates.Visible;
+			TutorialNavBar.Visibility = ViewStates.Visible;
+			OpenTutorial.Visibility = ViewStates.Invisible; //it remains visible when clicked, even though TutorialFrame is on top of it in the view hierarchy
+		}
+
+		public bool ScrollDown(MotionEvent e)
+		{
+			return true;
+		}
+		public bool ScrollMove(MotionEvent e)
+		{
+			return true;
+		}
+		public bool ScrollUp()
+		{
+			return true;
 		}
 
 		protected override async void OnResume()

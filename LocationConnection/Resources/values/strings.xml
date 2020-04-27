@@ -444,6 +444,7 @@
 	<!-- Help center -->
 
 	<string name="HelpCenterBack">Back</string>
+	<string name="HelpCenterTutorial">Open tutorial</string>
 	<string name="HelpCenterFormCaption">Ask a question or send feedback</string>
 	<string name="HelpCenterFormSend">Send</string>
     <string name="HelpCenterSent">Message sent.</string>

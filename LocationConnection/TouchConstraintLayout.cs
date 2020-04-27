@@ -20,7 +20,7 @@ namespace LocationConnection
 {
 	public class TouchConstraintLayout : ConstraintLayout
 	{
-		ProfileViewActivity context;
+		TouchActivity context;
 
 		public TouchConstraintLayout(Context context, IAttributeSet attrs) : base(context, attrs)
 		{
@@ -34,7 +34,7 @@ namespace LocationConnection
 
 		private void Initialize(Context context)
 		{
-			this.context = (ProfileViewActivity)context;
+			this.context = (TouchActivity)context;
 		}
 
 		/*protected override void OnDraw(Canvas canvas)

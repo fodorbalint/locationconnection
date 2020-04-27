@@ -20,7 +20,7 @@ using System.Timers;
 namespace LocationConnection
 {
 	[Activity(MainLauncher = false, ConfigurationChanges = Android.Content.PM.ConfigChanges.Orientation | Android.Content.PM.ConfigChanges.ScreenSize)]
-	public class ProfileViewActivity : BaseActivity, IOnMapReadyCallback
+	public class ProfileViewActivity : BaseActivity, IOnMapReadyCallback, TouchActivity
 	{
 		public ConstraintLayout ScrollLayout, ProfileImageContainer, Footer;
 		LinearLayout MapContainer, CircleContainer;
