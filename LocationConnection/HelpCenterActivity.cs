@@ -32,6 +32,11 @@ namespace LocationConnection
 		ImageButton TutorialBack, LoadPrevious, LoadNext;
 		TextView TutorialText, TutorialNavText;
 		TouchConstraintLayout TutorialFrame;
+		View TutorialTopSeparator, TutorialBottomSeparator;
+
+		private List<string> tutorialDescriptions;
+		private List<string> tutorialPictures;
+		private int currentTutorial;
 
 		InputMethodManager imm;
 		Android.Content.Res.Resources res;
@@ -71,6 +76,8 @@ namespace LocationConnection
 				TutorialText = FindViewById<TextView>(Resource.Id.TutorialText);
 				TutorialNavText = FindViewById<TextView>(Resource.Id.TutorialNavText);
 				TutorialFrame = FindViewById<TouchConstraintLayout>(Resource.Id.TutorialFrame);
+				TutorialTopSeparator = FindViewById<View>(Resource.Id.TutorialTopSeparator);
+				TutorialBottomSeparator = FindViewById<View>(Resource.Id.TutorialBottomSeparator);
 
 				MessageEdit.Visibility = ViewStates.Gone;
 				MessageSend.Visibility = ViewStates.Gone;
@@ -93,45 +100,6 @@ namespace LocationConnection
 			{
 				c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 			}
-		}
-
-		private void LoadNext_Click(object sender, EventArgs e)
-		{
-			//throw new NotImplementedException();
-		}
-
-		private void LoadPrevious_Click(object sender, EventArgs e)
-		{
-			//throw new NotImplementedException();
-		}
-
-		private void TutorialBack_Click(object sender, EventArgs e)
-		{
-			TutorialTopBar.Visibility = ViewStates.Invisible;
-			TutorialFrame.Visibility = ViewStates.Invisible;
-			TutorialNavBar.Visibility = ViewStates.Invisible;
-			OpenTutorial.Visibility = ViewStates.Visible;
-		}
-
-		private void OpenTutorial_Click(object sender, EventArgs e)
-		{
-			TutorialTopBar.Visibility = ViewStates.Visible;
-			TutorialFrame.Visibility = ViewStates.Visible;
-			TutorialNavBar.Visibility = ViewStates.Visible;
-			OpenTutorial.Visibility = ViewStates.Invisible; //it remains visible when clicked, even though TutorialFrame is on top of it in the view hierarchy
-		}
-
-		public bool ScrollDown(MotionEvent e)
-		{
-			return true;
-		}
-		public bool ScrollMove(MotionEvent e)
-		{
-			return true;
-		}
-		public bool ScrollUp()
-		{
-			return true;
 		}
 
 		protected override async void OnResume()
@@ -171,6 +139,11 @@ namespace LocationConnection
 			{
 				c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 			}
+		}
+
+		private void HelpCenterBack_Click(object sender, EventArgs e)
+		{
+			OnBackPressed();
 		}
 
 		private void HelpCenterFormCaption_Click(object sender, EventArgs e)
@@ -218,9 +191,100 @@ namespace LocationConnection
 			}
 		}
 
-		private void HelpCenterBack_Click(object sender, EventArgs e)
+		private async void OpenTutorial_Click(object sender, EventArgs e)
 		{
-			OnBackPressed();
+			TutorialTopBar.Visibility = ViewStates.Visible;
+			TutorialFrame.Visibility = ViewStates.Visible;
+			TutorialTopSeparator.Visibility = ViewStates.Visible;
+			TutorialBottomSeparator.Visibility = ViewStates.Visible;
+			TutorialNavBar.Visibility = ViewStates.Visible;
+			OpenTutorial.Visibility = ViewStates.Gone;
+
+			MessageEdit.Visibility = ViewStates.Gone;
+			MessageSend.Visibility = ViewStates.Gone;
+			QuestionsScroll.Visibility = ViewStates.Visible;
+			imm.HideSoftInputFromWindow(MessageEdit.WindowToken, 0);
+			MainLayout.RequestFocus();
+
+			string url = "action=tutorial&OS=Android&dpWidth=" + dpWidth;
+			string responseString = await c.MakeRequest(url);
+			if (responseString.Substring(0, 2) == "OK")
+			{
+				//QuestionsContainer.RemoveAllViews();
+				tutorialDescriptions = new List<string>();
+				tutorialPictures = new List<string>();
+				responseString = responseString.Substring(3);
+				
+				string[] lines = responseString.Split("\t");
+				int count = 0;
+				foreach (string line in lines)
+				{
+					count++;
+					if (count % 2 == 1)
+					{
+						tutorialDescriptions.Add(line);
+					}
+					else
+					{
+						tutorialPictures.Add(line);
+					}
+				}
+				currentTutorial = 0;
+				LoadTutorial();
+			}
+			else
+			{
+				c.ReportError(responseString);
+			}
+		}
+		
+		private void TutorialBack_Click(object sender, EventArgs e)
+		{
+			TutorialTopBar.Visibility = ViewStates.Invisible;
+			TutorialFrame.Visibility = ViewStates.Invisible;
+			TutorialTopSeparator.Visibility = ViewStates.Invisible;
+			TutorialBottomSeparator.Visibility = ViewStates.Invisible;
+			TutorialNavBar.Visibility = ViewStates.Invisible;
+			OpenTutorial.Visibility = ViewStates.Visible;
+		}
+
+		private void LoadPrevious_Click(object sender, EventArgs e)
+		{
+			currentTutorial--;
+			if (currentTutorial < 0)
+			{
+				currentTutorial = tutorialDescriptions.Count - 1;
+			}
+			LoadTutorial();
+		}
+
+		private void LoadNext_Click(object sender, EventArgs e)
+		{
+			currentTutorial++;
+			if (currentTutorial > tutorialDescriptions.Count - 1)
+			{
+				currentTutorial = 0;
+			}
+			LoadTutorial();
+		}
+
+		private void LoadTutorial()
+		{
+			TutorialText.Text = tutorialDescriptions[currentTutorial];
+			TutorialNavText.Text = (currentTutorial + 1) + " / " + tutorialDescriptions.Count;
+		}
+
+		public bool ScrollDown(MotionEvent e)
+		{
+			return true;
+		}
+		public bool ScrollMove(MotionEvent e)
+		{
+			return true;
+		}
+		public bool ScrollUp()
+		{
+			return true;
 		}
 	}
 }

@@ -56,8 +56,6 @@ namespace LocationConnection
 			context.DistanceShareFriend.Click += DistanceShareFriend_Click;
 			context.DistanceShareNone.Click += DistanceShareNone_Click;
 
-			//context.ImageEditor.Touch += ImageEditor_Touch;
-
 			client = new WebClient();
 			client.UploadProgressChanged += Client_UploadProgressChanged;
 			client.UploadFileCompleted += Client_UploadFileCompleted;
@@ -159,6 +157,7 @@ namespace LocationConnection
 
 		public async void ImageEditorOK_Click(object sender, EventArgs e)
 		{
+			//device rotation needs to be handled
 			if (context.ImageEditor.IsOutOfFrameX() || context.ImageEditor.IsOutOfFrameY())
 			{
 				await context.c.Alert(context.res.GetString(Resource.String.ImageEditorAlert));

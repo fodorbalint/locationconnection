@@ -462,7 +462,7 @@ namespace LocationConnection
 
 			int messageIndex = messageID - 1;
 
-			if (messageIndex >= messageItems.Count) //message exists
+			if (messageIndex >= messageItems.Count) //check if message exists
 			{
 				earlyDelivery = meta;
 				return;

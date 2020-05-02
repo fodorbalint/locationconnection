@@ -2091,6 +2091,11 @@ namespace LocationConnection
 					string responseString = await c.MakeRequest("action=requestmatchid&ID=" + Session.ID + "&SessionID=" + Session.SessionID + "&target=" + displayUser.ID);
 					if (responseString.Substring(0, 2) == "OK")
 					{
+						if (responseString.Substring(3) == "") //deleted user
+                        {
+							c.Snack(Resource.String.MatchNotFound);
+							return;
+                        }
 						Session.CurrentMatch = new MatchItem();
 						Session.CurrentMatch.MatchID = int.Parse(responseString.Substring(3));
 						Session.CurrentMatch.TargetID = displayUser.ID;

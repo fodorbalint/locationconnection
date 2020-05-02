@@ -50,9 +50,7 @@ namespace LocationConnection
 		public static int screenWidth;
 		public static int screenHeight;
 		public static float pixelDensity;
-		protected static float XPxPerIn;
-		protected static float XDpPerIn;
-		protected static float DpWidth;
+		protected static float dpWidth;
 		public int tweenTime = 300;
 
 		bool initializeError = false;
@@ -161,13 +159,13 @@ namespace LocationConnection
 			screenWidth = metrics.WidthPixels;
 			screenHeight = metrics.HeightPixels;
 			pixelDensity = metrics.Density;
-			XPxPerIn = metrics.Xdpi;
-			XDpPerIn = metrics.Xdpi / pixelDensity;
-			DpWidth = screenWidth / pixelDensity;
+			float xPxPerIn = metrics.Xdpi;
+			float xDpPerIn = metrics.Xdpi / pixelDensity;
+			dpWidth = screenWidth / pixelDensity;
 
 			if (setDisplaySize)
 			{
-				if (DpWidth >= 360)
+				if (dpWidth >= 360)
 				{
 					Settings.DisplaySize = 1;
 				}
@@ -178,7 +176,7 @@ namespace LocationConnection
 			}
 
 			c.LogActivity(" ScreenWidth " + screenWidth + " ScreenHeight " + screenHeight + " PixelDensity " + pixelDensity
-				+ " XPxPerIn " + XPxPerIn + " XDpPerIn " + XDpPerIn + " DpWidth " + DpWidth);
+				+ " XPxPerIn " + xPxPerIn + " XDpPerIn " + xDpPerIn + " DpWidth " + dpWidth);
 		}
 
 		protected void CheckIntent() //logged in

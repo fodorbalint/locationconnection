@@ -211,7 +211,7 @@ namespace LocationConnection
 			canvas.Restore();
 		}
 
-		public bool IsOutOfFrameY()
+		public bool IsOutOfFrameY() //0.001 is to take account for the comparison of float numbers. Touch move resolution is larger.
 		{
 			if (yDist <= 0)
 			{
@@ -222,7 +222,7 @@ namespace LocationConnection
 				context.c.CW("IsOutofFrameY " + (yDist + context.ImageEditorFrameBorder.Height / scaleFactor / 2) + " " + intrinsicHeight / 2);
 			}
 			
-			if (yDist <= 0 && (-yDist + context.ImageEditorFrameBorder.Height / scaleFactor / 2) > intrinsicHeight / 2 || yDist > 0 && (yDist + context.ImageEditorFrameBorder.Height / scaleFactor / 2) > intrinsicHeight / 2)
+			if (yDist <= 0 && (-yDist + context.ImageEditorFrameBorder.Height / scaleFactor / 2) > intrinsicHeight / 2 + 0.001 || yDist > 0 && (yDist + context.ImageEditorFrameBorder.Height / scaleFactor / 2) > intrinsicHeight / 2 + 0.001)
 			{
 				return true;
 			}
@@ -243,7 +243,7 @@ namespace LocationConnection
 				context.c.CW("IsOutofFrameX " + (xDist + context.ImageEditorFrameBorder.Width / scaleFactor / 2) + " " + intrinsicWidth / 2);
 			}
 
-			if (xDist <= 0 && (-xDist + context.ImageEditorFrameBorder.Width / scaleFactor / 2) > intrinsicWidth / 2 || xDist > 0 && (xDist + context.ImageEditorFrameBorder.Width / scaleFactor / 2) > intrinsicWidth / 2)
+			if (xDist <= 0 && (-xDist + context.ImageEditorFrameBorder.Width / scaleFactor / 2) > intrinsicWidth / 2 + 0.001 || xDist > 0 && (xDist + context.ImageEditorFrameBorder.Width / scaleFactor / 2) > intrinsicWidth / 2 + 0.001)
 			{
 				return true;
 			}
