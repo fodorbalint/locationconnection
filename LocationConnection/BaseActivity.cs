@@ -54,6 +54,7 @@ namespace LocationConnection
 		public int tweenTime = 300;
 
 		bool initializeError = false;
+		public static bool firstRun = false;
 
 		protected override void OnCreate(Bundle savedInstanceState)
 		{

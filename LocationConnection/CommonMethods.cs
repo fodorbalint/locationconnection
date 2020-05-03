@@ -108,6 +108,11 @@ namespace LocationConnection
 							}
 						}
 					}
+					BaseActivity.firstRun = false;
+				}
+				else
+				{
+					BaseActivity.firstRun = true;
 				}
 
 				Type typeS = typeof(Settings);

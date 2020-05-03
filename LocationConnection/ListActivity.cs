@@ -150,6 +150,8 @@ namespace LocationConnection
 		private int iconBackgroundDark;
 		private int statusRoundBackground;
 
+		private Timer firstRunTimer;
+
 
 		protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -736,6 +738,15 @@ namespace LocationConnection
 					ListView_Click(null, null);
 				}
 
+				c.CW("First run: " + firstRun);
+				if (firstRun) //if alert is not shown, will be changed next time ListActivity is recreated.
+				{
+					firstRunTimer = new Timer();
+					firstRunTimer.Interval = Constants.tutorialInterval;
+					firstRunTimer.Elapsed += FirstRunTimer_Elapsed;
+					firstRunTimer.Start();
+				}
+
 				c.CW("Onresume end");
 				c.LogActivity("ListActivity OnResume end");
 
@@ -780,6 +791,20 @@ namespace LocationConnection
 				Settings.ListMapType = (byte)thisMap.MapType;
 			}
 			c.SaveSettings();
+
+			if (firstRun && firstRunTimer.Enabled)
+			{
+				firstRunTimer.Stop();
+			}
+		}
+
+		private void FirstRunTimer_Elapsed(object sender, ElapsedEventArgs e)
+		{
+			firstRunTimer.Stop();
+			RunOnUiThread(() => {
+				c.SnackIndef(Resource.String.FirstRunMessage);
+			});
+			firstRun = false;
 		}
 
 		private void LoggedInLayout()

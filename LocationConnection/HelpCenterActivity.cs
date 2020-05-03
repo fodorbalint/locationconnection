@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.Graphics;
@@ -12,6 +12,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Support.Constraints;
 using Android.Views;
+using Android.Views.Animations;
 using Android.Views.InputMethods;
 using Android.Widget;
 
@@ -31,12 +32,15 @@ namespace LocationConnection
 		ConstraintLayout TutorialTopBar, TutorialNavBar;
 		ImageButton TutorialBack, LoadPrevious, LoadNext;
 		TextView TutorialText, TutorialNavText;
+		View TutorialFrameBg;
 		TouchConstraintLayout TutorialFrame;
 		View TutorialTopSeparator, TutorialBottomSeparator;
+		ImageView LoaderCircle;
 
 		private List<string> tutorialDescriptions;
 		private List<string> tutorialPictures;
 		private int currentTutorial;
+		public bool cancelImageLoading;
 
 		InputMethodManager imm;
 		Android.Content.Res.Resources res;
@@ -75,9 +79,11 @@ namespace LocationConnection
 				LoadNext = FindViewById<ImageButton>(Resource.Id.LoadNext);
 				TutorialText = FindViewById<TextView>(Resource.Id.TutorialText);
 				TutorialNavText = FindViewById<TextView>(Resource.Id.TutorialNavText);
+				TutorialFrameBg = FindViewById<View>(Resource.Id.TutorialFrameBg);
 				TutorialFrame = FindViewById<TouchConstraintLayout>(Resource.Id.TutorialFrame);
 				TutorialTopSeparator = FindViewById<View>(Resource.Id.TutorialTopSeparator);
 				TutorialBottomSeparator = FindViewById<View>(Resource.Id.TutorialBottomSeparator);
+				LoaderCircle = FindViewById<ImageView>(Resource.Id.LoaderCircle);
 
 				MessageEdit.Visibility = ViewStates.Gone;
 				MessageSend.Visibility = ViewStates.Gone;
@@ -95,6 +101,8 @@ namespace LocationConnection
 				Window.SetSoftInputMode(SoftInput.AdjustResize);
 				c.view = MainLayout;
 				res = Resources;
+
+				firstRun = false;
 			}
 			catch (Exception ex)
 			{
@@ -193,12 +201,15 @@ namespace LocationConnection
 
 		private async void OpenTutorial_Click(object sender, EventArgs e)
 		{
+			TutorialFrame.RemoveAllViews();
 			TutorialTopBar.Visibility = ViewStates.Visible;
+			TutorialFrameBg.Visibility = ViewStates.Visible;
 			TutorialFrame.Visibility = ViewStates.Visible;
 			TutorialTopSeparator.Visibility = ViewStates.Visible;
 			TutorialBottomSeparator.Visibility = ViewStates.Visible;
 			TutorialNavBar.Visibility = ViewStates.Visible;
 			OpenTutorial.Visibility = ViewStates.Gone;
+			cancelImageLoading = false;
 
 			MessageEdit.Visibility = ViewStates.Gone;
 			MessageSend.Visibility = ViewStates.Gone;
@@ -210,7 +221,6 @@ namespace LocationConnection
 			string responseString = await c.MakeRequest(url);
 			if (responseString.Substring(0, 2) == "OK")
 			{
-				//QuestionsContainer.RemoveAllViews();
 				tutorialDescriptions = new List<string>();
 				tutorialPictures = new List<string>();
 				responseString = responseString.Substring(3);
@@ -229,8 +239,24 @@ namespace LocationConnection
 						tutorialPictures.Add(line);
 					}
 				}
+				
 				currentTutorial = 0;
-				LoadTutorial();
+				LoadTutorial(); 
+				LoadEmptyPictures(tutorialDescriptions.Count);
+
+				StartAnim();
+				await Task.Run(async () =>
+				{
+					for (int i = 0; i < tutorialDescriptions.Count; i++)
+					{
+						if (cancelImageLoading)
+						{
+							c.CW("Cancelling task");
+							break;
+						}
+						await LoadPicture(i);
+					}
+				});
 			}
 			else
 			{
@@ -241,11 +267,26 @@ namespace LocationConnection
 		private void TutorialBack_Click(object sender, EventArgs e)
 		{
 			TutorialTopBar.Visibility = ViewStates.Invisible;
+			TutorialFrameBg.Visibility = ViewStates.Invisible;
 			TutorialFrame.Visibility = ViewStates.Invisible;
 			TutorialTopSeparator.Visibility = ViewStates.Invisible;
 			TutorialBottomSeparator.Visibility = ViewStates.Invisible;
 			TutorialNavBar.Visibility = ViewStates.Invisible;
 			OpenTutorial.Visibility = ViewStates.Visible;
+			cancelImageLoading = true;
+		}
+
+		private void StartAnim()
+		{
+			Animation anim = Android.Views.Animations.AnimationUtils.LoadAnimation(this, Resource.Animation.rotate);
+			LoaderCircle.StartAnimation(anim);
+			LoaderCircle.Visibility = ViewStates.Visible;
+		}
+
+		private void StopAnim()
+		{
+			LoaderCircle.Visibility = ViewStates.Gone;
+			LoaderCircle.ClearAnimation();
 		}
 
 		private void LoadPrevious_Click(object sender, EventArgs e)
@@ -272,6 +313,78 @@ namespace LocationConnection
 		{
 			TutorialText.Text = tutorialDescriptions[currentTutorial];
 			TutorialNavText.Text = (currentTutorial + 1) + " / " + tutorialDescriptions.Count;
+			TutorialFrame.ScrollX = currentTutorial * TutorialFrame.Width;
+		}
+
+		private void LoadEmptyPictures(int count)
+		{
+			for (int index = 0; index < count; index++)
+			{
+				ImageView image = new ImageView(this)
+				{
+					Id = 1000 + index
+				};
+				ConstraintLayout.LayoutParams p = new ConstraintLayout.LayoutParams(TutorialFrame.Width, ViewGroup.LayoutParams.MatchParent);
+				if (index == 0)
+				{
+					p.LeftToLeft = Resource.Id.TutorialFrame;
+				}
+				else
+				{
+					p.LeftToRight = 1000 + index - 1;
+				}
+				image.LayoutParameters = p;
+				TutorialFrame.AddView(image);
+			}
+		}
+		private async Task LoadPicture(int index)
+		{
+			ImageView image = (ImageView)TutorialFrame.GetChildAt(index);
+			
+			string url;
+			url = Constants.HostName + Constants.TutorialFolder + "/" + tutorialPictures[index];
+			c.CW("LoadPicture " + index + " " + url);
+
+			Bitmap im = null;
+
+			var task = CommonMethods.GetImageBitmapFromUrlAsync(url);
+			System.Threading.CancellationTokenSource cts = new System.Threading.CancellationTokenSource();
+
+			if (await Task.WhenAny(task, Task.Delay(Constants.RequestTimeout, cts.Token)) == task)
+			{
+				cts.Cancel();
+				im = await task;
+			}
+
+			if (index == 0)
+			{
+				RunOnUiThread(() =>
+				{
+					StopAnim();
+				});
+			}
+
+			if (im is null)
+			{
+				if (cancelImageLoading)
+				{
+					return;
+				}
+				RunOnUiThread(() => {
+					image.SetImageResource(Resource.Drawable.noimage_hd);
+				});
+			}
+			else
+			{
+				if (cancelImageLoading)
+				{
+					return;
+				}
+				RunOnUiThread(() => {
+					image.SetImageResource(0);
+					image.SetImageBitmap(im);
+				});
+			}
 		}
 
 		public bool ScrollDown(MotionEvent e)
