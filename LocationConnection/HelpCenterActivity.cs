@@ -201,7 +201,16 @@ namespace LocationConnection
 
 		private async void OpenTutorial_Click(object sender, EventArgs e)
 		{
+			MessageEdit.Visibility = ViewStates.Gone;
+			MessageSend.Visibility = ViewStates.Gone;
+			QuestionsScroll.Visibility = ViewStates.Visible;
+			imm.HideSoftInputFromWindow(MessageEdit.WindowToken, 0);
+			MainLayout.RequestFocus();
+			
 			TutorialFrame.RemoveAllViews();
+			TutorialText.Text = "";
+            TutorialNavText.Text = "";
+			
 			TutorialTopBar.Visibility = ViewStates.Visible;
 			TutorialFrameBg.Visibility = ViewStates.Visible;
 			TutorialFrame.Visibility = ViewStates.Visible;
@@ -209,13 +218,9 @@ namespace LocationConnection
 			TutorialBottomSeparator.Visibility = ViewStates.Visible;
 			TutorialNavBar.Visibility = ViewStates.Visible;
 			OpenTutorial.Visibility = ViewStates.Gone;
-			cancelImageLoading = false;
+			StartAnim();
 
-			MessageEdit.Visibility = ViewStates.Gone;
-			MessageSend.Visibility = ViewStates.Gone;
-			QuestionsScroll.Visibility = ViewStates.Visible;
-			imm.HideSoftInputFromWindow(MessageEdit.WindowToken, 0);
-			MainLayout.RequestFocus();
+			cancelImageLoading = false;
 
 			string url = "action=tutorial&OS=Android&dpWidth=" + dpWidth;
 			string responseString = await c.MakeRequest(url);
@@ -244,7 +249,6 @@ namespace LocationConnection
 				LoadTutorial(); 
 				LoadEmptyPictures(tutorialDescriptions.Count);
 
-				StartAnim();
 				await Task.Run(async () =>
 				{
 					for (int i = 0; i < tutorialDescriptions.Count; i++)
@@ -273,6 +277,7 @@ namespace LocationConnection
 			TutorialBottomSeparator.Visibility = ViewStates.Invisible;
 			TutorialNavBar.Visibility = ViewStates.Invisible;
 			OpenTutorial.Visibility = ViewStates.Visible;
+			LoaderCircle.Visibility = ViewStates.Gone;
 			cancelImageLoading = true;
 		}
 
@@ -312,7 +317,7 @@ namespace LocationConnection
 		private void LoadTutorial()
 		{
 			TutorialText.Text = tutorialDescriptions[currentTutorial];
-			TutorialNavText.Text = (currentTutorial + 1) + " / " + tutorialDescriptions.Count;
+			TutorialNavText.Text = currentTutorial + 1 + " / " + tutorialDescriptions.Count;
 			TutorialFrame.ScrollX = currentTutorial * TutorialFrame.Width;
 		}
 
@@ -324,7 +329,7 @@ namespace LocationConnection
 				{
 					Id = 1000 + index
 				};
-				ConstraintLayout.LayoutParams p = new ConstraintLayout.LayoutParams(TutorialFrame.Width, ViewGroup.LayoutParams.MatchParent);
+				ConstraintLayout.LayoutParams p = new ConstraintLayout.LayoutParams(TutorialFrame.Width, ViewGroup.LayoutParams.MatchParent); //using MatchParent for width will place the images on top of each other.
 				if (index == 0)
 				{
 					p.LeftToLeft = Resource.Id.TutorialFrame;
@@ -341,8 +346,7 @@ namespace LocationConnection
 		{
 			ImageView image = (ImageView)TutorialFrame.GetChildAt(index);
 			
-			string url;
-			url = Constants.HostName + Constants.TutorialFolder + "/" + tutorialPictures[index];
+			string url = Constants.HostName + Constants.TutorialFolder + "/" + tutorialPictures[index];
 			c.CW("LoadPicture " + index + " " + url);
 
 			Bitmap im = null;

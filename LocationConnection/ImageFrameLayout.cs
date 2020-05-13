@@ -34,16 +34,16 @@ namespace LocationConnection
 
 		static int prevEventHashCode;		
 		int removeIndex;
+
 		float? touchStartX;
 		float? touchStartY;
 		Stopwatch stw;
 		View currentImage;
 		Timer timer;
 		float scaleRatio = 1.1F;
+		bool imageSelected; 
 		bool imageMovable;
-		bool imageSelected;
 		public bool touchStarted;
-		bool dragStarted;
 		int timerCounter;
 		float touchCurrentX;
 		float touchCurrentY;
@@ -370,7 +370,10 @@ namespace LocationConnection
 			imageMovable = false;
 			imageSelected = false;
 			touchStarted = true;
-			dragStarted = false;
+			if (!(timer is null) && timer.Enabled) //user started a touch before select animation finished
+			{
+				timer.Stop();
+			}
 		}
 
 		public void Move(MotionEvent e)
@@ -385,8 +388,6 @@ namespace LocationConnection
 
 			if (stw.ElapsedMilliseconds > pressTime && Math.Abs(touchCurrentX - (float)touchStartX) < pressDistance * BaseActivity.pixelDensity && Math.Abs(touchCurrentY - (float)touchStartY) < pressDistance * BaseActivity.pixelDensity && !imageSelected)
 			{
-				imageSelected = true;
-
 				// calculating the relative coordinates to the parent
 				Rect offsetViewBounds = new Rect();
 				GetDrawingRect(offsetViewBounds);
@@ -399,6 +400,8 @@ namespace LocationConnection
 
 				if (startIndexPos < ChildCount)
 				{
+					imageSelected = true;
+
 					currentImage = GetChildFromDrawOrder(startIndexPos);
 					currentImage.SetZ(1);
 					currentImage.Animate().ScaleX(scaleRatio).ScaleY(scaleRatio).SetDuration(tweenTime / 2);
@@ -427,16 +430,20 @@ namespace LocationConnection
 
 		public void Up()
 		{
-			if (dragStarted)
+			if (imageMovable)
 			{
-				dragStarted = false;
+				imageMovable = false;
+
 				float centerX = currentImage.GetX() + tileSize / 2;
 				float centerY = currentImage.GetY() + tileSize / 2;
+				
 				int endIndexPos = GetIndexFromPos(centerX, centerY);
+				
 				if (endIndexPos < ChildCount && endIndexPos >= 0)
 				{
 					int endX = GetPosX(endIndexPos);
 					int endY = GetPosY(endIndexPos);
+					
 					currentImage.Animate().X(endX).Y(endY).SetDuration(tweenTime);
 
 					if (endIndexPos < startIndexPos)
@@ -509,11 +516,10 @@ namespace LocationConnection
 			}
 			else if (imageSelected) //user can start another touch before animation is finished, because pressTime > tweenTime.
 			{
-				timer.Stop();
 				touchStarted = false;
 				currentImage.SetZ(0);
 			}
-			else
+			else //less than pressTime time passed
 			{
 				touchStarted = false;
 			}
@@ -531,11 +537,13 @@ namespace LocationConnection
 			}
 			else
 			{
-				timer.Stop();
-				imageMovable = true;
-				dragStarted = true;
-				dragStartX = touchCurrentX;
-				dragStartY = touchCurrentY;
+				timer.Stop(); 
+				if (touchStarted) //check if user lifted their finger off before animation is finished
+				{
+					imageMovable = true;
+					dragStartX = touchCurrentX;
+					dragStartY = touchCurrentY;
+				}
 			}
 		}
 
