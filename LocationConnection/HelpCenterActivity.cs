@@ -2,9 +2,12 @@
 //on mobile textbox disappears on typing, it gets so small.
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
+using Android.Animation;
 using Android.App;
 using Android.Content;
 using Android.Graphics;
@@ -391,17 +394,339 @@ namespace LocationConnection
 			}
 		}
 
+		float touchStartX, touchStartY;
+		float touchCurrentX, touchCurrentY;
+		float currentOffsetX, currentOffsetY;
+		int startScrollX, totalScroll, startPic;
+		float prevPos;
+		long prevTime;
+		float prevSpeedX, speedX;
+		Stopwatch stw = new Stopwatch();
+
+		int clickTime = 300;
+		int swipeMinDistance = 15;
+		double swipeMinSpeed = 0.2;
+		Timer scrollTimer;
+		float startValue, endValue, timeValue, middleTime, topSpeed, acceleration;
+		ObjectAnimator animator;
+
 		public bool ScrollDown(MotionEvent e)
 		{
+			if (!(animator is null) && animator.IsRunning || !(scrollTimer is null) && scrollTimer.Enabled)
+			{
+				return false;
+			}
+
+			touchStartX = e.GetX();
+			touchStartY = e.GetY();
+			touchCurrentX = touchStartX;
+			touchCurrentY = touchStartY;
+			currentOffsetX = touchCurrentX - touchStartX; //when clicking, move event may not get triggered.
+			currentOffsetY = touchCurrentY - touchStartY;
+
+			startScrollX = TutorialFrame.ScrollX;
+			totalScroll = TutorialFrame.Width * (tutorialDescriptions.Count - 1);
+			startPic = PosToPic(TutorialFrame.ScrollX);
+
+			stw.Restart();
+			prevPos = touchStartX;
+			prevTime = 0;
+			prevSpeedX = 0;
+			speedX = 0;
+
 			return true;
 		}
 		public bool ScrollMove(MotionEvent e)
 		{
-			return true;
+			touchCurrentX = e.GetX();
+			touchCurrentY = e.GetY();
+
+			if (touchCurrentX != prevPos) //Move event gets triggered when we programatically scroll the view, even though the finger didn't move.
+			{
+				currentOffsetX = touchCurrentX - touchStartX;
+
+				int value = (int)(startScrollX - currentOffsetX);
+				if (value >= 0 && value <= totalScroll)
+				{
+					TutorialFrame.ScrollX = value;
+				}
+				else if (value > totalScroll)
+				{
+					TutorialFrame.ScrollX = totalScroll;
+				}
+				else
+				{
+					TutorialFrame.ScrollX = 0;
+				}
+
+				int newTutorial = (int)Math.Round((float)TutorialFrame.ScrollX / TutorialFrame.Width);
+
+				if (newTutorial != currentTutorial)
+				{
+					TutorialText.Text = tutorialDescriptions[newTutorial];
+					TutorialNavText.Text = newTutorial + 1 + " / " + tutorialDescriptions.Count;
+					currentTutorial = newTutorial;
+				}
+
+				long currentTime = stw.ElapsedMilliseconds;
+				long intervalTime = currentTime - prevTime;
+
+				prevSpeedX = speedX; //the last speed value is often much less than it should be, we use the one before the last.
+				speedX = (touchCurrentX - prevPos) / intervalTime;
+				prevPos = touchCurrentX;
+				prevTime = currentTime;
+			}
+			return false;
 		}
 		public bool ScrollUp()
 		{
-			return true;
+			stw.Stop();
+
+			if (stw.ElapsedMilliseconds < clickTime && Math.Abs(currentOffsetX) < swipeMinDistance * pixelDensity && Math.Abs(currentOffsetY) < swipeMinDistance * pixelDensity)
+			{
+				startPic = PosToPic(startScrollX);
+				int newPos;
+				int newIndex;
+
+				if (touchStartX + currentOffsetX >= screenWidth / 2) //next
+				{
+					if (startPic == tutorialDescriptions.Count - 1)
+					{
+						newIndex = 0;
+					}
+					else
+					{
+						newIndex = startPic + 1;
+					}
+				}
+				else //previous
+				{
+					if (startPic == 0)
+					{
+						newIndex = tutorialDescriptions.Count - 1;
+					}
+					else
+					{
+						newIndex = startPic - 1;
+					}
+				}
+
+				newPos = PicToPos(newIndex);
+				TutorialFrame.ScrollX = newPos;
+
+				TutorialText.Text = tutorialDescriptions[newIndex];
+				TutorialNavText.Text = newIndex + 1 + " / " + tutorialDescriptions.Count;
+				currentTutorial = newIndex;
+
+				return false;
+			}
+
+			int currentPic = PosToPic(TutorialFrame.ScrollX);
+
+			speedX = (Math.Abs(speedX) > Math.Abs(prevSpeedX)) ? speedX : prevSpeedX;
+
+			if (Math.Abs(speedX) > swipeMinSpeed * pixelDensity)
+			{
+				if (currentOffsetX < -swipeMinDistance * pixelDensity && speedX < 0)
+				{
+					int newPos = PicToPos(currentPic + 1);
+					if (newPos <= totalScroll)
+					{
+						float remainingDistance = (TutorialFrame.Width - TutorialFrame.ScrollX % TutorialFrame.Width);
+						long estimatedTime = -(long)(remainingDistance / speedX * 2);
+
+						var v = -speedX;
+						var s = remainingDistance;
+						var t = tweenTime;
+
+						double x1 = (4 * s + Math.Sqrt(16 * s * s - 8 * t * v * (2 * s - t * v))) / (4 * t);
+						double t1 = (x1 - v) / (2 * x1 - v) * t;
+
+						stw.Restart();
+						scrollTimer = new Timer();
+						scrollTimer.Interval = 1; // 1000 per framerate would work too, but it is 16.666. Settings 17, motion is ok, but sometimes jumps.
+
+						if (estimatedTime <= tweenTime)
+						{
+							scrollTimer.Elapsed += T_Elapsed;
+							startValue = TutorialFrame.ScrollX;
+							endValue = newPos;
+							timeValue = estimatedTime;
+						}
+						else
+						{
+							scrollTimer.Elapsed += T2_Elapsed;
+							startValue = TutorialFrame.ScrollX;
+							endValue = newPos;
+							timeValue = tweenTime;
+							middleTime = (float)t1;
+							//speeds are positive
+							speedX = -speedX;
+							topSpeed = (float)x1;
+							acceleration = (float)((x1 - v) / t1);
+						}
+						scrollTimer.Start();
+
+						TutorialText.Text = tutorialDescriptions[currentPic + 1];
+						TutorialNavText.Text = currentPic + 2 + " / " + tutorialDescriptions.Count;
+						currentTutorial = currentPic + 1;
+					}
+
+				}
+				else if (currentOffsetX > swipeMinDistance * pixelDensity && speedX > 0)
+				{
+					int newPos = PicToPos(currentPic);
+					if (newPos >= 0)
+					{
+						float remainingDistance = TutorialFrame.ScrollX % TutorialFrame.Width;
+						long estimatedTime = (long)(remainingDistance / speedX * 2);
+
+						var v = speedX;
+						var s = remainingDistance;
+						var t = tweenTime;
+						double x1 = (4 * s + Math.Sqrt(16 * s * s - 8 * t * v * (2 * s - t * v))) / (4 * t);
+						double t1 = (x1 - v) / (2 * x1 - v) * t;
+
+						stw.Restart();
+						scrollTimer = new Timer();
+						scrollTimer.Interval = 1;
+
+						if (estimatedTime <= tweenTime)
+						{
+							scrollTimer.Elapsed += T_Elapsed;
+							startValue = TutorialFrame.ScrollX;
+							endValue = newPos;
+							timeValue = estimatedTime;
+						}
+						else
+						{
+							scrollTimer.Elapsed += T2_Elapsed;
+							startValue = TutorialFrame.ScrollX;
+							endValue = newPos;
+							timeValue = tweenTime;
+							middleTime = (float)t1;
+							//speeds are negative
+							speedX = -speedX;
+							topSpeed = -(float)x1;
+							acceleration = -(float)((x1 - v) / t1);
+						}
+						scrollTimer.Start();
+
+						TutorialText.Text = tutorialDescriptions[currentPic];
+						TutorialNavText.Text = currentPic + 1 + " / " + tutorialDescriptions.Count;
+						currentTutorial = currentPic;
+					}
+				}
+				else
+				{
+					//not enough distance, pull image to closest border
+					double remainder = TutorialFrame.ScrollX % TutorialFrame.Width;
+					int newPos;
+					int newIndex;
+					if (remainder < TutorialFrame.Width / 2)
+					{
+						newIndex = currentPic;
+					}
+					else
+					{
+						newIndex = currentPic + 1;
+					}
+					newPos = PicToPos(newIndex);
+
+					animator = ObjectAnimator.OfInt(TutorialFrame, "ScrollX", newPos);
+					animator.SetDuration(tweenTime);
+					animator.Start();
+
+					if (startPic != newIndex)
+					{
+						TutorialText.Text = tutorialDescriptions[newIndex];
+						TutorialNavText.Text = newIndex + 1 + " / " + tutorialDescriptions.Count;
+						currentTutorial = newIndex;
+					}
+				}
+			}
+			else
+			{
+				//not enough speed, pull image to closest border
+				double remainder = TutorialFrame.ScrollX % TutorialFrame.Width;
+				int newPos;
+				int newIndex;
+				if (remainder < TutorialFrame.Width / 2)
+				{
+					newIndex = currentPic;
+				}
+				else
+				{
+					newIndex = currentPic + 1;
+				}
+				newPos = PicToPos(newIndex);
+
+				animator = ObjectAnimator.OfInt(TutorialFrame, "ScrollX", newPos);
+				animator.SetDuration(tweenTime);
+				animator.Start();
+
+				if (startPic != newIndex)
+				{
+					TutorialText.Text = tutorialDescriptions[newIndex];
+					TutorialNavText.Text = newIndex + 1 + " / " + tutorialDescriptions.Count;
+					currentTutorial = newIndex;
+				}
+			}
+			return false;
+		}
+
+		private void T_Elapsed(object sender, ElapsedEventArgs e) //decelerate
+		{
+			long millis = stw.ElapsedMilliseconds;
+			if (millis < timeValue)
+			{
+				//decelerate
+				float currentSpeed = (1 - millis / timeValue) * speedX;
+				float avgSpeed = (speedX + currentSpeed) / 2;
+				TutorialFrame.ScrollX = (int)(startValue - avgSpeed * millis);
+			}
+			else
+			{
+				stw.Stop();
+				scrollTimer.Stop();
+				TutorialFrame.ScrollX = (int)endValue;
+			}
+		}
+
+		private void T2_Elapsed(object sender, ElapsedEventArgs e) //accelerate - decelerate
+		{
+			long millis = stw.ElapsedMilliseconds;
+			if (millis < middleTime)
+			{
+				float currentSpeed = speedX + acceleration * millis;
+				float elapsedDistance = (speedX + currentSpeed) / 2 * millis;
+				TutorialFrame.ScrollX = (int)(startValue + elapsedDistance);
+				//ProfileImageScroll.Invalidate();
+			}
+			else if (millis < timeValue)
+			{
+				float currentSpeed = topSpeed - acceleration * (millis - middleTime);
+				float elapsedDistance = (speedX + topSpeed) / 2 * middleTime + (topSpeed + currentSpeed) / 2 * (millis - middleTime);
+				TutorialFrame.ScrollX = (int)(startValue + elapsedDistance);
+				//ProfileImageScroll.Invalidate();
+			}
+			else
+			{
+				stw.Stop();
+				scrollTimer.Stop();
+				TutorialFrame.ScrollX = (int)endValue;
+			}
+		}
+
+		public int PosToPic(double pos)
+		{
+			double remainder = pos % TutorialFrame.Width;
+			return (int)((pos - remainder) / TutorialFrame.Width);
+		}
+
+		private int PicToPos(int pic)
+		{
+			return TutorialFrame.Width * pic;
 		}
 	}
 }

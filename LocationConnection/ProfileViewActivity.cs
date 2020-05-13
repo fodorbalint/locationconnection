@@ -69,7 +69,7 @@ namespace LocationConnection
 		float prevSpeedY;
 		float speedY;
 
-		int startPic;
+		int startPic, imageIndex;
 		float touchCurrentX;
 		float touchCurrentY;
 		float currentOffsetX;
@@ -1366,6 +1366,7 @@ namespace LocationConnection
 			startScrollX = ProfileImageScroll.ScrollX;
 			totalScroll = ProfileImageScroll.Height * (counterCircles.Count - 1);
 			startPic = PosToPic(ProfileImageScroll.ScrollX);
+			imageIndex = startPic;
 
 			isTouchDown = true;
 			horizontalCancelled = false;
@@ -1418,6 +1419,18 @@ namespace LocationConnection
 						else
 						{
 							ProfileImageScroll.ScrollX = 0;
+						}
+
+						int newImageIndex = (int)Math.Round((float)ProfileImageScroll.ScrollX / ProfileImageScroll.Height);
+
+						if (newImageIndex != imageIndex)
+						{
+							View circle = counterCircles[imageIndex];
+							circle.SetBackgroundResource(counterCircle);
+							circle = counterCircles[newImageIndex];
+							circle.SetBackgroundResource(counterCircleSelected);
+
+							imageIndex = newImageIndex;
 						}
 
 						long currentTime = stw.ElapsedMilliseconds;
@@ -1559,36 +1572,34 @@ namespace LocationConnection
 
 			stw.Stop();
 
-			int currentPic = PosToPic(ProfileImageScroll.ScrollX);
 			View circle;
 
 			//click, move to next or previous image
 			if (stw.ElapsedMilliseconds < clickTime && Math.Abs(currentOffsetX) < swipeMinDistance * pixelDensity && Math.Abs(currentOffsetY) < swipeMinDistance * pixelDensity)
 			{
-				currentPic = PosToPic(startScrollX);
 				int newPos;
 				int newIndex;
 
 				if (touchStartX + currentOffsetX >= screenWidth / 2) //next
 				{
-					if (currentPic == counterCircles.Count - 1)
+					if (startPic  == counterCircles.Count - 1)
 					{
 						newIndex = 0;
 					}
 					else
 					{
-						newIndex = currentPic + 1;
+						newIndex = startPic + 1;
 					}
 				}
 				else //previous
 				{
-					if (currentPic == 0)
+					if (startPic == 0)
 					{
 						newIndex = counterCircles.Count - 1;
 					}
 					else
 					{
-						newIndex = currentPic - 1;
+						newIndex = startPic - 1;
 					}
 				}
 
@@ -1604,8 +1615,9 @@ namespace LocationConnection
 				return false;
 			}
 
+			int currentPic = PosToPic(ProfileImageScroll.ScrollX);
+
 			isTouchDown = false;
-			stw.Stop();
 			
 			speedX = (Math.Abs(speedX) > Math.Abs(prevSpeedX)) ? speedX : prevSpeedX;
 
@@ -1746,7 +1758,7 @@ namespace LocationConnection
 				}
 				else
 				{
-					//pull image to closest border
+					//not enough distance, pull image to closest border
 					double remainder = ProfileImageScroll.ScrollX % ProfileImageScroll.Height;
 					int newPos;
 					int newIndex;
@@ -1775,6 +1787,7 @@ namespace LocationConnection
 			}
 			else
 			{
+				//not enough speed, pull image to closest border
 				double remainder = ProfileImageScroll.ScrollX % ProfileImageScroll.Height;
 				int newPos;
 				int newIndex;

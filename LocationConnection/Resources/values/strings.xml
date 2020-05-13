@@ -198,7 +198,7 @@
 	<string name="maxYSmall">125.14</string>
 	<string name="bottomSeparatorMarginSmall">53.14</string>
 	
-	<string name="FirstRunMessage">Are you new here?\nFind the tutorial anytime in Menu &#10132; Help Center</string>
+    <string name="FirstRunMessage">Are you new here?\nFind the tutorial anytime in Menu &#10132; Help Center.</string>
     <string name="BackPressedInfo">Next press of back button will exit the app.</string>
     <string name="MapViewNoLocation">Showing map requires location access, or you need to set an address.\n\nDo you want to turn on location now?</string>
     <string name="MapViewNoUseLocation">Do you want to enable location?</string>
