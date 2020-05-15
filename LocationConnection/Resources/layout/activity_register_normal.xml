@@ -168,7 +168,7 @@
                 android:theme="@style/BlackTextSmallNormal"
                 android:id="@+id/ImagesProgressText" />
             <ImageView
-                android:src="@drawable/ic_reload_normal"
+                android:src="@drawable/ic_reload"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 app:layout_constraintTop_toBottomOf="@+id/ImagesUploaded"
@@ -526,4 +526,11 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:id="@+id/ImageEditorOK" />  
     </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        app:layout_constraintTop_toTopOf="@+id/ImageEditorFrame"
+        android:visibility="invisible"
+        android:background="@drawable/separator_top_transparent"
+        android:id="@+id/TopSeparator" /> 
 </android.support.constraint.ConstraintLayout>

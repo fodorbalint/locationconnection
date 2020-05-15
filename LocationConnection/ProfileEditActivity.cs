@@ -50,7 +50,7 @@ namespace LocationConnection
 					SetContentView(Resource.Layout.activity_profileedit_small);
 				}
 
-				//Interface start
+				//ProfilePage start
 
 				MainScroll = FindViewById<TouchScrollView>(Resource.Id.MainScroll);
 				MainLayout = FindViewById<ConstraintLayout>(Resource.Id.MainLayout);
@@ -59,7 +59,6 @@ namespace LocationConnection
 				CheckUsername = FindViewById<Button>(Resource.Id.CheckUsername);
 				Name = FindViewById<EditText>(Resource.Id.Name);
 				ImagesUploaded = FindViewById<ImageFrameLayout>(Resource.Id.ImagesUploaded);
-
 				Images = FindViewById<Button>(Resource.Id.Images);
 				ImagesProgressText = FindViewById<TextView>(Resource.Id.ImagesProgressText);
 				LoaderCircle = FindViewById<ImageView>(Resource.Id.LoaderCircle);
@@ -78,8 +77,16 @@ namespace LocationConnection
 				DistanceShareMatch = FindViewById<Switch>(Resource.Id.DistanceShareMatch);
 				DistanceShareFriend = FindViewById<Switch>(Resource.Id.DistanceShareFriend);
 				DistanceShareNone = FindViewById<Switch>(Resource.Id.DistanceShareNone);
-			
-				//Interface end
+
+				ImageEditorFrame = FindViewById<View>(Resource.Id.ImageEditorFrame);
+				ImageEditorFrameBorder = FindViewById<View>(Resource.Id.ImageEditorFrameBorder);
+				ImageEditor = FindViewById<ScaleImageView>(Resource.Id.ImageEditor);
+				ImageEditorControls = FindViewById<LinearLayout>(Resource.Id.ImageEditorControls);
+				ImageEditorCancel = FindViewById<ImageButton>(Resource.Id.ImageEditorCancel);
+				ImageEditorOK = FindViewById<ImageButton>(Resource.Id.ImageEditorOK);
+				TopSeparator = FindViewById<View>(Resource.Id.TopSeparator);
+
+				//ProfilePage end
 
 				Women = FindViewById<Switch>(Resource.Id.Women);
 				Men = FindViewById<Switch>(Resource.Id.Men);

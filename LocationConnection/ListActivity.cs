@@ -81,7 +81,7 @@ namespace LocationConnection
 		GridView UserSearchList;
 		ImageView ReloadPulldown;
         UserSearchListAdapter adapter;
-		ImageView LoaderCircle;
+		ImageView RefreshDistanceImage, LoaderCircle;
 		InputMethodManager imm;		
 
 		FusedLocationProviderClient fusedLocationProviderClient;
@@ -445,6 +445,7 @@ namespace LocationConnection
 				DistanceSourceAddress = FindViewById<RadioButton>(Resource.Id.DistanceSourceAddress);
 				DistanceSourceAddressText = FindViewById<EditText>(Resource.Id.DistanceSourceAddressText);
 				RefreshDistance = FindViewById<ImageButton>(Resource.Id.RefreshDistance);
+				RefreshDistanceImage = FindViewById<ImageView>(Resource.Id.RefreshDistanceImage);
 				AddressOK = FindViewById<ImageButton>(Resource.Id.AddressOK);
 				DistanceLimitInput = FindViewById<EditText>(Resource.Id.DistanceLimitInput);
 				DistanceLimit = FindViewById<SeekBar>(Resource.Id.DistanceLimit);
@@ -2271,7 +2272,7 @@ namespace LocationConnection
 			//the same animation cannot be applied to different icons, because the pivot point changes.
 			Animation anim = Android.Views.Animations.AnimationUtils.LoadAnimation(this, Resource.Animation.rotate);
 			Animation anim_small = Android.Views.Animations.AnimationUtils.LoadAnimation(this, Resource.Animation.rotate);
-			RefreshDistance.StartAnimation(anim);
+			RefreshDistanceImage.StartAnimation(anim);
 			LoaderCircle.StartAnimation(anim_small);
 			LoaderCircle.Visibility = ViewStates.Visible;
 ;
@@ -2285,7 +2286,7 @@ namespace LocationConnection
 		private void StopLoaderAnim()
 		{
 			RefreshDistance.Enabled = true;
-			RefreshDistance.ClearAnimation();
+			RefreshDistanceImage.ClearAnimation();
 			LoaderCircle.Visibility = ViewStates.Gone;
 			LoaderCircle.ClearAnimation();
 

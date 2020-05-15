@@ -56,6 +56,9 @@ namespace LocationConnection
 			context.DistanceShareFriend.Click += DistanceShareFriend_Click;
 			context.DistanceShareNone.Click += DistanceShareNone_Click;
 
+			context.ImageEditorCancel.Click += ImageEditorCancel_Click;
+			context.ImageEditorOK.Click += ImageEditorOK_Click;
+
 			client = new WebClient();
 			client.UploadProgressChanged += Client_UploadProgressChanged;
 			client.UploadFileCompleted += Client_UploadFileCompleted;
@@ -153,6 +156,7 @@ namespace LocationConnection
 			context.ImageEditor.Visibility = ViewStates.Invisible;
 			context.ImageEditorFrameBorder.Visibility = ViewStates.Invisible;
 			context.ImageEditorControls.Visibility = ViewStates.Invisible;
+			context.TopSeparator.Visibility = ViewStates.Invisible;
 		}
 
 		public async void ImageEditorOK_Click(object sender, EventArgs e)
@@ -203,6 +207,7 @@ namespace LocationConnection
 			context.ImageEditor.Visibility = ViewStates.Invisible;
 			context.ImageEditorFrameBorder.Visibility = ViewStates.Invisible;
 			context.ImageEditorControls.Visibility = ViewStates.Invisible;
+			context.TopSeparator.Visibility = ViewStates.Invisible;
 
 			//FileInfo fi = new FileInfo(fileName);
 			//context.c.CW(fileName + " Image size: " + fi.Length + " " + ext);

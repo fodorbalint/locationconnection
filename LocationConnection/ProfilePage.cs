@@ -33,6 +33,7 @@ namespace LocationConnection
 		public ScaleImageView ImageEditor;
 		public LinearLayout ImageEditorControls;
 		public ImageButton ImageEditorCancel, ImageEditorOK;
+		public View TopSeparator;
 
 		public List<string> uploadedImages;		
 		public bool imagesUploading;
@@ -142,6 +143,7 @@ namespace LocationConnection
 				else
 				{
 					ImageEditorControls.Visibility = ViewStates.Visible;
+					TopSeparator.Visibility = ViewStates.Visible;
 					ImageEditor.Visibility = ViewStates.Visible;
 					ImageEditorFrame.Visibility = ViewStates.Visible;
 					ImageEditorFrameBorder.Visibility = ViewStates.Visible;

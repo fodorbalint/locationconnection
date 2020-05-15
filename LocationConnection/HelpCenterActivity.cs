@@ -36,7 +36,7 @@ namespace LocationConnection
 		ImageButton TutorialBack, LoadPrevious, LoadNext;
 		TextView TutorialText, TutorialNavText;
 		View TutorialFrameBg;
-		TouchConstraintLayout TutorialFrame;
+		public TouchConstraintLayout TutorialFrame;
 		View TutorialTopSeparator, TutorialBottomSeparator;
 		ImageView LoaderCircle;
 

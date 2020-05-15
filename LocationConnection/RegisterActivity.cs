@@ -77,6 +77,8 @@ namespace LocationConnection
 					spinnerItemDropdown = Resource.Layout.spinner_item_dropdown_small;
 				}
 
+				//ProfilePage start
+
 				MainScroll = FindViewById<TouchScrollView>(Resource.Id.MainScroll);
 				MainLayout = FindViewById<ConstraintLayout>(Resource.Id.MainLayout);
 				Email = FindViewById<EditText>(Resource.Id.Email);
@@ -103,21 +105,22 @@ namespace LocationConnection
 				DistanceShareFriend = FindViewById<Switch>(Resource.Id.DistanceShareFriend);
 				DistanceShareNone = FindViewById<Switch>(Resource.Id.DistanceShareNone);
 
-				EulaText = FindViewById<EditText>(Resource.Id.EulaText);
-
 				ImageEditorFrame = FindViewById<View>(Resource.Id.ImageEditorFrame);
 				ImageEditorFrameBorder = FindViewById<View>(Resource.Id.ImageEditorFrameBorder);
 				ImageEditor = FindViewById<ScaleImageView>(Resource.Id.ImageEditor);
 				ImageEditorControls = FindViewById<LinearLayout>(Resource.Id.ImageEditorControls);
 				ImageEditorCancel = FindViewById<ImageButton>(Resource.Id.ImageEditorCancel);
 				ImageEditorOK = FindViewById<ImageButton>(Resource.Id.ImageEditorOK);
+				TopSeparator = FindViewById<View>(Resource.Id.TopSeparator);
 
-				//Interface end
+				//ProfilePage end
 
 				Sex = FindViewById<Spinner>(Resource.Id.Sex);
 
 				Password = FindViewById<EditText>(Resource.Id.Password);
 				ConfirmPassword = FindViewById<EditText>(Resource.Id.ConfirmPassword);
+
+				EulaText = FindViewById<EditText>(Resource.Id.EulaText);
 
 				Register = FindViewById<Button>(Resource.Id.Register);
 				Reset = FindViewById<Button>(Resource.Id.Reset);
@@ -149,9 +152,6 @@ namespace LocationConnection
 				Register.Click += Register_Click;
 				Reset.Click += Reset_Click;
 				Cancel.Click += Cancel_Click;
-
-				ImageEditorCancel.Click += rc.ImageEditorCancel_Click;
-				ImageEditorOK.Click += rc.ImageEditorOK_Click;
 			}
 			catch (Exception ex)
 			{

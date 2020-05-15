@@ -1,4 +1,4 @@
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LocationConnection.HelpCenterConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -162,7 +162,7 @@
 		app:layout_constraintBottom_toBottomOf="@+id/TutorialFrame"
 		app:layout_constraintLeft_toLeftOf="@+id/TutorialFrame"
 		app:layout_constraintRight_toRightOf="@+id/TutorialFrame"
-		android:src="@drawable/ic_reload_normal"
+		android:src="@drawable/ic_reload"
 		android:visibility="invisible"
 		android:id="@+id/LoaderCircle" />    
 	<LocationConnection.TouchConstraintLayout
@@ -235,4 +235,4 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:id="@+id/LoadNext" /> 
     </android.support.constraint.ConstraintLayout>
-</android.support.constraint.ConstraintLayout>
+</LocationConnection.HelpCenterConstraintLayout>

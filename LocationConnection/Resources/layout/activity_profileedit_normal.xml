@@ -1,551 +1,633 @@
-
-<LocationConnection.TouchScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"    
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fadeScrollbars="false"
-    android:fillViewport="true"
-    android:id="@+id/MainScroll">
-    <android.support.constraint.ConstraintLayout
+    android:layout_height="match_parent">
+    <LocationConnection.TouchScrollView    
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:focusable="true"
-        android:focusableInTouchMode="true" 
-        android:id="@+id/MainLayout">
-        <LocationConnection.ImageFrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0px"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/Images"                  
-            android:id="@+id/ImagesUploaded" />
-        <Button
-			android:layout_width="match_parent"
-			android:layout_height="45dp"          
-            app:layout_constraintTop_toBottomOf="@+id/ImagesUploaded"
-            app:layout_constraintBottom_toTopOf="@+id/LoaderCircle"
-            android:layout_marginTop="10dp"
-            android:textAllCaps="false"
-            android:backgroundTint="@color/ButtonOnWhite"
-            android:theme="@style/ButtonNormal"
-            android:text="@string/Images"
-			android:id="@+id/Images" />
-        <TextView
-			android:layout_width="0px"
-			android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/LoaderCircle"
-            app:layout_constraintBottom_toBottomOf="@+id/LoaderCircle"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/LoaderCircle"
-            android:theme="@style/BlackTextSmallNormal"
-			android:id="@+id/ImagesProgressText" />
-		<ImageView
-			android:src="@drawable/ic_reload_normal"
-			android:layout_width="36dp"
-			android:layout_height="36dp"
-            app:layout_constraintTop_toBottomOf="@+id/Images"
-            app:layout_constraintBottom_toTopOf="@+id/ImagesProgress"
-            app:layout_constraintRight_toRightOf="parent"
-            android:visibility="invisible"
-			android:id="@+id/LoaderCircle" />
-        <ProgressBar
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/LoaderCircle"
-            app:layout_constraintBottom_toTopOf="@+id/DescriptionText"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-			android:id="@+id/ImagesProgress" />
-        <TextView
+        android:layout_height="match_parent"
+        android:fadeScrollbars="false"
+        android:fillViewport="true"
+        android:id="@+id/MainScroll">
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/ImagesProgress"
-            app:layout_constraintBottom_toTopOf="@+id/Description"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:text="@string/Description"
-			android:theme="@style/BlackTextSmallNormal"
-            android:id="@+id/DescriptionText" />                
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="0px"
-            app:layout_constraintHeight_min="250dp"
-            app:layout_constraintTop_toBottomOf="@+id/DescriptionText"
-            app:layout_constraintBottom_toTopOf="@+id/EditSexText"
-            android:singleLine="false"
-            android:gravity="top"
-            android:theme="@style/EditNormal"
-            android:id="@+id/Description" />          
-		<TextView             
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/Description"
-            app:layout_constraintBottom_toTopOf="@+id/Women"
-			android:text="@string/EditSex"
-			android:theme="@style/BlackTextSmallNormal"
-            android:id="@+id/EditSexText" />
-		<View
-			android:layout_width="0px"
-			android:layout_height="0px"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/EditSexText"
-            app:layout_constraintWidth_percent="0.33"
-            android:id="@+id/EditSexSpacer" />
-		<TextView
-            android:layout_width="0px"
-			android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/Women"
-            app:layout_constraintBottom_toBottomOf="@+id/Women"
-            app:layout_constraintLeft_toRightOf="@+id/EditSexSpacer"
-            app:layout_constraintRight_toLeftOf="@+id/Women"
-			android:text="@string/Women"
-			android:theme="@style/BlackTextSmallNormal"
-			android:id="@+id/WomenText" />
-		<Switch
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/EditSexText"
-            app:layout_constraintBottom_toTopOf="@+id/Men"
-            app:layout_constraintLeft_toRightOf="@+id/WomenText"
-            app:layout_constraintRight_toRightOf="parent"
-			android:id="@+id/Women" />
-        <TextView
-            android:layout_width="0px"
-			android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/Men"
-            app:layout_constraintBottom_toBottomOf="@+id/Men"
-            app:layout_constraintLeft_toRightOf="@+id/EditSexSpacer"
-            app:layout_constraintRight_toLeftOf="@+id/Men"
-			android:text="@string/Men"
-			android:theme="@style/BlackTextSmallNormal"
-			android:id="@+id/MenText" />
-		<Switch
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/Women"
-            app:layout_constraintBottom_toTopOf="@+id/EditAccountData"
-            app:layout_constraintLeft_toRightOf="@+id/MenText"
-            app:layout_constraintRight_toRightOf="parent"
-			android:id="@+id/Men" />
-            
-		<TextView
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/Men"
-            app:layout_constraintBottom_toTopOf="@+id/EditAccountDataSection"
-			android:textStyle="bold"
-			android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:text="@string/EditAccountData"
-			android:theme="@style/BlackTextSmallNormal"
-			android:id="@+id/EditAccountData" />
-		<android.support.constraint.ConstraintLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/EditAccountData"
-            app:layout_constraintBottom_toTopOf="@+id/EditChangePassword"
-			android:id="@+id/EditAccountDataSection">
-			<TextView
-                android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@+id/Email"
-                app:layout_constraintBottom_toBottomOf="@+id/Email"
-				android:text="@string/Email"
-				android:theme="@style/BlackTextSmallNormal" />
-			<EditText
-                android:layout_width="0px"
-                android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true" 
+            android:id="@+id/MainLayout">
+            <LocationConnection.ImageFrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="0px"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintLeft_toRightOf="@+id/UsernameText"
-                app:layout_constraintRight_toRightOf="parent"
-                android:layout_marginLeft="10dp"
-                android:inputType="textEmailAddress"
-                android:singleLine="true"
-                android:theme="@style/EditNormal"
-                android:id="@+id/Email" />
-			<TextView
-				android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@+id/Username"
-                app:layout_constraintBottom_toBottomOf="@+id/Username"
-                android:text="@string/Username"
-				android:theme="@style/BlackTextSmallNormal"
-                android:id="@+id/UsernameText" />
-			<EditText
-                android:layout_width="0px"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/Email"
-                app:layout_constraintLeft_toRightOf="@+id/UsernameText"
-                app:layout_constraintRight_toRightOf="parent"
-                android:layout_marginLeft="10dp"
-                android:singleLine="true"
-                android:theme="@style/EditNormal"
-                android:id="@+id/Username" /> 					
+                app:layout_constraintBottom_toTopOf="@+id/Images"                  
+                android:id="@+id/ImagesUploaded" />
             <Button
-				android:layout_width="match_parent"
-				android:layout_height="45dp"
-                app:layout_constraintTop_toBottomOf="@+id/Username"
-				android:singleLine="true"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"          
+                app:layout_constraintTop_toBottomOf="@+id/ImagesUploaded"
+                app:layout_constraintBottom_toTopOf="@+id/LoaderCircle"
+                android:layout_marginTop="10dp"
                 android:textAllCaps="false"
                 android:backgroundTint="@color/ButtonOnWhite"
                 android:theme="@style/ButtonNormal"
-                android:text="@string/CheckAvailability"
-				android:id="@+id/CheckUsername"/>
-			<TextView
-				android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@+id/Name"
-                app:layout_constraintBottom_toBottomOf="@+id/Name"
-                android:text="@string/Name"
-				android:theme="@style/BlackTextSmallNormal" />
-			<EditText
-				android:layout_width="0px"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/CheckUsername"
-                app:layout_constraintLeft_toRightOf="@+id/UsernameText"
-                app:layout_constraintRight_toRightOf="parent"
-                android:layout_marginLeft="10dp"
-                android:singleLine="true"
-                android:theme="@style/EditNormal"
-                android:id="@+id/Name" />
-		</android.support.constraint.ConstraintLayout>
-
-        <TextView
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/EditAccountDataSection"
-            app:layout_constraintBottom_toTopOf="@+id/EditChangePasswordSection"
-			android:textStyle="bold"
-			android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:text="@string/EditChangePassword"
-			android:theme="@style/BlackTextSmallNormal"
-			android:id="@+id/EditChangePassword" />
-        <android.support.constraint.ConstraintLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/EditChangePassword"
-            app:layout_constraintBottom_toTopOf="@+id/EditLocationSettings"
-			android:id="@+id/EditChangePasswordSection">
+                android:text="@string/Images"
+                android:id="@+id/Images" />
             <TextView
-                android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@+id/EditOldPassword"
-                app:layout_constraintBottom_toBottomOf="@+id/EditOldPassword"
-				android:text="@string/EditOldPassword"
-				android:theme="@style/BlackTextSmallNormal" />
-			<EditText
                 android:layout_width="0px"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintLeft_toRightOf="@+id/EditConfirmPasswordText"
-                app:layout_constraintRight_toRightOf="parent"
-                android:layout_marginLeft="10dp"
-                android:inputType="textPassword"
-                android:singleLine="true"
-                android:theme="@style/EditNormal"
-                android:id="@+id/EditOldPassword" />
-			<TextView
-				android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@+id/EditNewPassword"
-                app:layout_constraintBottom_toBottomOf="@+id/EditNewPassword"
-                android:text="@string/EditNewPassword"
-				android:theme="@style/BlackTextSmallNormal" />
-			<EditText
-                android:layout_width="0px"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/EditOldPassword"
-                app:layout_constraintLeft_toRightOf="@+id/EditConfirmPasswordText"
-                app:layout_constraintRight_toRightOf="parent"
-                android:layout_marginLeft="10dp"
-                android:inputType="textPassword"
-                android:singleLine="true"
-                android:theme="@style/EditNormal"
-                android:id="@+id/EditNewPassword" /> 		
-			<TextView
-				android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@+id/EditConfirmPassword"
-                app:layout_constraintBottom_toBottomOf="@+id/EditConfirmPassword"
-                android:text="@string/EditConfirmPassword"
-                android:theme="@style/BlackTextSmallNormal"
-                android:id="@+id/EditConfirmPasswordText" />
-			<EditText
-				android:layout_width="0px"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/EditNewPassword"
-                app:layout_constraintLeft_toRightOf="@+id/EditConfirmPasswordText"
-                app:layout_constraintRight_toRightOf="parent"
-                android:layout_marginLeft="10dp"
-                android:inputType="textPassword"
-                android:singleLine="true"
-                android:theme="@style/EditNormal"
-                android:id="@+id/EditConfirmPassword" />                
-        </android.support.constraint.ConstraintLayout>
-         
-        <TextView
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/EditChangePasswordSection"
-            app:layout_constraintBottom_toTopOf="@+id/EditLocationSettingsSection"
-			android:textStyle="bold"
-			android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:text="@string/EditLocationSettings"
-			android:theme="@style/BlackTextSmallNormal"
-			android:id="@+id/EditLocationSettings" />
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/EditLocationSettings"
-            app:layout_constraintBottom_toTopOf="@+id/Save"
-			android:id="@+id/EditLocationSettingsSection">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@+id/UseLocationSwitch"
-                app:layout_constraintBottom_toBottomOf="@+id/UseLocationSwitch"
+                app:layout_constraintTop_toTopOf="@+id/LoaderCircle"
+                app:layout_constraintBottom_toBottomOf="@+id/LoaderCircle"
                 app:layout_constraintLeft_toLeftOf="parent"
-                android:text="@string/Location"
-    			android:theme="@style/BlackTextSmallNormal" />
+                app:layout_constraintRight_toLeftOf="@+id/LoaderCircle"
+                android:theme="@style/BlackTextSmallNormal"
+                android:id="@+id/ImagesProgressText" />
+            <ImageView
+                android:src="@drawable/ic_reload"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                app:layout_constraintTop_toBottomOf="@+id/Images"
+                app:layout_constraintBottom_toTopOf="@+id/ImagesProgress"
+                app:layout_constraintRight_toRightOf="parent"
+                android:visibility="invisible"
+                android:id="@+id/LoaderCircle" />
+            <ProgressBar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/LoaderCircle"
+                app:layout_constraintBottom_toTopOf="@+id/DescriptionText"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:id="@+id/ImagesProgress" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/ImagesProgress"
+                app:layout_constraintBottom_toTopOf="@+id/Description"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="@string/Description"
+                android:theme="@style/BlackTextSmallNormal"
+                android:id="@+id/DescriptionText" />                
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="0px"
+                app:layout_constraintHeight_min="250dp"
+                app:layout_constraintTop_toBottomOf="@+id/DescriptionText"
+                app:layout_constraintBottom_toTopOf="@+id/EditSexText"
+                android:singleLine="false"
+                android:gravity="top"
+                android:theme="@style/EditNormal"
+                android:id="@+id/Description" />          
+            <TextView             
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/Description"
+                app:layout_constraintBottom_toTopOf="@+id/Women"
+                android:text="@string/EditSex"
+                android:theme="@style/BlackTextSmallNormal"
+                android:id="@+id/EditSexText" />
+            <View
+                android:layout_width="0px"
+                android:layout_height="0px"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/EditSexText"
+                app:layout_constraintWidth_percent="0.33"
+                android:id="@+id/EditSexSpacer" />
+            <TextView
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@+id/Women"
+                app:layout_constraintBottom_toBottomOf="@+id/Women"
+                app:layout_constraintLeft_toRightOf="@+id/EditSexSpacer"
+                app:layout_constraintRight_toLeftOf="@+id/Women"
+                android:text="@string/Women"
+                android:theme="@style/BlackTextSmallNormal"
+                android:id="@+id/WomenText" />
             <Switch
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/EditSexText"
+                app:layout_constraintBottom_toTopOf="@+id/Men"
+                app:layout_constraintLeft_toRightOf="@+id/WomenText"
                 app:layout_constraintRight_toRightOf="parent"
-                android:id="@+id/UseLocationSwitch" />
+                android:id="@+id/Women" />
+            <TextView
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@+id/Men"
+                app:layout_constraintBottom_toBottomOf="@+id/Men"
+                app:layout_constraintLeft_toRightOf="@+id/EditSexSpacer"
+                app:layout_constraintRight_toLeftOf="@+id/Men"
+                android:text="@string/Men"
+                android:theme="@style/BlackTextSmallNormal"
+                android:id="@+id/MenText" />
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/Women"
+                app:layout_constraintBottom_toTopOf="@+id/EditAccountData"
+                app:layout_constraintLeft_toRightOf="@+id/MenText"
+                app:layout_constraintRight_toRightOf="parent"
+                android:id="@+id/Men" />
+                
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/Men"
+                app:layout_constraintBottom_toTopOf="@+id/EditAccountDataSection"
+                android:textStyle="bold"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:text="@string/EditAccountData"
+                android:theme="@style/BlackTextSmallNormal"
+                android:id="@+id/EditAccountData" />
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/EditAccountData"
+                app:layout_constraintBottom_toTopOf="@+id/EditChangePassword"
+                android:id="@+id/EditAccountDataSection">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@+id/Email"
+                    app:layout_constraintBottom_toBottomOf="@+id/Email"
+                    android:text="@string/Email"
+                    android:theme="@style/BlackTextSmallNormal" />
+                <EditText
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toRightOf="@+id/UsernameText"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:layout_marginLeft="10dp"
+                    android:inputType="textEmailAddress"
+                    android:singleLine="true"
+                    android:theme="@style/EditNormal"
+                    android:id="@+id/Email" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@+id/Username"
+                    app:layout_constraintBottom_toBottomOf="@+id/Username"
+                    android:text="@string/Username"
+                    android:theme="@style/BlackTextSmallNormal"
+                    android:id="@+id/UsernameText" />
+                <EditText
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/Email"
+                    app:layout_constraintLeft_toRightOf="@+id/UsernameText"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:layout_marginLeft="10dp"
+                    android:singleLine="true"
+                    android:theme="@style/EditNormal"
+                    android:id="@+id/Username" /> 					
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    app:layout_constraintTop_toBottomOf="@+id/Username"
+                    android:singleLine="true"
+                    android:textAllCaps="false"
+                    android:backgroundTint="@color/ButtonOnWhite"
+                    android:theme="@style/ButtonNormal"
+                    android:text="@string/CheckAvailability"
+                    android:id="@+id/CheckUsername"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@+id/Name"
+                    app:layout_constraintBottom_toBottomOf="@+id/Name"
+                    android:text="@string/Name"
+                    android:theme="@style/BlackTextSmallNormal" />
+                <EditText
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/CheckUsername"
+                    app:layout_constraintLeft_toRightOf="@+id/UsernameText"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:layout_marginLeft="10dp"
+                    android:singleLine="true"
+                    android:theme="@style/EditNormal"
+                    android:id="@+id/Name" />
+            </android.support.constraint.ConstraintLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/EditAccountDataSection"
+                app:layout_constraintBottom_toTopOf="@+id/EditChangePasswordSection"
+                android:textStyle="bold"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:text="@string/EditChangePassword"
+                android:theme="@style/BlackTextSmallNormal"
+                android:id="@+id/EditChangePassword" />
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/EditChangePassword"
+                app:layout_constraintBottom_toTopOf="@+id/EditLocationSettings"
+                android:id="@+id/EditChangePasswordSection">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@+id/EditOldPassword"
+                    app:layout_constraintBottom_toBottomOf="@+id/EditOldPassword"
+                    android:text="@string/EditOldPassword"
+                    android:theme="@style/BlackTextSmallNormal" />
+                <EditText
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toRightOf="@+id/EditConfirmPasswordText"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:layout_marginLeft="10dp"
+                    android:inputType="textPassword"
+                    android:singleLine="true"
+                    android:theme="@style/EditNormal"
+                    android:id="@+id/EditOldPassword" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@+id/EditNewPassword"
+                    app:layout_constraintBottom_toBottomOf="@+id/EditNewPassword"
+                    android:text="@string/EditNewPassword"
+                    android:theme="@style/BlackTextSmallNormal" />
+                <EditText
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/EditOldPassword"
+                    app:layout_constraintLeft_toRightOf="@+id/EditConfirmPasswordText"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:layout_marginLeft="10dp"
+                    android:inputType="textPassword"
+                    android:singleLine="true"
+                    android:theme="@style/EditNormal"
+                    android:id="@+id/EditNewPassword" /> 		
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@+id/EditConfirmPassword"
+                    app:layout_constraintBottom_toBottomOf="@+id/EditConfirmPassword"
+                    android:text="@string/EditConfirmPassword"
+                    android:theme="@style/BlackTextSmallNormal"
+                    android:id="@+id/EditConfirmPasswordText" />
+                <EditText
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/EditNewPassword"
+                    app:layout_constraintLeft_toRightOf="@+id/EditConfirmPasswordText"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:layout_marginLeft="10dp"
+                    android:inputType="textPassword"
+                    android:singleLine="true"
+                    android:theme="@style/EditNormal"
+                    android:id="@+id/EditConfirmPassword" />                
+            </android.support.constraint.ConstraintLayout>
             
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/UseLocationSwitch"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                android:text="@string/LocationShare"
-    			android:theme="@style/BlackTextSmallNormal"
-                android:id="@+id/LocationShareText" />
-    		<TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@+id/LocationShareAll"
-                app:layout_constraintBottom_toBottomOf="@+id/LocationShareAll"
-                app:layout_constraintLeft_toLeftOf="parent"
-                android:layout_marginLeft="25dp"
-                android:text="@string/LocationShareAll"
-    			android:theme="@style/BlackTextSmallNormal" />
-            <Switch
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/LocationShareText"
-                app:layout_constraintRight_toRightOf="parent"
-                android:id="@+id/LocationShareAll" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@+id/LocationShareLike"
-                app:layout_constraintBottom_toBottomOf="@+id/LocationShareLike"
-                app:layout_constraintLeft_toLeftOf="parent"
-                android:layout_marginLeft="25dp"
-                android:text="@string/LocationShareLike"
-    			android:theme="@style/BlackTextSmallNormal" />
-            <Switch
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/LocationShareAll"
-                app:layout_constraintRight_toRightOf="parent"
-                android:id="@+id/LocationShareLike" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@+id/LocationShareMatch"
-                app:layout_constraintBottom_toBottomOf="@+id/LocationShareMatch"
-                app:layout_constraintLeft_toLeftOf="parent"
-                android:layout_marginLeft="25dp"
-                android:text="@string/LocationShareMatch"
-    			android:theme="@style/BlackTextSmallNormal" />
-            <Switch
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/LocationShareLike"
-                app:layout_constraintRight_toRightOf="parent"
-                android:id="@+id/LocationShareMatch" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@+id/LocationShareFriend"
-                app:layout_constraintBottom_toBottomOf="@+id/LocationShareFriend"
-                app:layout_constraintLeft_toLeftOf="parent"
-                android:layout_marginLeft="25dp"
-                android:text="@string/LocationShareFriend"
-    			android:theme="@style/BlackTextSmallNormal" />
-            <Switch
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/LocationShareMatch"
-                app:layout_constraintRight_toRightOf="parent"
-                android:id="@+id/LocationShareFriend" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@+id/LocationShareNone"
-                app:layout_constraintBottom_toBottomOf="@+id/LocationShareNone"
-                app:layout_constraintLeft_toLeftOf="parent"
-                android:layout_marginLeft="25dp"
-                android:text="@string/LocationShareNone"
-    			android:theme="@style/BlackTextSmallNormal" />
-            <Switch
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/LocationShareFriend"
-                app:layout_constraintRight_toRightOf="parent"
-                android:id="@+id/LocationShareNone" />
-    
-    		<TextView
+                app:layout_constraintTop_toBottomOf="@+id/EditChangePasswordSection"
+                app:layout_constraintBottom_toTopOf="@+id/EditLocationSettingsSection"
+                android:textStyle="bold"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:text="@string/EditLocationSettings"
+                android:theme="@style/BlackTextSmallNormal"
+                android:id="@+id/EditLocationSettings" />
+            <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/LocationShareNone"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                android:text="@string/DistanceShare"
-    			android:theme="@style/BlackTextSmallNormal"
-                android:id="@+id/DistanceShareText" />
-    		<TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@+id/DistanceShareAll"
-                app:layout_constraintBottom_toBottomOf="@+id/DistanceShareAll"
-                app:layout_constraintLeft_toLeftOf="parent"
-                android:layout_marginLeft="25dp"
-                android:text="@string/DistanceShareAll"
-    			android:theme="@style/BlackTextSmallNormal" />
-            <Switch
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/DistanceShareText"
-                app:layout_constraintRight_toRightOf="parent"
-                android:id="@+id/DistanceShareAll" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@+id/DistanceShareLike"
-                app:layout_constraintBottom_toBottomOf="@+id/DistanceShareLike"
-                app:layout_constraintLeft_toLeftOf="parent"
-                android:layout_marginLeft="25dp"
-                android:text="@string/DistanceShareLike"
-    			android:theme="@style/BlackTextSmallNormal" />
-            <Switch
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/DistanceShareAll"
-                app:layout_constraintRight_toRightOf="parent"
-                android:id="@+id/DistanceShareLike" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@+id/DistanceShareMatch"
-                app:layout_constraintBottom_toBottomOf="@+id/DistanceShareMatch"
-                app:layout_constraintLeft_toLeftOf="parent"
-                android:layout_marginLeft="25dp"
-                android:text="@string/DistanceShareMatch"
-    			android:theme="@style/BlackTextSmallNormal" />
-            <Switch
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/DistanceShareLike"
-                app:layout_constraintRight_toRightOf="parent"
-                android:id="@+id/DistanceShareMatch" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@+id/DistanceShareFriend"
-                app:layout_constraintBottom_toBottomOf="@+id/DistanceShareFriend"
-                app:layout_constraintLeft_toLeftOf="parent"
-                android:layout_marginLeft="25dp"
-                android:text="@string/DistanceShareFriend"
-    			android:theme="@style/BlackTextSmallNormal" />
-            <Switch
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/DistanceShareMatch"
-                app:layout_constraintRight_toRightOf="parent"
-                android:id="@+id/DistanceShareFriend" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@+id/DistanceShareNone"
-                app:layout_constraintBottom_toBottomOf="@+id/DistanceShareNone"
-                app:layout_constraintLeft_toLeftOf="parent"
-                android:layout_marginLeft="25dp"
-                android:text="@string/DistanceShareNone"
-    			android:theme="@style/BlackTextSmallNormal" />
-            <Switch
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/DistanceShareFriend"
-                app:layout_constraintRight_toRightOf="parent"
-                android:id="@+id/DistanceShareNone" />            
-        </android.support.constraint.ConstraintLayout> 
+                app:layout_constraintTop_toBottomOf="@+id/EditLocationSettings"
+                app:layout_constraintBottom_toTopOf="@+id/Save"
+                android:id="@+id/EditLocationSettingsSection">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@+id/UseLocationSwitch"
+                    app:layout_constraintBottom_toBottomOf="@+id/UseLocationSwitch"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    android:text="@string/Location"
+                    android:theme="@style/BlackTextSmallNormal" />
+                <Switch
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:id="@+id/UseLocationSwitch" />
+                
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/UseLocationSwitch"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:text="@string/LocationShare"
+                    android:theme="@style/BlackTextSmallNormal"
+                    android:id="@+id/LocationShareText" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@+id/LocationShareAll"
+                    app:layout_constraintBottom_toBottomOf="@+id/LocationShareAll"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    android:layout_marginLeft="25dp"
+                    android:text="@string/LocationShareAll"
+                    android:theme="@style/BlackTextSmallNormal" />
+                <Switch
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/LocationShareText"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:id="@+id/LocationShareAll" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@+id/LocationShareLike"
+                    app:layout_constraintBottom_toBottomOf="@+id/LocationShareLike"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    android:layout_marginLeft="25dp"
+                    android:text="@string/LocationShareLike"
+                    android:theme="@style/BlackTextSmallNormal" />
+                <Switch
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/LocationShareAll"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:id="@+id/LocationShareLike" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@+id/LocationShareMatch"
+                    app:layout_constraintBottom_toBottomOf="@+id/LocationShareMatch"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    android:layout_marginLeft="25dp"
+                    android:text="@string/LocationShareMatch"
+                    android:theme="@style/BlackTextSmallNormal" />
+                <Switch
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/LocationShareLike"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:id="@+id/LocationShareMatch" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@+id/LocationShareFriend"
+                    app:layout_constraintBottom_toBottomOf="@+id/LocationShareFriend"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    android:layout_marginLeft="25dp"
+                    android:text="@string/LocationShareFriend"
+                    android:theme="@style/BlackTextSmallNormal" />
+                <Switch
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/LocationShareMatch"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:id="@+id/LocationShareFriend" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@+id/LocationShareNone"
+                    app:layout_constraintBottom_toBottomOf="@+id/LocationShareNone"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    android:layout_marginLeft="25dp"
+                    android:text="@string/LocationShareNone"
+                    android:theme="@style/BlackTextSmallNormal" />
+                <Switch
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/LocationShareFriend"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:id="@+id/LocationShareNone" />
         
-        <!-- button is in fact 33 dp tall-->
-        <Button
-			android:layout_width="0px"
-			android:layout_height="45dp"
-            app:layout_constraintTop_toBottomOf="@+id/EditLocationSettingsSection"
-            app:layout_constraintBottom_toTopOf="@+id/DeactivateAccount"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/Cancel"
-            android:layout_marginTop="9dp"
-            android:textAllCaps="false"
-            android:backgroundTint="@color/ButtonOnWhite"
-            android:theme="@style/ButtonNormal"
-            android:text="@string/EditSave"
-			android:id="@+id/Save" />
-		<Button
-			android:layout_width="0px"
-			android:layout_height="45dp"
-            app:layout_constraintTop_toBottomOf="@+id/EditLocationSettingsSection"
-            app:layout_constraintLeft_toRightOf="@+id/Save"
-            app:layout_constraintRight_toLeftOf="@+id/EditMoreOptions"
-            android:layout_marginTop="9dp"
-            android:textAllCaps="false"
-            android:backgroundTint="@color/ButtonOnWhite"
-            android:theme="@style/ButtonNormal"
-            android:text="@string/Cancel"
-			android:id="@+id/Cancel" />
-		<TextView
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/LocationShareNone"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:text="@string/DistanceShare"
+                    android:theme="@style/BlackTextSmallNormal"
+                    android:id="@+id/DistanceShareText" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@+id/DistanceShareAll"
+                    app:layout_constraintBottom_toBottomOf="@+id/DistanceShareAll"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    android:layout_marginLeft="25dp"
+                    android:text="@string/DistanceShareAll"
+                    android:theme="@style/BlackTextSmallNormal" />
+                <Switch
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/DistanceShareText"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:id="@+id/DistanceShareAll" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@+id/DistanceShareLike"
+                    app:layout_constraintBottom_toBottomOf="@+id/DistanceShareLike"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    android:layout_marginLeft="25dp"
+                    android:text="@string/DistanceShareLike"
+                    android:theme="@style/BlackTextSmallNormal" />
+                <Switch
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/DistanceShareAll"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:id="@+id/DistanceShareLike" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@+id/DistanceShareMatch"
+                    app:layout_constraintBottom_toBottomOf="@+id/DistanceShareMatch"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    android:layout_marginLeft="25dp"
+                    android:text="@string/DistanceShareMatch"
+                    android:theme="@style/BlackTextSmallNormal" />
+                <Switch
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/DistanceShareLike"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:id="@+id/DistanceShareMatch" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@+id/DistanceShareFriend"
+                    app:layout_constraintBottom_toBottomOf="@+id/DistanceShareFriend"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    android:layout_marginLeft="25dp"
+                    android:text="@string/DistanceShareFriend"
+                    android:theme="@style/BlackTextSmallNormal" />
+                <Switch
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/DistanceShareMatch"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:id="@+id/DistanceShareFriend" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@+id/DistanceShareNone"
+                    app:layout_constraintBottom_toBottomOf="@+id/DistanceShareNone"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    android:layout_marginLeft="25dp"
+                    android:text="@string/DistanceShareNone"
+                    android:theme="@style/BlackTextSmallNormal" />
+                <Switch
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/DistanceShareFriend"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:id="@+id/DistanceShareNone" />            
+            </android.support.constraint.ConstraintLayout> 
+            
+            <!-- button is in fact 33 dp tall-->
+            <Button
+                android:layout_width="0px"
+                android:layout_height="45dp"
+                app:layout_constraintTop_toBottomOf="@+id/EditLocationSettingsSection"
+                app:layout_constraintBottom_toTopOf="@+id/DeactivateAccount"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@+id/Cancel"
+                android:layout_marginTop="9dp"
+                android:textAllCaps="false"
+                android:backgroundTint="@color/ButtonOnWhite"
+                android:theme="@style/ButtonNormal"
+                android:text="@string/EditSave"
+                android:id="@+id/Save" />
+            <Button
+                android:layout_width="0px"
+                android:layout_height="45dp"
+                app:layout_constraintTop_toBottomOf="@+id/EditLocationSettingsSection"
+                app:layout_constraintLeft_toRightOf="@+id/Save"
+                app:layout_constraintRight_toLeftOf="@+id/EditMoreOptions"
+                android:layout_marginTop="9dp"
+                android:textAllCaps="false"
+                android:backgroundTint="@color/ButtonOnWhite"
+                android:theme="@style/ButtonNormal"
+                android:text="@string/Cancel"
+                android:id="@+id/Cancel" />
+            <TextView
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@+id/Save"
+                app:layout_constraintBottom_toBottomOf="@+id/Save"
+                app:layout_constraintLeft_toRightOf="@+id/Cancel"
+                app:layout_constraintRight_toRightOf="parent"
+                android:text="@string/EditMoreOptions"
+                android:theme="@style/BlackTextSmallNormal"
+                android:textStyle="bold"
+                android:padding="10dp"
+                android:id="@+id/EditMoreOptions" />   
+                
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                app:layout_constraintTop_toBottomOf="@+id/Save"
+                app:layout_constraintBottom_toTopOf="@+id/DeleteAccount"
+                android:layout_marginTop="45dp"
+                android:textAllCaps="false"
+                android:backgroundTint="@color/ButtonOnWhite"
+                android:theme="@style/ButtonNormal"
+                android:text="@string/DeactivateAccount"
+                android:id="@+id/DeactivateAccount" />
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                app:layout_constraintTop_toBottomOf="@+id/DeactivateAccount"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:textAllCaps="false"
+                android:backgroundTint="@color/ButtonOnWhite"
+                android:theme="@style/ButtonNormal"
+                android:text="@string/DeleteAccount"
+                android:id="@+id/DeleteAccount" />
+        </android.support.constraint.ConstraintLayout>
+    </LocationConnection.TouchScrollView>
+
+    <View
+        android:layout_width="match_parent"
+		android:layout_height="0px"
+        app:layout_constraintTop_toBottomOf="@+id/ImageEditorControls"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@color/Gray"
+        android:visibility="invisible"
+        android:id="@+id/ImageEditorFrame">        
+    </View>
+    <LocationConnection.ScaleImageView
+        android:layout_width="0px"
+		android:layout_height="0px"
+        app:layout_constraintTop_toTopOf="@+id/ImageEditorFrame"
+        app:layout_constraintBottom_toBottomOf="@+id/ImageEditorFrame"
+        app:layout_constraintLeft_toLeftOf="@+id/ImageEditorFrame"
+        app:layout_constraintRight_toRightOf="@+id/ImageEditorFrame"
+        android:visibility="invisible"
+        android:id="@+id/ImageEditor">        
+    </LocationConnection.ScaleImageView>
+    <View
+        android:layout_width="0px"
+		android:layout_height="0px"
+        app:layout_constraintTop_toTopOf="@+id/ImageEditorFrame"
+        app:layout_constraintBottom_toBottomOf="@+id/ImageEditorFrame"
+        app:layout_constraintLeft_toLeftOf="@+id/ImageEditorFrame"
+        app:layout_constraintRight_toRightOf="@+id/ImageEditorFrame"
+        app:layout_constraintDimensionRatio="1:1"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/border"
+        android:visibility="invisible"
+        android:id="@+id/ImageEditorFrameBorder">        
+    </View>
+    <LinearLayout
+        android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        android:gravity="center_vertical"
+        android:background="@android:color/white"
+        android:visibility="invisible"
+        android:id="@+id/ImageEditorControls">
+        <TextView
             android:layout_width="0px"
-			android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/Save"
-            app:layout_constraintBottom_toBottomOf="@+id/Save"
-            app:layout_constraintLeft_toRightOf="@+id/Cancel"
-            app:layout_constraintRight_toRightOf="parent"
-			android:text="@string/EditMoreOptions"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_weight="1"
+            android:text="@string/ImageEditorLabel"
 			android:theme="@style/BlackTextSmallNormal"
-			android:textStyle="bold"
-			android:padding="10dp"
-			android:id="@+id/EditMoreOptions" />   
-              
-		<Button
-			android:layout_width="match_parent"
-			android:layout_height="45dp"
-            app:layout_constraintTop_toBottomOf="@+id/Save"
-            app:layout_constraintBottom_toTopOf="@+id/DeleteAccount"
-		    android:layout_marginTop="45dp"
-            android:textAllCaps="false"
-            android:backgroundTint="@color/ButtonOnWhite"
-            android:theme="@style/ButtonNormal"
-            android:text="@string/DeactivateAccount"
-			android:id="@+id/DeactivateAccount" />
-		<Button
-			android:layout_width="match_parent"
-            android:layout_height="45dp"
-            app:layout_constraintTop_toBottomOf="@+id/DeactivateAccount"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:textAllCaps="false"
-            android:backgroundTint="@color/ButtonOnWhite"
-            android:theme="@style/ButtonNormal"
-            android:text="@string/DeleteAccount"
-			android:id="@+id/DeleteAccount" />
-	</android.support.constraint.ConstraintLayout>
-</LocationConnection.TouchScrollView>
+            android:id="@+id/ImageEditorLabel" />
+        <ImageButton
+            android:layout_width="48dp"
+    		android:layout_height="48dp"
+            android:layout_marginLeft="10dp"
+    		android:src="@drawable/ic_cross48_normal"
+    		android:tooltipText="@string/ImageEditorCancel"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:id="@+id/ImageEditorCancel" />  
+        <ImageButton
+            android:layout_width="48dp"
+    		android:layout_height="48dp"
+            android:layout_marginRight="5dp"
+    		android:src="@drawable/ic_check48_normal"
+    		android:tooltipText="@string/ImageEditorOK"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:id="@+id/ImageEditorOK" />  
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        app:layout_constraintTop_toTopOf="@+id/ImageEditorFrame"
+        android:visibility="invisible"
+        android:background="@drawable/separator_top_transparent"
+        android:id="@+id/TopSeparator" />
+</android.support.constraint.ConstraintLayout>

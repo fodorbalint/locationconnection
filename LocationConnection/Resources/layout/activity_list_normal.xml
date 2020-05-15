@@ -255,8 +255,9 @@
 					android:text="@string/UseGeoYes"
                     android:id="@+id/UseGeoYes" />
 			</RadioGroup>
+            <!-- When a png is set to src, it does not display correctly -->
             <ImageButton
-                android:src="@drawable/ic_reload_normal"
+                android:src="@null"
                 android:layout_width="36dp"
         		android:layout_height="36dp"
                 app:layout_constraintTop_toTopOf="parent"
@@ -266,7 +267,15 @@
     			android:tooltipText="@string/RefreshDistance"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:id="@+id/RefreshDistance" />
-            
+            <ImageView
+                android:src="@drawable/ic_reload"
+                android:layout_width="36dp"
+        		android:layout_height="36dp"
+                app:layout_constraintTop_toTopOf="@+id/RefreshDistance"
+                app:layout_constraintBottom_toBottomOf="@+id/RefreshDistance"
+                app:layout_constraintLeft_toLeftOf="@+id/RefreshDistance"
+                app:layout_constraintRight_toRightOf="@+id/RefreshDistance"
+                android:id="@+id/RefreshDistanceImage" />            
 			<android.support.constraint.ConstraintLayout
     			android:layout_width="match_parent"
     			android:layout_height="wrap_content"
@@ -459,7 +468,7 @@
             android:layout_width="29dp"
     		android:layout_height="29dp"
             app:layout_constraintLeft_toLeftOf="parent"
-            android:src="@drawable/ic_reload_small_normal"
+            android:src="@drawable/ic_reload_small"
             android:visibility="gone"
             android:id="@+id/LoaderCircle" />
         <ImageButton
