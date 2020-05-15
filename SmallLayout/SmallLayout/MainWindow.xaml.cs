@@ -20,7 +20,8 @@ using System.Windows.Threading;
 
 namespace SmallLayout
 {
-	//map buttons and gridview spacing have to be reverted.
+	//map buttons have to be reverted
+
 	public partial class MainWindow : Window
 	{
 		List<string> layoutFiles;

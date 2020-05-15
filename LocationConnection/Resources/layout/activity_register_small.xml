@@ -1,446 +1,536 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LocationConnection.TouchScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"    
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fadeScrollbars="false"
-    android:id="@+id/MainScroll">
-    <android.support.constraint.ConstraintLayout
+    android:layout_height="match_parent">
+    <LocationConnection.TouchScrollView    
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="8.57dp"
-        android:focusable="true"
-        android:focusableInTouchMode="true" 
-        android:id="@+id/MainLayout">
-        <TextView
-            android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:fadeScrollbars="false"
+        android:id="@+id/MainScroll">
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/Sex"
-            app:layout_constraintBottom_toBottomOf="@+id/Sex"
-            android:text="@string/Sex"
-			android:theme="@style/BlackTextSmallSmall" />
-        <Spinner
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-			android:dropDownWidth="wrap_content"
-            android:theme="@style/EditSmall"
-			android:entries="@array/SexEntries"
-			android:id="@+id/Sex" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/Email"
-            app:layout_constraintBottom_toBottomOf="@+id/Email"
-            android:text="@string/Email"
-			android:theme="@style/BlackTextSmallSmall" />
-        <EditText
-            android:layout_width="0px"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/Sex"
-            app:layout_constraintLeft_toRightOf="@+id/ConfirmPasswordText"
-            app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginTop="8.57dp"
-            android:layout_marginLeft="8.57dp"
-            android:inputType="textEmailAddress"
-            android:singleLine="true"
-            android:theme="@style/EditSmall"
-            android:id="@+id/Email" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/Password"
-            app:layout_constraintBottom_toBottomOf="@+id/Password"
-            android:text="@string/Password"
-			android:theme="@style/BlackTextSmallSmall" />
-        <EditText
-            android:layout_width="0px"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/Email"
-            app:layout_constraintLeft_toRightOf="@+id/ConfirmPasswordText"
-            app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginLeft="8.57dp"
-            android:inputType="textPassword"
-            android:singleLine="true"
-            android:theme="@style/EditSmall"
-            android:id="@+id/Password" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/ConfirmPassword"
-            app:layout_constraintBottom_toBottomOf="@+id/ConfirmPassword"
-            android:text="@string/ConfirmPassword"
-			android:theme="@style/BlackTextSmallSmall"
-            android:id="@+id/ConfirmPasswordText" />
-        <EditText
-            android:layout_width="0px"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/Password"
-            app:layout_constraintLeft_toRightOf="@+id/ConfirmPasswordText"
-            app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginLeft="8.57dp"
-            android:inputType="textPassword"
-            android:singleLine="true"
-            android:theme="@style/EditSmall"
-            android:id="@+id/ConfirmPassword" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/Username"
-            app:layout_constraintBottom_toBottomOf="@+id/Username"
-            android:text="@string/Username"
-			android:theme="@style/BlackTextSmallSmall" />
-        <EditText
-            android:layout_width="0px"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/ConfirmPassword"
-            app:layout_constraintLeft_toRightOf="@+id/ConfirmPasswordText"
-            app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginLeft="8.57dp"
-            android:singleLine="true"
-            android:theme="@style/EditSmall"
-            android:id="@+id/Username" />
+            android:orientation="vertical"
+            android:padding="8.57dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true" 
+            android:id="@+id/MainLayout">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@+id/Sex"
+                app:layout_constraintBottom_toBottomOf="@+id/Sex"
+                android:text="@string/Sex"
+                android:theme="@style/BlackTextSmallSmall" />
+            <Spinner
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:dropDownWidth="wrap_content"
+                android:theme="@style/EditSmall"
+                android:entries="@array/SexEntries"
+                android:id="@+id/Sex" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@+id/Email"
+                app:layout_constraintBottom_toBottomOf="@+id/Email"
+                android:text="@string/Email"
+                android:theme="@style/BlackTextSmallSmall" />
+            <EditText
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/Sex"
+                app:layout_constraintLeft_toRightOf="@+id/ConfirmPasswordText"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginTop="8.57dp"
+                android:layout_marginLeft="8.57dp"
+                android:inputType="textEmailAddress"
+                android:singleLine="true"
+                android:theme="@style/EditSmall"
+                android:id="@+id/Email" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/Email"
+                android:layout_marginTop="8.57dp"
+                android:text="@string/EmailExplanation"
+                android:theme="@style/BlackTextSmallSmall"
+                android:id="@+id/EmailExplanationLabel" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@+id/Password"
+                app:layout_constraintBottom_toBottomOf="@+id/Password"
+                android:text="@string/Password"
+                android:theme="@style/BlackTextSmallSmall" />
+            <EditText
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/EmailExplanationLabel"
+                app:layout_constraintLeft_toRightOf="@+id/ConfirmPasswordText"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginLeft="8.57dp"
+                android:inputType="textPassword"
+                android:singleLine="true"
+                android:theme="@style/EditSmall"
+                android:id="@+id/Password" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@+id/ConfirmPassword"
+                app:layout_constraintBottom_toBottomOf="@+id/ConfirmPassword"
+                android:text="@string/ConfirmPassword"
+                android:theme="@style/BlackTextSmallSmall"
+                android:id="@+id/ConfirmPasswordText" />
+            <EditText
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/Password"
+                app:layout_constraintLeft_toRightOf="@+id/ConfirmPasswordText"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginLeft="8.57dp"
+                android:inputType="textPassword"
+                android:singleLine="true"
+                android:theme="@style/EditSmall"
+                android:id="@+id/ConfirmPassword" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@+id/Username"
+                app:layout_constraintBottom_toBottomOf="@+id/Username"
+                android:text="@string/Username"
+                android:theme="@style/BlackTextSmallSmall" />
+            <EditText
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/ConfirmPassword"
+                app:layout_constraintLeft_toRightOf="@+id/ConfirmPasswordText"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginLeft="8.57dp"
+                android:singleLine="true"
+                android:theme="@style/EditSmall"
+                android:id="@+id/Username" />
+            
+            <Button                    
+                android:layout_width="match_parent"
+                android:layout_height="38.57dp"
+                app:layout_constraintTop_toBottomOf="@+id/Username"
+                android:textAllCaps="false"
+                android:backgroundTint="@color/ButtonOnWhite"
+                android:theme="@style/ButtonSmall"
+                android:text="@string/CheckAvailability"
+                android:id="@+id/CheckUsername"/>
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@+id/Name"
+                app:layout_constraintBottom_toBottomOf="@+id/Name"
+                android:text="@string/Name"
+                android:theme="@style/BlackTextSmallSmall" />
+            <EditText
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/CheckUsername"
+                app:layout_constraintLeft_toRightOf="@+id/ConfirmPasswordText"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginLeft="8.57dp"
+                android:singleLine="true"
+                android:theme="@style/EditSmall"
+                android:id="@+id/Name" />
         
-        <Button                    
-            android:layout_width="match_parent"
-            android:layout_height="38.57dp"
-            app:layout_constraintTop_toBottomOf="@+id/Username"
-            android:textAllCaps="false"
-            android:backgroundTint="@color/ButtonOnWhite"
-            android:theme="@style/ButtonSmall"
-            android:text="@string/CheckAvailability"
-            android:id="@+id/CheckUsername"/>
-        
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="38.57dp"
+                app:layout_constraintTop_toBottomOf="@+id/Name"
+                android:textAllCaps="false"
+                android:backgroundTint="@color/ButtonOnWhite"
+                android:theme="@style/ButtonSmall"
+                android:text="@string/Images"
+                android:id="@+id/Images" />
+            <LocationConnection.ImageFrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="0px"
+                app:layout_constraintTop_toBottomOf="@+id/Images"
+                android:layout_marginTop="8.57dp"                 
+                android:id="@+id/ImagesUploaded" />
+            <TextView
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@+id/LoaderCircle"
+                app:layout_constraintBottom_toBottomOf="@+id/LoaderCircle"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@+id/LoaderCircle"
+                android:theme="@style/BlackTextSmallSmall"
+                android:id="@+id/ImagesProgressText" />
+            <ImageView
+                android:src="@drawable/ic_reload"
+                android:layout_width="30.86dp"
+                android:layout_height="30.86dp"
+                app:layout_constraintTop_toBottomOf="@+id/ImagesUploaded"
+                app:layout_constraintRight_toRightOf="parent"
+                android:visibility="invisible"
+                android:id="@+id/LoaderCircle" />
+            <ProgressBar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/LoaderCircle"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:id="@+id/ImagesProgress" />
+                
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/ImagesProgress"
+                android:paddingTop="4.29dp"
+                android:paddingBottom="4.29dp"
+                android:text="@string/Description"
+                android:theme="@style/BlackTextSmallSmall"
+                android:id="@+id/DescriptionText" />                
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="214.29dp"
+                app:layout_constraintTop_toBottomOf="@+id/DescriptionText"
+                android:singleLine="false"
+                android:gravity="top"
+                android:theme="@style/EditSmall"
+                android:id="@+id/Description" />
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@+id/UseLocationSwitch"
+                app:layout_constraintBottom_toBottomOf="@+id/UseLocationSwitch"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:text="@string/Location"
+                android:theme="@style/BlackTextSmallSmall" />
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/Description"
+                app:layout_constraintRight_toRightOf="parent"
+                android:id="@+id/UseLocationSwitch" />       
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/UseLocationSwitch"
+                android:paddingTop="8.57dp"
+                android:paddingBottom="8.57dp" 
+                android:text="@string/LocationExplanation"
+                android:theme="@style/BlackTextSmallSmall"
+                android:id="@+id/LocationExplanation" />
+                
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/LocationExplanation"
+                android:paddingTop="4.29dp"
+                android:paddingBottom="4.29dp"
+                android:text="@string/LocationShare"
+                android:theme="@style/BlackTextSmallSmall"
+                android:id="@+id/LocationShareText" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@+id/LocationShareAll"
+                app:layout_constraintBottom_toBottomOf="@+id/LocationShareAll"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_marginLeft="21.43dp"
+                android:text="@string/LocationShareAll"
+                android:theme="@style/BlackTextSmallSmall" />
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/LocationShareText"
+                app:layout_constraintRight_toRightOf="parent"
+                android:id="@+id/LocationShareAll" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@+id/LocationShareLike"
+                app:layout_constraintBottom_toBottomOf="@+id/LocationShareLike"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_marginLeft="21.43dp"
+                android:text="@string/LocationShareLike"
+                android:theme="@style/BlackTextSmallSmall" />
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/LocationShareAll"
+                app:layout_constraintRight_toRightOf="parent"
+                android:id="@+id/LocationShareLike" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@+id/LocationShareMatch"
+                app:layout_constraintBottom_toBottomOf="@+id/LocationShareMatch"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_marginLeft="21.43dp"
+                android:text="@string/LocationShareMatch"
+                android:theme="@style/BlackTextSmallSmall" />
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/LocationShareLike"
+                app:layout_constraintRight_toRightOf="parent"
+                android:id="@+id/LocationShareMatch" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@+id/LocationShareFriend"
+                app:layout_constraintBottom_toBottomOf="@+id/LocationShareFriend"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_marginLeft="21.43dp"
+                android:text="@string/LocationShareFriend"
+                android:theme="@style/BlackTextSmallSmall" />
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/LocationShareMatch"
+                app:layout_constraintRight_toRightOf="parent"
+                android:id="@+id/LocationShareFriend" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@+id/LocationShareNone"
+                app:layout_constraintBottom_toBottomOf="@+id/LocationShareNone"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_marginLeft="21.43dp"
+                android:text="@string/LocationShareNone"
+                android:theme="@style/BlackTextSmallSmall" />
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/LocationShareFriend"
+                app:layout_constraintRight_toRightOf="parent"
+                android:id="@+id/LocationShareNone" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/LocationShareNone"
+                android:paddingTop="4.29dp"
+                android:paddingBottom="4.29dp"
+                android:text="@string/DistanceShare"
+                android:theme="@style/BlackTextSmallSmall"
+                android:id="@+id/DistanceShareText" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@+id/DistanceShareAll"
+                app:layout_constraintBottom_toBottomOf="@+id/DistanceShareAll"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_marginLeft="21.43dp"
+                android:text="@string/DistanceShareAll"
+                android:theme="@style/BlackTextSmallSmall" />
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/DistanceShareText"
+                app:layout_constraintRight_toRightOf="parent"
+                android:id="@+id/DistanceShareAll" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@+id/DistanceShareLike"
+                app:layout_constraintBottom_toBottomOf="@+id/DistanceShareLike"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_marginLeft="21.43dp"
+                android:text="@string/DistanceShareLike"
+                android:theme="@style/BlackTextSmallSmall" />
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/DistanceShareAll"
+                app:layout_constraintRight_toRightOf="parent"
+                android:id="@+id/DistanceShareLike" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@+id/DistanceShareMatch"
+                app:layout_constraintBottom_toBottomOf="@+id/DistanceShareMatch"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_marginLeft="21.43dp"
+                android:text="@string/DistanceShareMatch"
+                android:theme="@style/BlackTextSmallSmall" />
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/DistanceShareLike"
+                app:layout_constraintRight_toRightOf="parent"
+                android:id="@+id/DistanceShareMatch" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@+id/DistanceShareFriend"
+                app:layout_constraintBottom_toBottomOf="@+id/DistanceShareFriend"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_marginLeft="21.43dp"
+                android:text="@string/DistanceShareFriend"
+                android:theme="@style/BlackTextSmallSmall" />
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/DistanceShareMatch"
+                app:layout_constraintRight_toRightOf="parent"
+                android:id="@+id/DistanceShareFriend" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@+id/DistanceShareNone"
+                app:layout_constraintBottom_toBottomOf="@+id/DistanceShareNone"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_marginLeft="21.43dp"
+                android:text="@string/DistanceShareNone"
+                android:theme="@style/BlackTextSmallSmall" />
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/DistanceShareFriend"
+                app:layout_constraintRight_toRightOf="parent"
+                android:id="@+id/DistanceShareNone" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/DistanceShareNone"
+                android:layout_marginTop="17.14dp"
+                android:text="@string/EulaLabel"
+                android:theme="@style/BlackTextSmallSmall"
+                android:id="@+id/EulaLabel" />                
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="214.29dp"
+                app:layout_constraintTop_toBottomOf="@+id/EulaLabel"
+                android:layout_marginTop="8.57dp"
+                android:singleLine="false"
+                android:editable="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:gravity="top"
+                android:scrollbars="vertical"
+                android:text="@string/EulaText"
+                android:theme="@style/BlackTextXSmallSmall"
+                android:id="@+id/EulaText" />
+                
+            <Button
+                android:layout_width="0px"
+                android:layout_height="38.57dp"
+                app:layout_constraintTop_toBottomOf="@+id/EulaText"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@+id/Reset"
+                android:layout_marginTop="7.71dp"
+                android:textAllCaps="false"
+                android:backgroundTint="@color/ButtonOnWhite"
+                android:theme="@style/ButtonSmall"
+                android:text="@string/Register"
+                android:id="@+id/Register" />
+            <Button
+                android:layout_width="0px"
+                android:layout_height="38.57dp"
+                app:layout_constraintTop_toBottomOf="@+id/EulaText"
+                app:layout_constraintLeft_toRightOf="@+id/Register"
+                app:layout_constraintRight_toLeftOf="@+id/Cancel"
+                android:layout_marginTop="7.71dp"
+                android:textAllCaps="false"
+                android:backgroundTint="@color/ButtonOnWhite"
+                android:theme="@style/ButtonSmall"
+                android:text="@string/Reset"
+                android:id="@+id/Reset" />
+            <Button
+                android:layout_width="0px"
+                android:layout_height="38.57dp"
+                app:layout_constraintTop_toBottomOf="@+id/EulaText"
+                app:layout_constraintLeft_toRightOf="@+id/Reset"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginTop="7.71dp"
+                android:textAllCaps="false"
+                android:backgroundTint="@color/ButtonOnWhite"
+                android:theme="@style/ButtonSmall"
+                android:text="@string/Cancel"
+                android:id="@+id/Cancel" />
+        </android.support.constraint.ConstraintLayout>
+    </LocationConnection.TouchScrollView>
+    
+    <View
+        android:layout_width="match_parent"
+		android:layout_height="0px"
+        app:layout_constraintTop_toBottomOf="@+id/ImageEditorControls"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@color/Gray"
+        android:visibility="invisible"
+        android:id="@+id/ImageEditorFrame">        
+    </View>
+    <LocationConnection.ScaleImageView
+        android:layout_width="0px"
+		android:layout_height="0px"
+        app:layout_constraintTop_toTopOf="@+id/ImageEditorFrame"
+        app:layout_constraintBottom_toBottomOf="@+id/ImageEditorFrame"
+        app:layout_constraintLeft_toLeftOf="@+id/ImageEditorFrame"
+        app:layout_constraintRight_toRightOf="@+id/ImageEditorFrame"
+        android:visibility="invisible"
+        android:id="@+id/ImageEditor">        
+    </LocationConnection.ScaleImageView>
+    <View
+        android:layout_width="0px"
+		android:layout_height="0px"
+        app:layout_constraintTop_toTopOf="@+id/ImageEditorFrame"
+        app:layout_constraintBottom_toBottomOf="@+id/ImageEditorFrame"
+        app:layout_constraintLeft_toLeftOf="@+id/ImageEditorFrame"
+        app:layout_constraintRight_toRightOf="@+id/ImageEditorFrame"
+        app:layout_constraintDimensionRatio="1:1"
+        android:layout_marginLeft="17.14dp"
+        android:layout_marginRight="17.14dp"
+        android:layout_marginTop="17.14dp"
+        android:layout_marginBottom="17.14dp"
+        android:background="@drawable/border"
+        android:visibility="invisible"
+        android:id="@+id/ImageEditorFrameBorder">        
+    </View>
+    <LinearLayout
+        android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        android:gravity="center_vertical"
+        android:background="@android:color/white"
+        android:visibility="invisible"
+        android:id="@+id/ImageEditorControls">
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/Name"
-            app:layout_constraintBottom_toBottomOf="@+id/Name"
-            android:text="@string/Name"
-			android:theme="@style/BlackTextSmallSmall" />
-        <EditText
             android:layout_width="0px"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/CheckUsername"
-            app:layout_constraintLeft_toRightOf="@+id/ConfirmPasswordText"
-            app:layout_constraintRight_toRightOf="parent"
             android:layout_marginLeft="8.57dp"
-            android:singleLine="true"
-            android:theme="@style/EditSmall"
-            android:id="@+id/Name" />
-       
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="38.57dp"
-            app:layout_constraintTop_toBottomOf="@+id/Name"
-            android:textAllCaps="false"
-            android:backgroundTint="@color/ButtonOnWhite"
-            android:theme="@style/ButtonSmall"
-            android:text="@string/Images"
-            android:id="@+id/Images" />
-        <LocationConnection.ImageFrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0px"
-            app:layout_constraintTop_toBottomOf="@+id/Images"
-            android:layout_marginTop="8.57dp"                 
-            android:id="@+id/ImagesUploaded" />
-		<TextView
-			android:layout_width="0px"
-			android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/LoaderCircle"
-            app:layout_constraintBottom_toBottomOf="@+id/LoaderCircle"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/LoaderCircle"
-            android:theme="@style/BlackTextSmallSmall"
-			android:id="@+id/ImagesProgressText" />
-		<ImageView
-			android:src="@drawable/ic_reload_small"
-			android:layout_width="30.86dp"
-			android:layout_height="30.86dp"
-            app:layout_constraintTop_toBottomOf="@+id/ImagesUploaded"
-            app:layout_constraintRight_toRightOf="parent"
-            android:visibility="invisible"
-			android:id="@+id/LoaderCircle" />
-		<ProgressBar
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/LoaderCircle"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-			android:id="@+id/ImagesProgress" />
-            
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/ImagesProgress"
-            android:paddingTop="4.29dp"
-            android:paddingBottom="4.29dp"
-            android:text="@string/Description"
-			android:theme="@style/BlackTextSmallSmall"
-            android:id="@+id/DescriptionText" />                
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="214.29dp"
-            app:layout_constraintTop_toBottomOf="@+id/DescriptionText"
-            android:singleLine="false"
-            android:gravity="top"
-            android:theme="@style/EditSmall"
-            android:id="@+id/Description" />
-		
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/UseLocationSwitch"
-            app:layout_constraintBottom_toBottomOf="@+id/UseLocationSwitch"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:text="@string/Location"
-			android:theme="@style/BlackTextSmallSmall" />
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/Description"
-            app:layout_constraintRight_toRightOf="parent"
-            android:id="@+id/UseLocationSwitch" />       
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/UseLocationSwitch"
-            android:paddingTop="8.57dp"
-            android:paddingBottom="8.57dp" 
-			android:text="@string/LocationExplanation"
-			android:theme="@style/BlackTextSmallSmall"
-            android:id="@+id/LocationExplanation" />
-            
-		<TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/LocationExplanation"
-            android:paddingTop="4.29dp"
-            android:paddingBottom="4.29dp"
-            android:text="@string/LocationShare"
-			android:theme="@style/BlackTextSmallSmall"
-            android:id="@+id/LocationShareText" />
-		<TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/LocationShareAll"
-            app:layout_constraintBottom_toBottomOf="@+id/LocationShareAll"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginLeft="21.43dp"
-            android:text="@string/LocationShareAll"
-			android:theme="@style/BlackTextSmallSmall" />
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/LocationShareText"
-            app:layout_constraintRight_toRightOf="parent"
-            android:id="@+id/LocationShareAll" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/LocationShareLike"
-            app:layout_constraintBottom_toBottomOf="@+id/LocationShareLike"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginLeft="21.43dp"
-            android:text="@string/LocationShareLike"
-			android:theme="@style/BlackTextSmallSmall" />
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/LocationShareAll"
-            app:layout_constraintRight_toRightOf="parent"
-            android:id="@+id/LocationShareLike" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/LocationShareMatch"
-            app:layout_constraintBottom_toBottomOf="@+id/LocationShareMatch"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginLeft="21.43dp"
-            android:text="@string/LocationShareMatch"
-			android:theme="@style/BlackTextSmallSmall" />
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/LocationShareLike"
-            app:layout_constraintRight_toRightOf="parent"
-            android:id="@+id/LocationShareMatch" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/LocationShareFriend"
-            app:layout_constraintBottom_toBottomOf="@+id/LocationShareFriend"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginLeft="21.43dp"
-            android:text="@string/LocationShareFriend"
-			android:theme="@style/BlackTextSmallSmall" />
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/LocationShareMatch"
-            app:layout_constraintRight_toRightOf="parent"
-            android:id="@+id/LocationShareFriend" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/LocationShareNone"
-            app:layout_constraintBottom_toBottomOf="@+id/LocationShareNone"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginLeft="21.43dp"
-            android:text="@string/LocationShareNone"
-			android:theme="@style/BlackTextSmallSmall" />
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/LocationShareFriend"
-            app:layout_constraintRight_toRightOf="parent"
-            android:id="@+id/LocationShareNone" />
-
-		<TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/LocationShareNone"
-            android:paddingTop="4.29dp"
-            android:paddingBottom="4.29dp"
-            android:text="@string/DistanceShare"
-			android:theme="@style/BlackTextSmallSmall"
-            android:id="@+id/DistanceShareText" />
-		<TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/DistanceShareAll"
-            app:layout_constraintBottom_toBottomOf="@+id/DistanceShareAll"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginLeft="21.43dp"
-            android:text="@string/DistanceShareAll"
-			android:theme="@style/BlackTextSmallSmall" />
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/DistanceShareText"
-            app:layout_constraintRight_toRightOf="parent"
-            android:id="@+id/DistanceShareAll" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/DistanceShareLike"
-            app:layout_constraintBottom_toBottomOf="@+id/DistanceShareLike"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginLeft="21.43dp"
-            android:text="@string/DistanceShareLike"
-			android:theme="@style/BlackTextSmallSmall" />
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/DistanceShareAll"
-            app:layout_constraintRight_toRightOf="parent"
-            android:id="@+id/DistanceShareLike" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/DistanceShareMatch"
-            app:layout_constraintBottom_toBottomOf="@+id/DistanceShareMatch"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginLeft="21.43dp"
-            android:text="@string/DistanceShareMatch"
-			android:theme="@style/BlackTextSmallSmall" />
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/DistanceShareLike"
-            app:layout_constraintRight_toRightOf="parent"
-            android:id="@+id/DistanceShareMatch" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/DistanceShareFriend"
-            app:layout_constraintBottom_toBottomOf="@+id/DistanceShareFriend"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginLeft="21.43dp"
-            android:text="@string/DistanceShareFriend"
-			android:theme="@style/BlackTextSmallSmall" />
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/DistanceShareMatch"
-            app:layout_constraintRight_toRightOf="parent"
-            android:id="@+id/DistanceShareFriend" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/DistanceShareNone"
-            app:layout_constraintBottom_toBottomOf="@+id/DistanceShareNone"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginLeft="21.43dp"
-            android:text="@string/DistanceShareNone"
-			android:theme="@style/BlackTextSmallSmall" />
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/DistanceShareFriend"
-            app:layout_constraintRight_toRightOf="parent"
-            android:id="@+id/DistanceShareNone" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/DistanceShareNone"
-            android:layout_marginTop="17.14dp"
-            android:text="@string/EulaLabel"
-			android:theme="@style/BlackTextSmallSmall"
-            android:id="@+id/EulaLabel" />                
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="214.29dp"
-            app:layout_constraintTop_toBottomOf="@+id/EulaLabel"
             android:layout_marginTop="8.57dp"
-            android:singleLine="false"
-            android:editable="false"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:gravity="top"
-            android:scrollbars="vertical"
-            android:text="@string/EulaText"
-            android:theme="@style/BlackTextXSmallSmall"
-            android:id="@+id/EulaText" />
-            
-		<Button
-			android:layout_width="0px"
-			android:layout_height="38.57dp"
-            app:layout_constraintTop_toBottomOf="@+id/EulaText"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/Reset"
-            android:layout_marginTop="7.71dp"
-            android:textAllCaps="false"
-            android:backgroundTint="@color/ButtonOnWhite"
-            android:theme="@style/ButtonSmall"
-            android:text="@string/Register"
-			android:id="@+id/Register" />
-		<Button
-			android:layout_width="0px"
-			android:layout_height="38.57dp"
-            app:layout_constraintTop_toBottomOf="@+id/EulaText"
-            app:layout_constraintLeft_toRightOf="@+id/Register"
-            app:layout_constraintRight_toLeftOf="@+id/Cancel"
-            android:layout_marginTop="7.71dp"
-            android:textAllCaps="false"
-            android:backgroundTint="@color/ButtonOnWhite"
-            android:theme="@style/ButtonSmall"
-            android:text="@string/Reset"
-			android:id="@+id/Reset" />
-		<Button
-			android:layout_width="0px"
-			android:layout_height="38.57dp"
-            app:layout_constraintTop_toBottomOf="@+id/EulaText"
-            app:layout_constraintLeft_toRightOf="@+id/Reset"
-            app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginTop="7.71dp"
-            android:textAllCaps="false"
-            android:backgroundTint="@color/ButtonOnWhite"
-            android:theme="@style/ButtonSmall"
-            android:text="@string/Cancel"
-			android:id="@+id/Cancel" />
-    </android.support.constraint.ConstraintLayout>
-</LocationConnection.TouchScrollView>
+            android:layout_marginBottom="8.57dp"
+            android:layout_weight="1"
+            android:text="@string/ImageEditorLabel"
+			android:theme="@style/BlackTextSmallSmall"
+            android:id="@+id/ImageEditorLabel" />
+        <ImageButton
+            android:layout_width="41.14dp"
+    		android:layout_height="41.14dp"
+            android:layout_marginLeft="8.57dp"
+    		android:src="@drawable/ic_cross48_small"
+    		android:tooltipText="@string/ImageEditorCancel"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:id="@+id/ImageEditorCancel" />  
+        <ImageButton
+            android:layout_width="41.14dp"
+    		android:layout_height="41.14dp"
+            android:layout_marginRight="4.29dp"
+    		android:src="@drawable/ic_check48_small"
+    		android:tooltipText="@string/ImageEditorOK"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:id="@+id/ImageEditorOK" />  
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1.71dp"
+        app:layout_constraintTop_toTopOf="@+id/ImageEditorFrame"
+        android:visibility="invisible"
+        android:background="@drawable/separator_top_transparent"
+        android:id="@+id/TopSeparator" /> 
+</android.support.constraint.ConstraintLayout>

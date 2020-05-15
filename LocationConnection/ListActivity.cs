@@ -474,6 +474,9 @@ namespace LocationConnection
 					MenuChatListBg.SetBackgroundResource(statusRoundBackground);
 				}
 
+				UserSearchList.SetVerticalSpacing((int)Math.Round(2 * pixelDensity));
+				UserSearchList.SetHorizontalSpacing((int)Math.Round(2 * pixelDensity));
+
 				mapFragment.GetMapAsync(this);
 				imm = (InputMethodManager)GetSystemService(Context.InputMethodService);
 				c.view = MainLayout;
@@ -545,15 +548,19 @@ namespace LocationConnection
 				base.OnResume();
 				if (!initialized) { return; }
 
+				
+
 				if (File.Exists(c.locationLogFile))
 				{
 					TruncateLocationLog();
 				}
 				TruncateSystemLog();
 
-				c.LogActivity("Logged in: " + c.IsLoggedIn());
+				//c.IsLoggedIn() true does not mean, all session variables are set. Nullable object must have a value error can occur if autologin response is at the same time as ONResume.
+				bool isLoggedIn = c.IsLoggedIn();
+				c.LogActivity("Logged in: " + isLoggedIn);
 
-				if (c.IsLoggedIn())
+				if (isLoggedIn)
 				{
 					LoggedInLayout();
 					if (!(pageMenu is null))
@@ -656,7 +663,7 @@ namespace LocationConnection
 				}
 
 				int inAppLocationRate;
-				if (c.IsLoggedIn())
+				if (isLoggedIn)
 				{
 					if ((bool)Session.UseLocation && !c.IsLocationEnabled())
 					{

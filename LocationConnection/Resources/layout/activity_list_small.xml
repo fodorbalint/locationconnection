@@ -255,8 +255,9 @@
 					android:text="@string/UseGeoYes"
                     android:id="@+id/UseGeoYes" />
 			</RadioGroup>
+            <!-- When a png is set to src, it does not display correctly -->
             <ImageButton
-                android:src="@drawable/ic_reload"
+                android:src="@null"
                 android:layout_width="30.86dp"
         		android:layout_height="30.86dp"
                 app:layout_constraintTop_toTopOf="parent"
@@ -266,7 +267,15 @@
     			android:tooltipText="@string/RefreshDistance"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:id="@+id/RefreshDistance" />
-            
+            <ImageView
+                android:src="@drawable/ic_reload"
+                android:layout_width="30.86dp"
+        		android:layout_height="30.86dp"
+                app:layout_constraintTop_toTopOf="@+id/RefreshDistance"
+                app:layout_constraintBottom_toBottomOf="@+id/RefreshDistance"
+                app:layout_constraintLeft_toLeftOf="@+id/RefreshDistance"
+                app:layout_constraintRight_toRightOf="@+id/RefreshDistance"
+                android:id="@+id/RefreshDistanceImage" />            
 			<android.support.constraint.ConstraintLayout
     			android:layout_width="match_parent"
     			android:layout_height="wrap_content"
@@ -309,8 +318,8 @@
                     android:theme="@style/EditSmall"
 					android:id="@+id/DistanceSourceAddressText" />
                 <ImageButton
-					android:layout_width="30dp"
-					android:layout_height="30dp"
+					android:layout_width="30.86dp"
+					android:layout_height="30.86dp"
                     app:layout_constraintTop_toBottomOf="@+id/SourceRadioGroup"
                     app:layout_constraintLeft_toRightOf="@+id/DistanceSourceAddressText"
                     app:layout_constraintRight_toRightOf="parent"
@@ -374,8 +383,6 @@
         app:layout_constraintTop_toBottomOf="@+id/FilterLayout"
         app:layout_constraintBottom_toTopOf="@+id/StatusBar"
         android:numColumns="3"
-        android:verticalSpacing="2dp"
-        android:horizontalSpacing="2dp"
         android:stretchMode="columnWidth"
         android:id="@+id/UserSearchList" />    
 	<LinearLayout
