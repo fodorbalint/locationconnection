@@ -244,7 +244,7 @@ namespace LocationConnection
 				mapHeight = -1;
 				cancelImageLoading = false;
 
-				c.CW("OnResume IntentData.profileViewPageType " + IntentData.profileViewPageType);
+				c.LogActivity("OnResume IntentData.profileViewPageType " + IntentData.profileViewPageType);
 				pageType = IntentData.profileViewPageType;
 
 				switch (pageType)
@@ -1121,6 +1121,7 @@ namespace LocationConnection
 			}
 			catch (Exception ex)
 			{
+				HideMap();
 				c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 			}
 		}

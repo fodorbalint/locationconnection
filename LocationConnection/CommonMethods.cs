@@ -835,7 +835,7 @@ namespace LocationConnection
 			else {
 				string url = "action=reporterror&ID=" + Session.ID + "&SessionID=" + Session.SessionID;
 				string content = "Content=" + UrlEncode(error + System.Environment.NewLine
-					+ "Android version: " + Build.VERSION.SdkInt + " " + Build.VERSION.Sdk + " " + System.Environment.NewLine + Build.VERSION.BaseOs + System.Environment.NewLine + File.ReadAllText(logFile));
+					+ "Android version: " + AndroidInfo() + System.Environment.NewLine + File.ReadAllText(logFile));
 				string responseString = MakeRequestSync(url, "POST", content);
 				if (responseString == "OK")
 				{
@@ -863,7 +863,7 @@ namespace LocationConnection
 			{
 				string url = "action=reporterror&ID=" + Session.ID + "&SessionID=" + Session.SessionID;
 				string content = "Content=" + UrlEncode(error + System.Environment.NewLine
-					+ "Android version: " + Build.VERSION.SdkInt + " " + Build.VERSION.Sdk + " " + System.Environment.NewLine + Build.VERSION.BaseOs + System.Environment.NewLine + File.ReadAllText(logFile));
+					+ "Android version: " + AndroidInfo() + System.Environment.NewLine + File.ReadAllText(logFile));
 				MakeRequestSync(url, "POST", content);
 			}
 		}
@@ -891,9 +891,14 @@ namespace LocationConnection
 				Session.SnackMessage = error;
 				string url = "action=reporterror&ID=" + Session.ID + "&SessionID=" + Session.SessionID;
 				string content = "Content=" + UrlEncode(error + System.Environment.NewLine
-					+ "Android version: " + Build.VERSION.SdkInt + " " + Build.VERSION.Sdk + " " + System.Environment.NewLine + Build.VERSION.BaseOs + System.Environment.NewLine + File.ReadAllText(logFile));
+					+ "Android version: " + AndroidInfo() + System.Environment.NewLine + File.ReadAllText(logFile));
 				MakeRequestSync(url, "POST", content);
 			}
+		}
+
+		public string AndroidInfo()
+		{
+			return Build.VERSION.SdkInt + " - " + Build.VERSION.Sdk + " - "+ Build.Manufacturer + " - " + Build.Model + " - " + Build.Product;
 		}
 
 		public void CW(object message)

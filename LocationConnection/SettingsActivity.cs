@@ -525,7 +525,7 @@ namespace LocationConnection
 
 				string url = "action=reporterror&ID=" + Session.ID + "&SessionID=" + Session.SessionID;
 				string content = "Content=" + c.UrlEncode(MessageEdit.Text + System.Environment.NewLine
-					+ "Android version: " + Build.VERSION.SdkInt + " " + Build.VERSION.Sdk + " " + System.Environment.NewLine + Build.VERSION.BaseOs + System.Environment.NewLine + File.ReadAllText(CommonMethods.logFile));
+					+ "Android version: " + c.AndroidInfo() + System.Environment.NewLine + File.ReadAllText(CommonMethods.logFile));
 				string responseString = await c.MakeRequest(url, "POST", content);
 
 				if (responseString == "OK")

@@ -219,51 +219,69 @@ namespace LocationConnection
 
 		private void AddLine(LatLng location1, LatLng location2, Color color)
 		{
-			PolylineOptions p = new PolylineOptions();
-			p.Add(location1, location2);
-			p.InvokeWidth(3*pixelDensity);
-			p.InvokeJointType(JointType.Bevel);
-			p.InvokeColor(Color.Black);
-			thisMap.AddPolyline(p);
+			try
+			{
+				PolylineOptions p = new PolylineOptions();
+				p.Add(location1, location2);
+				p.InvokeWidth(3 * pixelDensity);
+				p.InvokeJointType(JointType.Bevel);
+				p.InvokeColor(Color.Black);
+				thisMap.AddPolyline(p);
 
-			p = new PolylineOptions();
-			p.Add(location1, location2);
-			p.InvokeWidth(2*pixelDensity);
-			p.InvokeJointType(JointType.Bevel);
-			p.InvokeColor(color);
-			thisMap.AddPolyline(p);
+				p = new PolylineOptions();
+				p.Add(location1, location2);
+				p.InvokeWidth(2 * pixelDensity);
+				p.InvokeJointType(JointType.Bevel);
+				p.InvokeColor(color);
+				thisMap.AddPolyline(p);
+			}
+			catch
+			{
+			}
 		}
 
 		private void AddCircle(LatLng location)
 		{
-			if (!(circle is null))
+			try
 			{
-				circle.Remove();
+				if (!(circle is null))
+				{
+					circle.Remove();
+				}
+
+				Drawable drawable = ContextCompat.GetDrawable(this, icMapmarker);
+
+				Bitmap bitmap = Bitmap.CreateBitmap((int)(circleSize * pixelDensity), (int)(circleSize * pixelDensity), Bitmap.Config.Argb8888);
+				Canvas canvas = new Canvas(bitmap);
+				drawable.SetBounds(0, 0, canvas.Width, canvas.Height);
+				drawable.Draw(canvas);
+
+				MarkerOptions markerOptions = new MarkerOptions();
+				markerOptions.SetPosition(location);
+				markerOptions.SetIcon(BitmapDescriptorFactory.FromBitmap(bitmap));
+				markerOptions.Anchor(0.5f, 0.5f);
+				circle = thisMap.AddMarker(markerOptions);
 			}
-
-			Drawable drawable = ContextCompat.GetDrawable(this, icMapmarker);
-
-			Bitmap bitmap = Bitmap.CreateBitmap((int)(circleSize * pixelDensity), (int)(circleSize * pixelDensity), Bitmap.Config.Argb8888);
-			Canvas canvas = new Canvas(bitmap);
-			drawable.SetBounds(0, 0, canvas.Width, canvas.Height);
-			drawable.Draw(canvas);
-
-			MarkerOptions markerOptions = new MarkerOptions();
-			markerOptions.SetPosition(location);
-			markerOptions.SetIcon(BitmapDescriptorFactory.FromBitmap(bitmap));
-			markerOptions.Anchor(0.5f, 0.5f);
-			circle = thisMap.AddMarker(markerOptions);
+			catch
+			{
+			}
 		}
 
 		private void MoveMap(LatLng location, bool isFirst)
 		{
-			if (isFirst)
+			try
 			{
-				thisMap.MoveCamera(CameraUpdateFactory.NewLatLngZoom(location, 14));
+				if (isFirst)
+				{
+					thisMap.MoveCamera(CameraUpdateFactory.NewLatLngZoom(location, 14));
+				}
+				else
+				{
+					thisMap.MoveCamera(CameraUpdateFactory.NewLatLng(location));
+				}
 			}
-			else
+			catch
 			{
-				thisMap.MoveCamera(CameraUpdateFactory.NewLatLng(location));
 			}
 		}
 

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Location Connection</string>
 	<string name="app_name_short">Connection</string>
-    <string name="versionInfo">Version: 1.4 - 20 May 2020\n\nCreated by Balint Fodor\n\nContact: fodorbalint@gmail.com\nlocationconnection.me\n\nPrivacy policy:\nhttps://locationconnection.me/?page=legal#privacy\n\nSource code:\nhttps://github.com/fodorbalint?tab=repositories</string>
+    <string name="versionInfo">Version: 1.4 - 21 May 2020\n\nCreated by Balint Fodor\n\nContact: fodorbalint@gmail.com\nlocationconnection.me\n\nPrivacy policy:\nhttps://locationconnection.me/?page=legal#privacy\n\nSource code:\nhttps://github.com/fodorbalint?tab=repositories</string>
 
 	<!-- General -->
 
@@ -14,7 +14,7 @@
 	<string name="logAlertPaddingNormal">7</string>
 	<string name="logAlertPaddingSmall">6</string>
 	
-	<string name="GooglePlayNotAvailable">Since Google Play is not installed, instant messaging will not work.</string>
+	<string name="GooglePlayNotAvailable">Google Play Services is unavailable.\nMaps, notifications, and instant messaging will therefore not work.\nError message:</string>
 
     <string name="NoNetwork">No Internet connection.</string>
     <string name="NetworkTimeout">Internet connection timed out.</string>
@@ -99,7 +99,7 @@
 	<string name="StorageNotGranted">Storage read permission was not granted.</string>
 	<string name="ImagesUploading">Wait until the picture finished uploading.</string>
 	<string name="ImagesDeleting">Wait until picture deletion is finished.</string>
-	<string name="UploadImagePathNotFound">File cannot be accessed. Try uploading from your local storage.</string>
+	<string name="UploadImagePathNotFound">File cannot be accessed.\n- Try again if you have recently taken the picture.\n- If the photo is on an external SD card, copy it into your internal storage.</string>
 	<string name="ImagesProgressText">Uploading... (This may take up to a minute.)</string>
     <string name="ImagesProgressTextPercent">Uploading:</string>    
     <string name="ImagesRearrange">Press and hold an image to rearrange.</string>

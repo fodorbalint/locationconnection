@@ -169,7 +169,7 @@ namespace LocationConnection
 				{
 					string url = "action=reporterror&ID=" + Session.ID + "&SessionID=" + Session.SessionID;
 					string content = "Content=" + c.UrlEncode(File.ReadAllText(c.errorFile) + System.Environment.NewLine
-						+ "Android version: " + Build.VERSION.SdkInt + " " + Build.VERSION.Sdk + " " + System.Environment.NewLine + Build.VERSION.BaseOs + System.Environment.NewLine + File.ReadAllText(CommonMethods.logFile));
+						+ "Android version: " + c.AndroidInfo() + System.Environment.NewLine + File.ReadAllText(CommonMethods.logFile));
 					string responseString = c.MakeRequestSync(url, "POST", content);
 					if (responseString == "OK")
 					{
@@ -857,19 +857,15 @@ namespace LocationConnection
 			((ConstraintLayout.LayoutParams)BottomSeparator.LayoutParameters).RightMargin = 0;
 		}
 
-		public bool IsPlayServicesAvailable()
+		public bool IsPlayServicesAvailable() //Newer Huawei devices do not support play store.
 		{
 			int resultCode = GoogleApiAvailability.Instance.IsGooglePlayServicesAvailable(this);
 			if (resultCode != ConnectionResult.Success)
 			{
-				if (GoogleApiAvailability.Instance.IsUserResolvableError(resultCode))
-				{
-					c.ReportError(GoogleApiAvailability.Instance.GetErrorString(resultCode));
-				}
-				else
-				{
-					c.ReportError(res.GetString(Resource.String.GooglePlayNotAvailable));
-				}
+				c.Alert(res.GetString(Resource.String.GooglePlayNotAvailable) + " " + GoogleApiAvailability.Instance.GetErrorString(resultCode));
+				c.ReportErrorSilent("IsPlayServicesAvailable error: " + resultCode + " - " + GoogleApiAvailability.Instance.GetErrorString(resultCode));
+				// if (GoogleApiAvailability.Instance.IsUserResolvableError(resultCode))
+				
 				return false;
 			}
 			else
@@ -2692,67 +2688,76 @@ namespace LocationConnection
 
 		public bool MoveMap(double? latitude, double? longitude)
 		{
-			if (!(latitude is null) && !(longitude is null))
+			try
 			{
-				LatLng location = new LatLng((double)latitude, (double)longitude);
-
-				RunOnUiThread(() =>
+				if (!(latitude is null) && !(longitude is null))
 				{
-					thisMap.Clear();
+					LatLng location = new LatLng((double)latitude, (double)longitude);
 
-					if (recenterMap)
+					RunOnUiThread(() =>
 					{
-						if (c.IsLocationEnabled())
-						{
-							thisMap.MyLocationEnabled = true;
-							thisMap.UiSettings.MyLocationButtonEnabled = true;
-						}
-						else
-						{
-							thisMap.MyLocationEnabled = false;
-							thisMap.UiSettings.MyLocationButtonEnabled = false;
-						}
+						thisMap.Clear();
 
-						if ((bool)Session.GeoFilter && Session.LastSearchType == Constants.SearchType_Filter) //no geo filter on free text search
+						if (recenterMap)
 						{
-							MarkerOptions markerOptions = new MarkerOptions();
-							markerOptions.SetPosition(new LatLng((double)latitude, (double)longitude));
-							thisMap.AddMarker(markerOptions);
+							if (c.IsLocationEnabled())
+							{
+								thisMap.MyLocationEnabled = true;
+								thisMap.UiSettings.MyLocationButtonEnabled = true;
+							}
+							else
+							{
+								thisMap.MyLocationEnabled = false;
+								thisMap.UiSettings.MyLocationButtonEnabled = false;
+							}
 
+							if ((bool)Session.GeoFilter && Session.LastSearchType == Constants.SearchType_Filter) //no geo filter on free text search
+							{
+								MarkerOptions markerOptions = new MarkerOptions();
+								markerOptions.SetPosition(new LatLng((double)latitude, (double)longitude));
+								thisMap.AddMarker(markerOptions);
+
+								CircleOptions circleOptions = new CircleOptions();
+								circleOptions.InvokeCenter(new LatLng((double)latitude, (double)longitude));
+								circleOptions.InvokeRadius((double)Session.DistanceLimit * 1000);
+								circleOptions.InvokeStrokeColor(Color.Black);
+								circleOptions.InvokeFillColor(Color.Argb(18, 0, 205, 0));
+								circleOptions.InvokeStrokeWidth(2); // is in pixels, and floored to int. No anti-aliasing.
+								circle = thisMap.AddCircle(circleOptions);
+							}
+
+							CameraPosition.Builder builder = CameraPosition.InvokeBuilder();
+							builder.Target(location);
+							builder.Zoom(GetZoomLevel((double)latitude));
+							CameraPosition cameraPosition = builder.Build();
+							CameraUpdate cameraUpdate = CameraUpdateFactory.NewCameraPosition(cameraPosition);
+							thisMap.MoveCamera(cameraUpdate);
+						}
+						else //change only circle radius
+						{
 							CircleOptions circleOptions = new CircleOptions();
 							circleOptions.InvokeCenter(new LatLng((double)latitude, (double)longitude));
 							circleOptions.InvokeRadius((double)Session.DistanceLimit * 1000);
 							circleOptions.InvokeStrokeColor(Color.Black);
 							circleOptions.InvokeFillColor(Color.Argb(18, 0, 205, 0));
-							circleOptions.InvokeStrokeWidth(2); // is in pixels, and floored to int. No anti-aliasing.
+							circleOptions.InvokeStrokeWidth(2);
 							circle = thisMap.AddCircle(circleOptions);
 						}
+					});
 
-						CameraPosition.Builder builder = CameraPosition.InvokeBuilder();
-						builder.Target(location);
-						builder.Zoom(GetZoomLevel((double)latitude));
-						CameraPosition cameraPosition = builder.Build();
-						CameraUpdate cameraUpdate = CameraUpdateFactory.NewCameraPosition(cameraPosition);
-						thisMap.MoveCamera(cameraUpdate);
-					}
-					else //change only circle radius
-					{
-						CircleOptions circleOptions = new CircleOptions();
-						circleOptions.InvokeCenter(new LatLng((double)latitude, (double)longitude));
-						circleOptions.InvokeRadius((double)Session.DistanceLimit * 1000);
-						circleOptions.InvokeStrokeColor(Color.Black);
-						circleOptions.InvokeFillColor(Color.Argb(18, 0, 205, 0));
-						circleOptions.InvokeStrokeWidth(2);
-						circle = thisMap.AddCircle(circleOptions);
-					}
-				});
-
-				return true;
+					return true;
+				}
+				else
+				{
+					return false;
+				}
 			}
-			else
+			catch (Exception ex)
 			{
+				c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 				return false;
 			}
+			
 		}
 
 		public float GetZoomLevel(double latitude)

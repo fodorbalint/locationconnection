@@ -106,12 +106,13 @@ namespace LocationConnection
 						{
 							selectedFileStr = c.GetPathToImage(selectedFile);
 						}
-						catch
+						catch (Exception ex)
 						{
-							c.LogError("UploadImagePathNotFound: selectedFile: " + selectedFile + ", selectedFile.Path: " + selectedFile.Path);
+							c.LogActivity("UploadImagePathNotFound: " + ex.Message + " " + ex.StackTrace.Replace("\n"," ") + " selectedFile: " + selectedFile + ", selectedFile.Path: " + selectedFile.Path);
 							c.ReportError(res.GetString(Resource.String.UploadImagePathNotFound));
 							return;
 						}
+						c.LogActivity("Image resolved: selectedFile: " + selectedFile + ", selectedFile.Path: " + selectedFile.Path + " selectedFileStr " + selectedFileStr);
 					}
 					else
 					{
