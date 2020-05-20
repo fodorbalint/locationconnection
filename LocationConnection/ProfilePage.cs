@@ -8,6 +8,7 @@ using Android.App;
 using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
+using Android.Media;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.Constraints;
@@ -130,9 +131,29 @@ namespace LocationConnection
 					return;
 				}
 
+				ExifInterface exif = new ExifInterface(selectedFileStr);
+				int orientation = exif.GetAttributeInt(ExifInterface.TagOrientation, (int)Android.Media.Orientation.Undefined);
+
 				Bitmap bm = BitmapFactory.DecodeFile(selectedFileStr);
 
-				c.CW(bm.Width + " " + bm.Height);
+				//c.CW("Image width " + bm.Width + " height " + bm.Height + " orientation " + orientation + " file " + selectedFileStr);
+				//c.LogActivity("Image width " + bm.Width + " height " + bm.Height + " orientation " + orientation + " file " + selectedFileStr);
+
+				switch (orientation)
+				{
+					case (int)Android.Media.Orientation.Rotate90:
+						bm = RotateImage(bm, 90);
+						break;
+					case (int)Android.Media.Orientation.Rotate180:
+						bm = RotateImage(bm, 180);
+						break;
+					case (int)Android.Media.Orientation.Rotate270:
+						bm = RotateImage(bm, 270);
+						break;
+				}
+
+				//c.CW("Image new width " + bm.Width + " new height " + bm.Height);
+				//c.LogActivity("Image new width " + bm.Width + " new height " + bm.Height);
 
 				float sizeRatio = (float)bm.Width / bm.Height;
 
@@ -164,6 +185,13 @@ namespace LocationConnection
 					ImageEditor.SetContent(bm);					
 				}
 			}
+		}
+
+		public Bitmap RotateImage (Bitmap source, float angle)
+		{
+			Matrix matrix = new Matrix();
+			matrix.PostRotate(angle);
+			return Bitmap.CreateBitmap(source, 0, 0, source.Width, source.Height, matrix, true);
 		}
 	}
 }

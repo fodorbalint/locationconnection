@@ -20,6 +20,7 @@ using Android.Support.V4.App;
 using Android.Support.V4.Content;
 using Android.Views;
 using Android.Views.Animations;
+using Android.Views.InputMethods;
 using Android.Widget;
 
 namespace LocationConnection
@@ -32,7 +33,7 @@ namespace LocationConnection
 		public TextView EditAccountData, EditChangePassword, EditLocationSettings, EditMoreOptions;
 		Switch Women, Men;
 		public EditText EditOldPassword, EditNewPassword, EditConfirmPassword;
-
+		InputMethodManager imm;
 		int checkFormMessage;
 
 		protected override void OnCreate(Bundle savedInstanceState)
@@ -122,6 +123,7 @@ namespace LocationConnection
 				c.view = MainLayout;
 				rc = new RegisterCommonMethods(this);
 				res = Resources;
+				imm = (InputMethodManager)GetSystemService(InputMethodService);
 
 				Women.Click += Women_Click;
 				Men.Click += Men_Click;
@@ -201,6 +203,13 @@ namespace LocationConnection
 			{
 				c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 			}
+		}
+
+		protected override void OnPause()
+		{
+			base.OnPause();
+
+			imm.HideSoftInputFromWindow(Description.WindowToken, 0);
 		}
 
 		private void SetSexChoice()

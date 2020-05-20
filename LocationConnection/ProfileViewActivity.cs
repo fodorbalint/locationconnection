@@ -25,7 +25,7 @@ namespace LocationConnection
 		public ConstraintLayout ScrollLayout, ProfileImageContainer, Footer;
 		LinearLayout MapContainer, CircleContainer;
 		Android.Support.V7.Widget.Toolbar MenuContainer;
-		View EditSpacer, HeaderBackground, PercentProgress, MapTopSeparator, MapBottomSeparator, NavigationSpacer,
+		View EditSpacer, HeaderBackground, PercentProgress, MapTopSeparator, NavigationSpacer,
 			EditSelfHeader, RippleImageEditBack, RippleImage, RippleImageNext, RippleImagePrev;
 		TextView Name, Username, ResponseRate, LastActiveDate, RegisterDate, Description, LocationTime, DistanceText;
 		public TouchConstraintLayout ProfileImageScroll;
@@ -178,7 +178,6 @@ namespace LocationConnection
 				ProfileViewMap = (SupportMapFragment)SupportFragmentManager.FindFragmentById(Resource.Id.ProfileViewMap);
 				ProfileViewMap.GetMapAsync(this);
 				MapTopSeparator= FindViewById<View>(Resource.Id.MapTopSeparator);
-				MapBottomSeparator = FindViewById<View>(Resource.Id.MapBottomSeparator);
 				MapStreet = FindViewById<Button>(Resource.Id.MapStreet);
 				MapSatellite = FindViewById<Button>(Resource.Id.MapSatellite);
 				NavigationSpacer = FindViewById<View>(Resource.Id.NavigationSpacer);
@@ -237,6 +236,7 @@ namespace LocationConnection
 				base.OnResume();
 				if (!ListActivity.initialized) { return; }
 
+				GetScreenMetrics(false); //if orientation was changed in ListActivity, profileImageScroll will now not have the correct height set in SetHeight otherwise 
 				mapSet = false;
 				userLoaded = false;
 				ProfileImageScroll.ScrollX = 0;
@@ -570,13 +570,11 @@ namespace LocationConnection
 		private void ShowNavigationSpacer()
 		{
 			NavigationSpacer.LayoutParameters.Height = (int)(navigationSpacerHeight * pixelDensity);
-			MapBottomSeparator.Visibility = ViewStates.Visible;
 		}
 
 		private void HideNavigationSpacer()
 		{
 			NavigationSpacer.LayoutParameters.Height = 0;
-			MapBottomSeparator.Visibility = ViewStates.Gone;
 		}
 
 		private void Footer_LayoutChange(object sender, View.LayoutChangeEventArgs e)
@@ -618,11 +616,8 @@ namespace LocationConnection
 
 			Rect r = new Rect();
 			MainLayout.GetWindowVisibleDisplayFrame(r);
-			int screenHeight = MainLayout.RootView.Height;
-			int keyboardHeight = screenHeight - r.Bottom;
-			c.CW("SetHeight currentScrollHeight " + currentScrollHeight + " MainLayout.Height " + MainLayout.Height + " " + keyboardHeight); //for when returning from profile edit with the keyboard open			
-
-			totalScrollHeight = currentScrollHeight - MainLayout.Height - keyboardHeight;
+			totalScrollHeight = currentScrollHeight - MainLayout.Height;
+			c.LogActivity("SetHeight screenHeight " + screenHeight + " totalScrollHeight " + totalScrollHeight + " currentScrollHeight " + currentScrollHeight + " MainLayout.Height " + MainLayout.Height + " ScrollLayout.Height " + ScrollLayout.Height);
 
 			if (totalScrollHeight < 0)
 			{
@@ -637,9 +632,9 @@ namespace LocationConnection
 				CastShadows(ScrollLayout.ScrollY);
 			}
 
-			if (currentScrollHeight < MainLayout.Height + keyboardHeight)
+			if (currentScrollHeight < MainLayout.Height)
 			{
-				int value = screenWidth + MainLayout.Height + keyboardHeight - currentScrollHeight;
+				int value = screenWidth + MainLayout.Height - currentScrollHeight;
 
 				var p = new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, value);
 				p.TopToBottom = Resource.Id.HeaderBackground;
@@ -656,6 +651,8 @@ namespace LocationConnection
 		}
 
 		private int GetScrollHeight() {
+			//c.LogActivity("GetScrollHeight EditSpacer " + ((EditSpacer.Visibility == ViewStates.Visible) ? EditSpacer.Height : 0) + " HeaderBackground " + HeaderBackground.Height + " screenWidth " + screenWidth + " Footer " + Footer.Height + " MapContainer " + ((MapContainer.Visibility == ViewStates.Visible) ? MapContainer.LayoutParameters.Height : 0) + " NavigationSpacer " + NavigationSpacer.LayoutParameters.Height);
+
 			return ((EditSpacer.Visibility == ViewStates.Visible) ? EditSpacer.Height : 0) + HeaderBackground.Height + screenWidth
 				+ Footer.Height + ((MapContainer.Visibility == ViewStates.Visible) ? MapContainer.LayoutParameters.Height : 0) + NavigationSpacer.LayoutParameters.Height;
 		}
@@ -831,6 +828,8 @@ namespace LocationConnection
 				}
 				counterCircles = new List<View>();
 
+				c.LogActivity("LoadSelf " + Session.Username);
+
 				Username.Text = Session.Username;
 				Name.Text = Session.Name;
 				Description.Text = Session.Description;
@@ -956,6 +955,8 @@ namespace LocationConnection
 				}
 
 				counterCircles = new List<View>();
+
+				c.LogActivity("LoadUser " + displayUser.Username);
 
 				Username.Text = displayUser.Username;
 				Name.Text = displayUser.Name;

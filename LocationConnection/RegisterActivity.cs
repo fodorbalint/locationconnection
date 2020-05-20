@@ -132,7 +132,7 @@ namespace LocationConnection
 				c.view = MainLayout;
 				rc = new RegisterCommonMethods(this);
 				res = Resources;
-				imm = (InputMethodManager)GetSystemService(Context.InputMethodService);
+				imm = (InputMethodManager)GetSystemService(InputMethodService);
 
 				var adapter = ArrayAdapter.CreateFromResource(this, Resource.Array.SexEntries, spinnerItem);
 				adapter.SetDropDownViewResource(spinnerItemDropdown);
