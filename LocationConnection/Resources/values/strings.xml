@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Location Connection</string>
 	<string name="app_name_short">Connection</string>
-    <string name="versionInfo">Version: 1.4 - 21 May 2020\n\nCreated by Balint Fodor\n\nContact: fodorbalint@gmail.com\nlocationconnection.me\n\nPrivacy policy:\nhttps://locationconnection.me/?page=legal#privacy\n\nSource code:\nhttps://github.com/fodorbalint?tab=repositories</string>
+    <string name="versionInfo">Version: 1.4 - 22 May 2020\n\nCreated by Balint Fodor\n\nContact: fodorbalint@gmail.com\nlocationconnection.me\n\nPrivacy policy:\nhttps://locationconnection.me/?page=legal#privacy\n\nSource code:\nhttps://github.com/fodorbalint?tab=repositories</string>
 
 	<!-- General -->
 
@@ -18,7 +18,7 @@
 
     <string name="NoNetwork">No Internet connection.</string>
     <string name="NetworkTimeout">Internet connection timed out.</string>
-	<string name="ErrorEncountered">Error encountered</string>
+	<string name="ErrorEncountered">Error</string>
 	<string name="ErrorNotificationSent">Developer has been notified.</string>
 	<string name="ErrorNotificationToSend">Developer will be notified on app restart.</string>
 
@@ -74,6 +74,7 @@
 	<string name="WrongImageExtension">Only jpg, jpeg and png files are allowed.</string>
 	<string name="NotAnImage">The uploaded file is not an image.</string>
 	<string name="PictureTooLarge">The uploaded image exceeds the 20 MB limit.</string>
+	<string name="PictureSizeTooLarge">The uploaded image exceeds 4000 x 4000 pixel limit.</string>
 	<string name="PasswordMismatch">Incorrect password. Log out to reset it.</string>
 	<string name="UserPassive">[name] is not active.</string>
     <string name="MatchNotFound">Match not found.</string>

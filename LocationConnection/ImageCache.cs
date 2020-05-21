@@ -105,11 +105,17 @@ namespace LocationConnection
                         imageViewToLoadLater.Remove(imageView);
                     }
 
+                    
                     context.RunOnUiThread(() => {
                         imageView.SetImageBitmap(Load(saveName)); //takes 3-4 ms
-                        imageView.Alpha = 0;
-                        imageView.Animate().Alpha(1).SetDuration(context.tweenTime).Start();
+
+                        if (context is ChatListActivity) //only necessary because in the list the pictures appear on the wrong place for a moment
+                        {
+                            imageView.Alpha = 0;
+                            imageView.Animate().Alpha(1).SetDuration(context.tweenTime).Start();
+                        }
                     });
+                    
                 }
                 else
                 {

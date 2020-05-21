@@ -2663,7 +2663,12 @@ namespace LocationConnection
 				{
 					ImageCache im = new ImageCache(this);
 					Bitmap imageBitmap = await im.LoadBitmap(profile.ID.ToString(), profile.Pictures[0]);
-					Bitmap smallMarker = Bitmap.CreateScaledBitmap(imageBitmap, (int)(Settings.MapIconSize * pixelDensity), (int)(Settings.MapIconSize * pixelDensity), false);
+
+					Bitmap smallMarker = Bitmap.CreateBitmap((int)(Settings.MapIconSize * pixelDensity) + 2, (int)(Settings.MapIconSize * pixelDensity) + 2, imageBitmap.GetConfig()); //Bitmap.CreateScaledBitmap(imageBitmap, (int)(Settings.MapIconSize * pixelDensity), (int)(Settings.MapIconSize * pixelDensity), false);
+					Canvas canvas = new Canvas(smallMarker);
+					canvas.DrawColor(Color.Black);
+					canvas.DrawBitmap(imageBitmap, new Rect(0, 0, imageBitmap.Width, imageBitmap.Height), new Rect(1, 1, 1 + (int)(Settings.MapIconSize * pixelDensity), 1 + (int)(Settings.MapIconSize * pixelDensity)), null);
+
 					LatLng location = new LatLng((double)profile.Latitude, (double)profile.Longitude);
 					markerOptions = new MarkerOptions();
 					markerOptions.SetPosition(location);
