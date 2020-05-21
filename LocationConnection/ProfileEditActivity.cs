@@ -33,7 +33,6 @@ namespace LocationConnection
 		public TextView EditAccountData, EditChangePassword, EditLocationSettings, EditMoreOptions;
 		Switch Women, Men;
 		public EditText EditOldPassword, EditNewPassword, EditConfirmPassword;
-		InputMethodManager imm;
 		int checkFormMessage;
 
 		protected override void OnCreate(Bundle savedInstanceState)
@@ -110,16 +109,10 @@ namespace LocationConnection
 				DeactivateAccount = FindViewById<Button>(Resource.Id.DeactivateAccount);
 				DeleteAccount = FindViewById<Button>(Resource.Id.DeleteAccount);
 
-				EditAccountDataSection.Visibility = ViewStates.Gone;
-				EditChangePasswordSection.Visibility = ViewStates.Gone;
-				EditLocationSettingsSection.Visibility = ViewStates.Gone;
-				DeactivateAccount.Visibility = ViewStates.Gone;
-				DeleteAccount.Visibility = ViewStates.Gone;
-
 				ImagesUploaded.numColumns = 3; //it does not get passed in the layout file
 				ImagesUploaded.tileSpacing = 2;
 				ImagesUploaded.SetTileSize();
-				ImagesProgress.Progress = 0;
+				
 				c.view = MainLayout;
 				rc = new RegisterCommonMethods(this);
 				res = Resources;
@@ -149,6 +142,14 @@ namespace LocationConnection
 			try {
 				base.OnResume();
 				if (!ListActivity.initialized) { return; }
+
+				EditAccountDataSection.Visibility = ViewStates.Gone;
+				EditChangePasswordSection.Visibility = ViewStates.Gone;
+				EditLocationSettingsSection.Visibility = ViewStates.Gone;
+				DeactivateAccount.Visibility = ViewStates.Gone;
+				DeleteAccount.Visibility = ViewStates.Gone;
+				ImagesProgress.Progress = 0;
+				MainScroll.ScrollY = 0;
 
 				MainLayout.RequestFocus();
 				SetSexChoice();
@@ -197,6 +198,11 @@ namespace LocationConnection
 				else
 				{
 					DeactivateAccount.Text = res.GetString(Resource.String.ActivateAccount);
+				}
+
+				if (imageEditorOpen)
+				{
+					AdjustImage();
 				}
 			}
 			catch (Exception ex)

@@ -14,6 +14,7 @@ using Android.Runtime;
 using Android.Support.Constraints;
 using Android.Support.V7.App;
 using Android.Views;
+using Android.Views.InputMethods;
 using Android.Widget;
 
 namespace LocationConnection
@@ -40,10 +41,14 @@ namespace LocationConnection
 		public bool imagesUploading;
 		public bool imagesDeleting;
 		public Resources res;
+		public bool imageEditorOpen;
+		float sizeRatio;
+		Bitmap bm;
 
 		public string selectedFileStr, selectedImageName;
 		public RegisterCommonMethods rc;
 		public float lastScale;
+		public InputMethodManager imm;
 
 		public abstract void SaveRegData();
 
@@ -135,10 +140,10 @@ namespace LocationConnection
 				ExifInterface exif = new ExifInterface(selectedFileStr);
 				int orientation = exif.GetAttributeInt(ExifInterface.TagOrientation, (int)Android.Media.Orientation.Undefined);
 
-				Bitmap bm = BitmapFactory.DecodeFile(selectedFileStr);
+				bm = BitmapFactory.DecodeFile(selectedFileStr);
 
-				//c.CW("Image width " + bm.Width + " height " + bm.Height + " orientation " + orientation + " file " + selectedFileStr);
-				//c.LogActivity("Image width " + bm.Width + " height " + bm.Height + " orientation " + orientation + " file " + selectedFileStr);
+				c.CW("Image width " + bm.Width + " height " + bm.Height + " orientation " + orientation + " file " + selectedFileStr);
+				c.LogActivity("Image width " + bm.Width + " height " + bm.Height + " orientation " + orientation + " file " + selectedFileStr);
 
 				switch (orientation)
 				{
@@ -153,10 +158,7 @@ namespace LocationConnection
 						break;
 				}
 
-				//c.CW("Image new width " + bm.Width + " new height " + bm.Height);
-				//c.LogActivity("Image new width " + bm.Width + " new height " + bm.Height);
-
-				float sizeRatio = (float)bm.Width / bm.Height;
+				sizeRatio = (float)bm.Width / bm.Height;
 
 				if (sizeRatio == 1)
 				{
@@ -164,28 +166,43 @@ namespace LocationConnection
 				}
 				else
 				{
-					ImageEditorControls.Visibility = ViewStates.Visible;
-					TopSeparator.Visibility = ViewStates.Visible;
-					ImageEditor.Visibility = ViewStates.Visible;
-					ImageEditorFrame.Visibility = ViewStates.Visible;
-					ImageEditorFrameBorder.Visibility = ViewStates.Visible;
-
-					if (sizeRatio > 1)
-					{
-						ImageEditor.intrinsicHeight = ImageEditorFrameBorder.Height;
-						ImageEditor.intrinsicWidth = ImageEditorFrameBorder.Width * sizeRatio;
-					}
-					else
-					{
-						ImageEditor.intrinsicHeight = ImageEditorFrameBorder.Width / sizeRatio;
-						ImageEditor.intrinsicWidth = ImageEditorFrameBorder.Width;
-					}
-					ImageEditor.scaleFactor = 1;
-					ImageEditor.xDist = 0;
-					ImageEditor.yDist = 0;
-					ImageEditor.SetContent(bm);					
+					//called before OnResume. If the keyboard was open, screen size is reduced.
+					imageEditorOpen = true;					
 				}
 			}
+		}
+
+		public void AdjustImage()
+		{
+			c.CW("AdjustImage 0 imageEditorFrameBorderWidth " + imageEditorFrameBorderWidth);
+
+			if (ImageEditorFrameBorder.Width > imageEditorFrameBorderWidth)
+			{
+				imageEditorFrameBorderWidth = ImageEditorFrameBorder.Width;
+			}
+
+			c.CW("AdjustImage 1 imageEditorFrameBorderWidth " + imageEditorFrameBorderWidth);
+
+			ImageEditorControls.Visibility = ViewStates.Visible;
+			TopSeparator.Visibility = ViewStates.Visible;
+			ImageEditor.Visibility = ViewStates.Visible;
+			ImageEditorFrame.Visibility = ViewStates.Visible;
+			ImageEditorFrameBorder.Visibility = ViewStates.Visible;
+
+			if (sizeRatio > 1)
+			{
+				ImageEditor.intrinsicHeight = imageEditorFrameBorderWidth;
+				ImageEditor.intrinsicWidth = imageEditorFrameBorderWidth * sizeRatio;
+			}
+			else
+			{
+				ImageEditor.intrinsicHeight = imageEditorFrameBorderWidth / sizeRatio;
+				ImageEditor.intrinsicWidth = imageEditorFrameBorderWidth;
+			}
+			ImageEditor.scaleFactor = 1;
+			ImageEditor.xDist = 0;
+			ImageEditor.yDist = 0;
+			ImageEditor.SetContent(bm);
 		}
 
 		public Bitmap RotateImage (Bitmap source, float angle)

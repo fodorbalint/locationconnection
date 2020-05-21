@@ -7,6 +7,7 @@ using System.Timers;
 using Android.Animation;
 using Android.App;
 using Android.Content;
+using Android.Content.Res;
 using Android.OS;
 using Android.Runtime;
 using Android.Util;
@@ -18,7 +19,7 @@ namespace LocationConnection
 {
 	public class TouchScrollView : ScrollView
 	{
-		Activity context;
+		ProfilePage context;
 
 		public TouchScrollView(Context context, IAttributeSet attrs) : base(context, attrs) {
 			Initialize(context);
@@ -30,7 +31,7 @@ namespace LocationConnection
 
 		private void Initialize(Context context)
 		{
-			this.context = (Activity)context;
+			this.context = (ProfilePage)context;
 		}
 
 		//Originally I used this function to get the touch start coordinates, because in HorizontalScrollView's touch cancel event the ScrollView's coordinates are available. 
@@ -55,32 +56,58 @@ namespace LocationConnection
 			return base.OnInterceptTouchEvent(ev);
 		}*/
 
+		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
+		{
+			base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
+
+			//At first OnResume ImageEditorFrameBorder.Width is 0, but when keyboard opens, it has a value. Parameter will not change back when keyboard closes.
+			if (context.ImageEditorFrameBorder.Width > context.imageEditorFrameBorderWidth)
+			{
+				context.imageEditorFrameBorderWidth = context.ImageEditorFrameBorder.Width;
+			}			
+
+			context.c.CW("OnMeasure " + context.ImageEditorFrameBorder.Width + " " + context.imageEditorFrameBorderWidth);
+		}
+
+		protected override void OnConfigurationChanged(Configuration newConfig)
+		{
+			base.OnConfigurationChanged(newConfig);
+
+			//OnMeasure is called up until 30 ms after, but ImageEditorFrameBorder still has the old size at that time.
+			Timer t = new Timer();
+			t.Interval = 100;
+			t.Elapsed += T_Elapsed;
+			t.Start();
+
+			context.imageEditorFrameBorderWidth = 0;
+			context.c.CW("OnConfigurationChanged border width: " + context.ImageEditorFrameBorder.Width);
+		}
+
+		private void T_Elapsed(object sender, ElapsedEventArgs e)
+		{
+			((Timer)sender).Stop();
+
+			context.c.CW("T_Elapsed border width: " + context.ImageEditorFrameBorder.Width);
+			context.imageEditorFrameBorderWidth = context.ImageEditorFrameBorder.Width;
+		}
+
 		public override bool OnTouchEvent(MotionEvent e)
 		{
 			switch (e.Action) {
 				case MotionEventActions.Down:
 					break;
 				case MotionEventActions.Move:
-					if (context is ProfileViewActivity && ((ProfileViewActivity)context).horizontalCancelled)
+					if (context.ImagesUploaded.touchStarted)
 					{
-						return ((ProfileViewActivity)context).ScrollMove(e);
-					}
-					else if (context is ProfilePage && ((ProfilePage)context).ImagesUploaded.touchStarted)
-					{
-						((ProfilePage)context).ImagesUploaded.Move(e);
+						context.ImagesUploaded.Move(e);
 						return false;
 					}
 					break;
 
 				case MotionEventActions.Up:
-					if (context is ProfileViewActivity &&  ((ProfileViewActivity)context).horizontalCancelled)
+					if (context.ImagesUploaded.touchStarted)
 					{
-						((ProfileViewActivity)context).horizontalCancelled = false;
-						return ((ProfileViewActivity)context).ScrollUp();
-					}
-					else if (context is ProfilePage && ((ProfilePage)context).ImagesUploaded.touchStarted)
-					{
-						((ProfilePage)context).ImagesUploaded.Up();
+						context.ImagesUploaded.Up();
 						return false;
 					}
 					break;

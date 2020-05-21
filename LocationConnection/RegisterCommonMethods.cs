@@ -100,6 +100,7 @@ namespace LocationConnection
 
 		public void Images_Click(object sender, System.EventArgs e)
 		{
+			//context.imm.HideSoftInputFromInputMethod(context.Description.WindowToken, 0);
 			if (context.uploadedImages.Count < Constants.MaxNumPictures)
 			{
 				if (!context.imagesUploading && !context.imagesDeleting)
@@ -157,6 +158,7 @@ namespace LocationConnection
 			context.ImageEditorFrameBorder.Visibility = ViewStates.Invisible;
 			context.ImageEditorControls.Visibility = ViewStates.Invisible;
 			context.TopSeparator.Visibility = ViewStates.Invisible;
+			context.imageEditorOpen = false;
 		}
 
 		public async void ImageEditorOK_Click(object sender, EventArgs e)
@@ -208,6 +210,7 @@ namespace LocationConnection
 			context.ImageEditorFrameBorder.Visibility = ViewStates.Invisible;
 			context.ImageEditorControls.Visibility = ViewStates.Invisible;
 			context.TopSeparator.Visibility = ViewStates.Invisible;
+			context.imageEditorOpen = false;
 
 			//FileInfo fi = new FileInfo(fileName);
 			//context.c.CW(fileName + " Image size: " + fi.Length + " " + ext);

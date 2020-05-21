@@ -239,6 +239,7 @@ namespace LocationConnection
 				GetScreenMetrics(false); //if orientation was changed in ListActivity, profileImageScroll will now not have the correct height set in SetHeight otherwise 
 				mapSet = false;
 				userLoaded = false;
+				ScrollLayout.ScrollY = 0;
 				ProfileImageScroll.ScrollX = 0;
 				footerHeight = -1;
 				mapHeight = -1;
@@ -337,8 +338,8 @@ namespace LocationConnection
 						break;
 				}
 
-				c.CW("OnResume ended");
-				
+				Name.RequestLayout(); //margins are not always set. For example when deleting user, and viewing a profile afterwards, or when getting a match notification on self page, and then clicking on the user's profile. Sets Username too.
+
 				refreshTimer = new Timer();
 				refreshTimer.Interval = refreshFrequency;
 				refreshTimer.Elapsed += RefreshTimer_Elapsed;
@@ -490,6 +491,8 @@ namespace LocationConnection
 
 			((ConstraintLayout.LayoutParams)Name.LayoutParameters).LeftMargin = (int)(paddingProfilePage * pixelDensity);
 			((ConstraintLayout.LayoutParams)Username.LayoutParameters).LeftMargin = (int)(paddingProfilePage * pixelDensity);
+
+			c.LogActivity("Setting margins on name/username: " + (int)(paddingProfilePage * pixelDensity));
 
 			PreviousButton.Visibility = ViewStates.Gone;
 			NextButton.Visibility = ViewStates.Gone;

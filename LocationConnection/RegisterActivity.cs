@@ -45,7 +45,6 @@ namespace LocationConnection
         public EditText Password, ConfirmPassword;
 		Button Register, Reset, Cancel;
 		EditText EulaText;
-		InputMethodManager imm;
 
 		//RegisterCommonMethods<RegisterActivity> rc;
 		public BaseAdapter adapter;
@@ -169,7 +168,6 @@ namespace LocationConnection
 
 				GetScreenMetrics(false);
 				ImagesUploaded.SetTileSize();
-
 				MainLayout.RequestFocus();
 
 				if (!(ListActivity.listProfiles is null))
@@ -242,22 +240,29 @@ namespace LocationConnection
 					ResetForm();
 				}
 
-				string responseString = await c.MakeRequest("action=eula"); //deleting images from server
-				if (responseString.Substring(0, 2) == "OK")
+				if (!imageEditorOpen)
 				{
-					if (Build.VERSION.SdkInt >= BuildVersionCodes.N)
+					string responseString = await c.MakeRequest("action=eula"); //deleting images from server
+					if (responseString.Substring(0, 2) == "OK")
 					{
-						EulaText.TextFormatted = Html.FromHtml(responseString.Substring(3), FromHtmlOptions.ModeCompact);
+						if (Build.VERSION.SdkInt >= BuildVersionCodes.N)
+						{
+							EulaText.TextFormatted = Html.FromHtml(responseString.Substring(3), FromHtmlOptions.ModeCompact);
+						}
+						else
+						{
+							EulaText.TextFormatted = Html.FromHtml(responseString.Substring(3)); //.FromHtml("<h2>Title</h2><br><p>Description here</p>");
+						}
 					}
 					else
 					{
-						EulaText.TextFormatted = Html.FromHtml(responseString.Substring(3)); //.FromHtml("<h2>Title</h2><br><p>Description here</p>");
+						c.ReportError(responseString);
 					}
 				}
 				else
 				{
-					c.ReportError(responseString);
-				}
+					AdjustImage();
+				}				
 			}
 			catch (Exception ex)
 			{

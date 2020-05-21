@@ -84,7 +84,6 @@ namespace LocationConnection
 		public void SetTileSize()
 		{
 			tileSize = (BaseActivity.screenWidth - 20 * BaseActivity.pixelDensity - tileSpacing * (numColumns - 1) * BaseActivity.pixelDensity) / numColumns;
-			context.c.CW("SetTileSize " + BaseActivity.screenWidth + " " + tileSize + " " + BaseActivity.pixelDensity);
 		}
 
 		public void Reposition()
@@ -309,7 +308,6 @@ namespace LocationConnection
 					LayoutParameters.Width = (int)(BaseActivity.screenWidth - 20 * BaseActivity.pixelDensity);
 					LayoutParameters.Height = (int)((indexCount - indexCount % numColumns) / numColumns * (tileSize + tileSpacing * BaseActivity.pixelDensity) + tileSize);
 					RequestLayout();
-					context.c.CW("Refitimagecontainer " + LayoutParameters.Height + " --- " + indexCount);
 				});
 			}
 			else
@@ -318,7 +316,6 @@ namespace LocationConnection
 					LayoutParameters.Width = (int)(BaseActivity.screenWidth - 20 * BaseActivity.pixelDensity);
 					LayoutParameters.Height = 0;
 					RequestLayout();
-					context.c.CW("Refitimagecontainer 0 " + LayoutParameters.Height);
 				});
 			}
 		}
