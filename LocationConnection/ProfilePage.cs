@@ -97,27 +97,31 @@ namespace LocationConnection
 				 */
 
 				string path = selectedFile.Path;
+
+				c.LogActivity("Original selectedFile: " + selectedFile + ", selectedFile.Path: " + selectedFile.Path);
 				if (path.IndexOf(":") != -1) //fix #1
 				{
 					int colonPos = path.IndexOf(":");
 					path = path.Substring(colonPos + 1);
+					c.LogActivity("Splitting at first colon");
 				}
 				if (!File.Exists(path))
 				{
 					string str = Regex.Replace(selectedFile.Path, @"/document/([A-Z\d]{4}-[A-Z\d]{4}):", "/storage/$1/"); // fix #2
+					c.LogActivity("Replaced document to storage");
 					if (!File.Exists(str))
 					{
 						try
 						{
-							selectedFileStr = c.GetPathToImage(selectedFile);
+							selectedFileStr = GetPathToImage(selectedFile);
 						}
 						catch (Exception ex)
 						{
-							c.LogActivity("UploadImagePathNotFound: " + ex.Message + " " + ex.StackTrace.Replace("\n"," ") + " selectedFile: " + selectedFile + ", selectedFile.Path: " + selectedFile.Path);
+							c.LogActivity("UploadImagePathNotFound: " + ex.Message + " " + ex.StackTrace.Replace("\n"," "));
 							c.ReportError(res.GetString(Resource.String.UploadImagePathNotFound));
 							return;
 						}
-						c.LogActivity("Image resolved: selectedFile: " + selectedFile + ", selectedFile.Path: " + selectedFile.Path + " selectedFileStr " + selectedFileStr);
+						c.LogActivity("Image resolved to " + selectedFileStr);
 					}
 					else
 					{
@@ -170,6 +174,70 @@ namespace LocationConnection
 					imageEditorOpen = true;					
 				}
 			}
+		}
+
+		public string GetPathToImage(Android.Net.Uri uri)
+		{
+			//This method only finds images from the gallery, for images it returns null
+			/*var cu = ContentResolver.Query(uri, new string[] { Android.Provider.MediaStore.Images.Media.InterfaceConsts.Data }, null, null, null);
+			cu.MoveToFirst();
+			string p = cu.GetString(0);
+			cu.Close();
+
+			c.LogActivity("Path found early: " + p + " colIndex " + colIndex);*/
+
+
+			string doc_id = "";
+			using (var c1 = ContentResolver.Query(uri, null, null, null, null))
+			{
+				if (c1 is null)
+				{
+					throw new Exception("Cursor at first query is null");
+				}
+				c.LogActivity("First cursor colcount: " + c1.ColumnCount + " rowCount: " + c1.Count); // 6 columns for images, 33 columns for gallery. Using ID in the projection would result in an empty document_id string for images.
+				c1.MoveToFirst();
+
+				string row = "";
+				for(int i = 0; i < c1.ColumnCount;  i++)
+				{
+					row += i + ":" + c1.GetString(i) + "; ";
+				}				
+				c.LogActivity(row);
+				/* Images:
+				 * image:73381 - image/jpeg - P1000148_cut_4-5.JPG - 1590000387000 - 131077 - 7428059
+				 * Gallery:
+				 * 73412 - /storage/emulated/0/DCIM/Camera/IMG_20200522_112801.jpg - 1852812 - IMG_20200522_112801.jpg - image/jpeg - IMG_20200522_112801
+				 */
+				string document_id = c1.GetString(0); //if the picture was just deleted, this error is thrown: Index 0 requested, with a size of 0
+				
+				if (document_id is null)
+				{
+					throw new Exception("document_id is null");
+				}
+
+				//online services do not work, no ID can be extracted.
+				//Google Photos: /0/1/mediakey:/local:e5c12407-e2c5-47db-b5ca-c7d757cb5e4c/ORIGINAL/NONE/image/jpeg/145854146
+				//OneDrive: /Drive/ID/1/Item/RID/6028F4288AEF832B!6520/Stream/1/Property/3B 2018-01-05 (00).png
+				c.LogActivity("GetPathToImage document_id " + document_id); //from gallery: 73412 | from images: image:73412
+
+				doc_id = document_id.Substring(document_id.LastIndexOf(":") + 1);
+			}
+
+			string path = null;
+
+			// The projection contains the columns we want to return in our query.
+			string selection = Android.Provider.MediaStore.Images.Media.InterfaceConsts.Id + " =? "; //_id=?
+			using (var cursor = ContentResolver.Query(Android.Provider.MediaStore.Images.Media.ExternalContentUri, new string[] { Android.Provider.MediaStore.Images.Media.InterfaceConsts.Data }, selection, new string[] { doc_id }, null))
+			{
+				if (cursor is null)
+				{
+					throw new Exception("Cursor at second query is null");
+				}
+				c.LogActivity("Second cursor colcount: " + cursor.ColumnCount + " rowCount: " + cursor.Count);
+				cursor.MoveToFirst();
+				path = cursor.GetString(0);
+			}
+			return path;
 		}
 
 		public void AdjustImage()

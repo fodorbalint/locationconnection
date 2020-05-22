@@ -156,7 +156,7 @@ namespace LocationConnection
                     {
                         //context.c.CW("Cancelled loading " + userID + " at " + imgID); 
                         //context.c.LogActivity("Cancelled loading " + userID + " at " + imgID);
-
+                        
                         //For a chatlist with 3 items, the 4 imageViews are used. The first is called 13 times (with all 3 IDs), the second called once, the third once, and the fourth 24 times (with all 3 IDs).
                         imageViewToLoadLater[imageView] = saveName;
                         return;
@@ -243,7 +243,7 @@ namespace LocationConnection
             }
             catch (Exception ex)
             {
-                context.c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
+                context.c.ReportErrorSilent("ImageViewToLoadLater " + imageViewToLoadLater + " imagesInProgress " + imagesInProgress + " userID " + userID + " " + ex.Message + System.Environment.NewLine + ex.StackTrace);
             }
         }
 

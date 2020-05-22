@@ -160,6 +160,7 @@ namespace LocationConnection
                 base.OnCreate(savedInstanceState);
 				//Xamarin.Essentials.Platform.Init(this, savedInstanceState); needed?
 
+				onCreateError = false;
 				thisInstance = this;
 				initialized = true;
 				GetScreenMetrics(true);
@@ -546,7 +547,7 @@ namespace LocationConnection
 		{
 			try {
 				base.OnResume();
-				if (!initialized) { return; }
+				if (!initialized || onCreateError) { return; }
 
 				
 
@@ -800,7 +801,7 @@ namespace LocationConnection
 			}
 			c.SaveSettings();
 
-			if (firstRun && firstRunTimer.Enabled)
+			if (firstRun && !(firstRunTimer is null) && firstRunTimer.Enabled) //firstRunTimer may be null if OnResume was terminated due to error in OnCreate
 			{
 				firstRunTimer.Stop();
 			}
@@ -859,18 +860,30 @@ namespace LocationConnection
 
 		public bool IsPlayServicesAvailable() //Newer Huawei devices do not support play store.
 		{
-			int resultCode = GoogleApiAvailability.Instance.IsGooglePlayServicesAvailable(this);
-			if (resultCode != ConnectionResult.Success)
+			c.LogActivity("IsPlayServicesAvailable");
+			c.LogActivity("GoogleApiAvailability.Instance " + GoogleApiAvailability.Instance);
+			if (!(GoogleApiAvailability.Instance is null))
 			{
-				c.Alert(res.GetString(Resource.String.GooglePlayNotAvailable) + " " + GoogleApiAvailability.Instance.GetErrorString(resultCode));
-				c.ReportErrorSilent("IsPlayServicesAvailable error: " + resultCode + " - " + GoogleApiAvailability.Instance.GetErrorString(resultCode));
-				// if (GoogleApiAvailability.Instance.IsUserResolvableError(resultCode))
-				
-				return false;
+				int resultCode = GoogleApiAvailability.Instance.IsGooglePlayServicesAvailable(this);
+				if (resultCode != ConnectionResult.Success)
+				{
+					c.Alert(res.GetString(Resource.String.GooglePlayNotAvailableWithError) + " " + GoogleApiAvailability.Instance.GetErrorString(resultCode));
+					c.ReportErrorSilent("IsPlayServicesAvailable error: " + resultCode + " - " + GoogleApiAvailability.Instance.GetErrorString(resultCode));
+					// if (GoogleApiAvailability.Instance.IsUserResolvableError(resultCode))
+
+					return false;
+				}
+				else
+				{
+					return true;
+				}
 			}
 			else
 			{
-				return true;
+				c.Alert(res.GetString(Resource.String.GooglePlayNotAvailable));
+				c.ReportErrorSilent("IsPlayServicesAvailable instance null");
+
+				return false;
 			}
 		}
 
