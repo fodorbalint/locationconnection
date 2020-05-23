@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Timers;
 using Android.App;
 using Android.Content;
 using Android.Content.Res;
@@ -49,8 +50,30 @@ namespace LocationConnection
 		public RegisterCommonMethods rc;
 		public float lastScale;
 		public InputMethodManager imm;
+		Timer t;
+		public bool active;
 
 		public abstract void SaveRegData();
+
+		protected override void OnResume()
+		{
+			base.OnResume();
+
+			active = true;
+
+			c.LogActivity("Starting timer from OnResume");
+			t = new Timer();
+			t.Interval = 100;
+			t.Elapsed += T_Elapsed;
+			t.Start();
+		}
+
+		protected override void OnPause()
+		{
+			base.OnPause();
+
+			active = false;
+		}
 
 		protected async override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
 		{
@@ -98,17 +121,15 @@ namespace LocationConnection
 
 				string path = selectedFile.Path;
 
-				c.LogActivity("Original selectedFile: " + selectedFile + ", selectedFile.Path: " + selectedFile.Path);
+				c.LogActivity("selectedFile: " + selectedFile + " selectedFile.Path: " + selectedFile.Path);
 				if (path.IndexOf(":") != -1) //fix #1
 				{
 					int colonPos = path.IndexOf(":");
 					path = path.Substring(colonPos + 1);
-					c.LogActivity("Splitting at first colon");
 				}
 				if (!File.Exists(path))
 				{
 					string str = Regex.Replace(selectedFile.Path, @"/document/([A-Z\d]{4}-[A-Z\d]{4}):", "/storage/$1/"); // fix #2
-					c.LogActivity("Replaced document to storage");
 					if (!File.Exists(str))
 					{
 						try
@@ -202,12 +223,22 @@ namespace LocationConnection
 				{
 					row += i + ":" + c1.GetString(i) + "; ";
 				}				
+
 				c.LogActivity(row);
 				/* Images:
 				 * image:73381 - image/jpeg - P1000148_cut_4-5.JPG - 1590000387000 - 131077 - 7428059
 				 * Gallery:
 				 * 73412 - /storage/emulated/0/DCIM/Camera/IMG_20200522_112801.jpg - 1852812 - IMG_20200522_112801.jpg - image/jpeg - IMG_20200522_112801
 				 */
+
+				int colIndex = c1.GetColumnIndex(Android.Provider.MediaStore.Images.Media.InterfaceConsts.Data);
+				c.LogActivity("Data col index: " + colIndex);
+
+				if (colIndex != -1) //image picked from gallery
+				{
+					return c1.GetString(colIndex);
+				}
+
 				string document_id = c1.GetString(0); //if the picture was just deleted, this error is thrown: Index 0 requested, with a size of 0
 				
 				if (document_id is null)
@@ -278,6 +309,14 @@ namespace LocationConnection
 			Matrix matrix = new Matrix();
 			matrix.PostRotate(angle);
 			return Bitmap.CreateBitmap(source, 0, 0, source.Width, source.Height, matrix, true);
+		}
+
+		public void T_Elapsed(object sender, ElapsedEventArgs e) //it takes 30-50 ms from OnResume start / OnConfiguration changed for the layout to get the new values.
+		{
+			((Timer)sender).Stop();
+
+			c.LogActivity("T_Elapsed " + timerCounter + " border width " + ImageEditorFrameBorder.Width);
+			imageEditorFrameBorderWidth = ImageEditorFrameBorder.Width;
 		}
 	}
 }

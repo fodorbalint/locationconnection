@@ -61,7 +61,9 @@ namespace LocationConnection
     [Activity(MainLauncher = true, ConfigurationChanges = Android.Content.PM.ConfigChanges.Orientation | Android.Content.PM.ConfigChanges.ScreenSize)]
     public class ListActivity : BaseActivity, IOnMapReadyCallback
 	{
-        Android.Content.Res.Resources res;
+		private string googleServiceFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "googleservice.txt");
+
+		Android.Content.Res.Resources res;
 
 		IMenu pageMenu;
 
@@ -160,6 +162,7 @@ namespace LocationConnection
                 base.OnCreate(savedInstanceState);
 				//Xamarin.Essentials.Platform.Init(this, savedInstanceState); needed?
 
+				File.Delete(CommonMethods.logFile);
 				onCreateError = false;
 				thisInstance = this;
 				initialized = true;
@@ -178,6 +181,7 @@ namespace LocationConnection
 					}
 				}
 
+				res = Resources;
 				IsPlayServicesAvailable();
 				CreateNotificationChannel();
 
@@ -481,7 +485,6 @@ namespace LocationConnection
 				mapFragment.GetMapAsync(this);
 				imm = (InputMethodManager)GetSystemService(Context.InputMethodService);
 				c.view = MainLayout;
-				res = Resources;
 				fusedLocationProviderClient = LocationServices.GetFusedLocationProviderClient(this);
 				ReloadPulldown.SetY(-ReloadPulldown.Height);
 				SetSupportActionBar(MainPageToolbar);
@@ -865,11 +868,24 @@ namespace LocationConnection
 			if (!(GoogleApiAvailability.Instance is null))
 			{
 				int resultCode = GoogleApiAvailability.Instance.IsGooglePlayServicesAvailable(this);
+				c.LogActivity("resultCode: " + resultCode);
 				if (resultCode != ConnectionResult.Success)
 				{
-					c.Alert(res.GetString(Resource.String.GooglePlayNotAvailableWithError) + " " + GoogleApiAvailability.Instance.GetErrorString(resultCode));
-					c.ReportErrorSilent("IsPlayServicesAvailable error: " + resultCode + " - " + GoogleApiAvailability.Instance.GetErrorString(resultCode));
-					// if (GoogleApiAvailability.Instance.IsUserResolvableError(resultCode))
+					if (GoogleApiAvailability.Instance.IsUserResolvableError(resultCode))
+					{
+						c.Alert(res.GetString(Resource.String.GooglePlayNotAvailableWithError) + " " + GoogleApiAvailability.Instance.GetErrorString(resultCode));
+						c.ReportErrorSilent("IsPlayServicesAvailable resolvable error: " + resultCode + " - " + GoogleApiAvailability.Instance.GetErrorString(resultCode));
+					}
+					else
+					{
+						if (!File.Exists(googleServiceFile))
+						{
+							File.WriteAllText(googleServiceFile, "");
+
+							c.Alert(res.GetString(Resource.String.GooglePlayNotAvailableWithError) + " " + GoogleApiAvailability.Instance.GetErrorString(resultCode));
+							c.ReportErrorSilent("IsPlayServicesAvailable unresolvable error: " + resultCode + " - " + GoogleApiAvailability.Instance.GetErrorString(resultCode));
+						}
+					}
 
 					return false;
 				}
@@ -880,8 +896,13 @@ namespace LocationConnection
 			}
 			else
 			{
-				c.Alert(res.GetString(Resource.String.GooglePlayNotAvailable));
-				c.ReportErrorSilent("IsPlayServicesAvailable instance null");
+				if (!File.Exists(googleServiceFile))
+				{
+					File.WriteAllText(googleServiceFile, "");
+
+					c.Alert(res.GetString(Resource.String.GooglePlayNotAvailable));
+					c.ReportErrorSilent("IsPlayServicesAvailable instance null");
+				}
 
 				return false;
 			}
@@ -1040,6 +1061,7 @@ namespace LocationConnection
 			{
 				UseGeoNo.Checked = true;
 				UseGeoContainer.Visibility = ViewStates.Gone;
+				c.LogActivity("SetViews Session.GeoFilter false UseGeoContainer gone");
 			}
 			else
 			{
@@ -1403,6 +1425,8 @@ namespace LocationConnection
 				OpenFilters.SetBackgroundResource(iconBackgroundLight);
 				OpenSearch.SetBackgroundResource(0);
 				FilterLayout.Visibility = ViewStates.Visible;
+
+				c.LogActivity("OpenFilters_Click Session.GeoFilter false UseGeoContainer.Visibility " + UseGeoContainer.Visibility);
 
 				if ((bool)Settings.SearchOpen)
 				{
@@ -2637,23 +2661,38 @@ namespace LocationConnection
 
 			bool result;
 
-			if ((bool)Session.GeoFilter && (bool)Session.GeoSourceOther)
+			try //for newer Huawei phones
 			{
-				result = MoveMap(Session.OtherLatitude, Session.OtherLongitude);
+				if ((bool)Session.GeoFilter && (bool)Session.GeoSourceOther)
+				{
+					result = MoveMap(Session.OtherLatitude, Session.OtherLongitude);
+				}
+				else
+				{
+					result = MoveMap(Session.Latitude, Session.Longitude);
+				}
+				if (!result)
+				{
+					RunOnUiThread(() =>
+					{
+						c.Snack(Resource.String.NoLocationSet);
+						mapSetting = false;
+						SetResultStatus();
+						StopLoaderAnim();
+					});
+					return;
+				}
 			}
-			else
-			{
-				result = MoveMap(Session.Latitude, Session.Longitude);
-			}
-			if (!result)
+			catch (Exception ex)
 			{
 				RunOnUiThread(() =>
 				{
-					c.Snack(Resource.String.NoLocationSet);
+					c.Alert(res.GetString(Resource.String.GoogleMapsNotAvailable));
 					mapSetting = false;
 					SetResultStatus();
 					StopLoaderAnim();
 				});
+				c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 				return;
 			}
 
@@ -2706,76 +2745,67 @@ namespace LocationConnection
 
 		public bool MoveMap(double? latitude, double? longitude)
 		{
-			try
+			if (!(latitude is null) && !(longitude is null))
 			{
-				if (!(latitude is null) && !(longitude is null))
+				LatLng location = new LatLng((double)latitude, (double)longitude);
+
+				RunOnUiThread(() =>
 				{
-					LatLng location = new LatLng((double)latitude, (double)longitude);
+					thisMap.Clear();
 
-					RunOnUiThread(() =>
+					if (recenterMap)
 					{
-						thisMap.Clear();
-
-						if (recenterMap)
+						if (c.IsLocationEnabled())
 						{
-							if (c.IsLocationEnabled())
-							{
-								thisMap.MyLocationEnabled = true;
-								thisMap.UiSettings.MyLocationButtonEnabled = true;
-							}
-							else
-							{
-								thisMap.MyLocationEnabled = false;
-								thisMap.UiSettings.MyLocationButtonEnabled = false;
-							}
-
-							if ((bool)Session.GeoFilter && Session.LastSearchType == Constants.SearchType_Filter) //no geo filter on free text search
-							{
-								MarkerOptions markerOptions = new MarkerOptions();
-								markerOptions.SetPosition(new LatLng((double)latitude, (double)longitude));
-								thisMap.AddMarker(markerOptions);
-
-								CircleOptions circleOptions = new CircleOptions();
-								circleOptions.InvokeCenter(new LatLng((double)latitude, (double)longitude));
-								circleOptions.InvokeRadius((double)Session.DistanceLimit * 1000);
-								circleOptions.InvokeStrokeColor(Color.Black);
-								circleOptions.InvokeFillColor(Color.Argb(18, 0, 205, 0));
-								circleOptions.InvokeStrokeWidth(2); // is in pixels, and floored to int. No anti-aliasing.
-								circle = thisMap.AddCircle(circleOptions);
-							}
-
-							CameraPosition.Builder builder = CameraPosition.InvokeBuilder();
-							builder.Target(location);
-							builder.Zoom(GetZoomLevel((double)latitude));
-							CameraPosition cameraPosition = builder.Build();
-							CameraUpdate cameraUpdate = CameraUpdateFactory.NewCameraPosition(cameraPosition);
-							thisMap.MoveCamera(cameraUpdate);
+							thisMap.MyLocationEnabled = true;
+							thisMap.UiSettings.MyLocationButtonEnabled = true;
 						}
-						else //change only circle radius
+						else
 						{
+							thisMap.MyLocationEnabled = false;
+							thisMap.UiSettings.MyLocationButtonEnabled = false;
+						}
+
+						if ((bool)Session.GeoFilter && Session.LastSearchType == Constants.SearchType_Filter) //no geo filter on free text search
+						{
+							MarkerOptions markerOptions = new MarkerOptions();
+							markerOptions.SetPosition(new LatLng((double)latitude, (double)longitude));
+							thisMap.AddMarker(markerOptions);
+
 							CircleOptions circleOptions = new CircleOptions();
 							circleOptions.InvokeCenter(new LatLng((double)latitude, (double)longitude));
 							circleOptions.InvokeRadius((double)Session.DistanceLimit * 1000);
 							circleOptions.InvokeStrokeColor(Color.Black);
 							circleOptions.InvokeFillColor(Color.Argb(18, 0, 205, 0));
-							circleOptions.InvokeStrokeWidth(2);
+							circleOptions.InvokeStrokeWidth(2); // is in pixels, and floored to int. No anti-aliasing.
 							circle = thisMap.AddCircle(circleOptions);
 						}
-					});
 
-					return true;
-				}
-				else
-				{
-					return false;
-				}
+						CameraPosition.Builder builder = CameraPosition.InvokeBuilder();
+						builder.Target(location);
+						builder.Zoom(GetZoomLevel((double)latitude));
+						CameraPosition cameraPosition = builder.Build();
+						CameraUpdate cameraUpdate = CameraUpdateFactory.NewCameraPosition(cameraPosition);
+						thisMap.MoveCamera(cameraUpdate);
+					}
+					else //change only circle radius
+					{
+						CircleOptions circleOptions = new CircleOptions();
+						circleOptions.InvokeCenter(new LatLng((double)latitude, (double)longitude));
+						circleOptions.InvokeRadius((double)Session.DistanceLimit * 1000);
+						circleOptions.InvokeStrokeColor(Color.Black);
+						circleOptions.InvokeFillColor(Color.Argb(18, 0, 205, 0));
+						circleOptions.InvokeStrokeWidth(2);
+						circle = thisMap.AddCircle(circleOptions);
+					}
+				});
+
+				return true;
 			}
-			catch (Exception ex)
+			else
 			{
-				c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
 				return false;
 			}
-			
 		}
 
 		public float GetZoomLevel(double latitude)

@@ -225,7 +225,9 @@ namespace LocationConnection
 
 			cancelImageLoading = false;
 
-			string url = "action=tutorial&OS=Android&dpWidth=" + dpWidth;
+			float width = Math.Min(dpWidth, screenHeight / pixelDensity);
+
+			string url = "action=tutorial&OS=Android&dpWidth=" + width;
 			string responseString = await c.MakeRequest(url);
 			if (responseString.Substring(0, 2) == "OK")
 			{

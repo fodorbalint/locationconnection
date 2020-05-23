@@ -53,7 +53,6 @@ namespace LocationConnection
 		protected static float dpWidth;
 		public int tweenTime = 300;
 
-		bool initializeError = false;
 		public static bool firstRun = false;
 
 		public int imageEditorFrameBorderWidth;
@@ -75,18 +74,6 @@ namespace LocationConnection
 				fusedLocationProviderClient = LocationServices.GetFusedLocationProviderClient(this);
 			}
 			c.LogActivity(LocalClassName.Split(".")[1] + " OnCreate");
-
-			if (!(this is ListActivity) && !ListActivity.initialized)
-			{
-				initializeError = true;
-				c.LogActivity(LocalClassName.Split(".")[1] + " Not initialized");
-
-				c.ReportErrorSilent("Initialization error");
-
-				Intent i = new Intent(this, typeof(ListActivity));
-				i.SetFlags(ActivityFlags.ReorderToFront); //ListActivity must be recreated.
-				StartActivity(i);
-			}
 		}
 
 		protected override void OnResume()
@@ -104,13 +91,13 @@ namespace LocationConnection
 			c.LogActivity(LocalClassName.Split(".")[1] + " OnResume");
 
 			//When opening app, Android sometimes resumes an Activity while the static variables are cleared out, resulting in error
-			if (!ListActivity.initialized && !initializeError)
+			if (!ListActivity.initialized)
 			{
 				c.LogActivity(LocalClassName.Split(".")[1] + " Not initialized");
 
 				c.ReportErrorSilent("Initialization error");
 				
-				Intent i = new Intent(this, typeof(ListActivity));
+				Intent i = new Intent(this, typeof(ListActivity)); //current activity has to go through OnResume, therefore we cannot handle initialization errors in OnCreate
 				i.SetFlags(ActivityFlags.ReorderToFront); //ListActivity must be recreated.
 				StartActivity(i);
 			}
@@ -178,7 +165,7 @@ namespace LocationConnection
 				}
 			}
 
-			c.LogActivity(" ScreenWidth " + screenWidth + " ScreenHeight " + screenHeight + " PixelDensity " + pixelDensity
+			c.LogActivity("ScreenWidth " + screenWidth + " ScreenHeight " + screenHeight + " PixelDensity " + pixelDensity
 				+ " XPxPerIn " + xPxPerIn + " XDpPerIn " + xDpPerIn + " DpWidth " + dpWidth);
 		}
 

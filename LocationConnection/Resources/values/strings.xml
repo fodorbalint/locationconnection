@@ -16,6 +16,7 @@
 	
 	<string name="GooglePlayNotAvailableWithError">Google Play Services is unavailable.\nMaps, notifications, and instant messaging will therefore not work.\nError message:</string>
 	<string name="GooglePlayNotAvailable">Google Play Services is unavailable.\nMaps, notifications, and instant messaging will therefore not work.</string>
+	<string name="GoogleMapsNotAvailable">Google Maps is not available on this device.</string>
 
     <string name="NoNetwork">No Internet connection.</string>
     <string name="NetworkTimeout">Internet connection timed out.</string>

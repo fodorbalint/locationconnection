@@ -262,7 +262,8 @@ namespace LocationConnection
 				else
 				{
 					AdjustImage();
-				}				
+				}
+				c.LogActivity("OnResume end");
 			}
 			catch (Exception ex)
 			{

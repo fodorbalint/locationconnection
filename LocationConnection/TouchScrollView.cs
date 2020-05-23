@@ -20,6 +20,7 @@ namespace LocationConnection
 	public class TouchScrollView : ScrollView
 	{
 		ProfilePage context;
+		Timer t;
 
 		public TouchScrollView(Context context, IAttributeSet attrs) : base(context, attrs) {
 			Initialize(context);
@@ -59,36 +60,34 @@ namespace LocationConnection
 		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
 		{
 			base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
-
+			
 			//At first OnResume ImageEditorFrameBorder.Width is 0, but when keyboard opens, it has a value. Parameter will not change back when keyboard closes.
-			if (context.ImageEditorFrameBorder.Width > context.imageEditorFrameBorderWidth)
-			{
-				context.imageEditorFrameBorderWidth = context.ImageEditorFrameBorder.Width;
-			}			
 
-			context.c.CW("OnMeasure " + context.ImageEditorFrameBorder.Width + " " + context.imageEditorFrameBorderWidth);
+			if (!(!(t is null) && t.Enabled))
+			{
+				context.c.LogActivity("TouchScrollView OnMeasure border width " + context.ImageEditorFrameBorder.Width + " variable " + context.imageEditorFrameBorderWidth);
+				if (context.ImageEditorFrameBorder.Width > context.imageEditorFrameBorderWidth)
+				{
+					context.imageEditorFrameBorderWidth = context.ImageEditorFrameBorder.Width;
+				}
+			}
+					
 		}
 
-		protected override void OnConfigurationChanged(Configuration newConfig)
+		protected override void OnConfigurationChanged(Configuration newConfig) //When changing orientation while in the file picker dialog: On Android 8 and 9, it is gets called once just before OnActivityResult, and once again after OnResume. On Android 10, it is not called after OnResume.
+		//OnMeasure is called up until 30 ms after, but ImageEditorFrameBorder still has the old size at that time.
 		{
 			base.OnConfigurationChanged(newConfig);
-
-			//OnMeasure is called up until 30 ms after, but ImageEditorFrameBorder still has the old size at that time.
-			Timer t = new Timer();
-			t.Interval = 100;
-			t.Elapsed += T_Elapsed;
-			t.Start();
+			 if (context.active && !(!(t is null) && t.Enabled))
+			{
+				t = new Timer();
+				t.Interval = 10;
+				t.Elapsed += context.T_Elapsed;
+				t.Start();
+			}
 
 			context.imageEditorFrameBorderWidth = 0;
-			context.c.CW("OnConfigurationChanged border width: " + context.ImageEditorFrameBorder.Width);
-		}
-
-		private void T_Elapsed(object sender, ElapsedEventArgs e)
-		{
-			((Timer)sender).Stop();
-
-			context.c.CW("T_Elapsed border width: " + context.ImageEditorFrameBorder.Width);
-			context.imageEditorFrameBorderWidth = context.ImageEditorFrameBorder.Width;
+			context.c.LogActivity("OnConfigurationChanged newW " + newConfig.ScreenWidthDp * BaseActivity.pixelDensity + " newH " + newConfig.ScreenHeightDp * BaseActivity.pixelDensity + " border width " + context.ImageEditorFrameBorder.Width + " variable " + context.imageEditorFrameBorderWidth);
 		}
 
 		public override bool OnTouchEvent(MotionEvent e)
