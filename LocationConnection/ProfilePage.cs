@@ -52,7 +52,6 @@ namespace LocationConnection
 		public InputMethodManager imm;
 		public Timer t;
 		public bool active;
-		public bool configChanged;
 
 		public abstract void SaveRegData();
 
@@ -61,8 +60,6 @@ namespace LocationConnection
 			base.OnResume();
 
 			active = true;
-			configChanged = true;
-
 			c.LogActivity("OnResume border width " + ImageEditorFrameBorder.Width + " variable " + imageEditorFrameBorderWidth);
 
 			/*c.LogActivity("Starting timer from OnResume");
@@ -278,13 +275,6 @@ namespace LocationConnection
 
 		public void AdjustImage()
 		{
-			/*c.CW("AdjustImage 0 imageEditorFrameBorderWidth " + imageEditorFrameBorderWidth);
-
-			if (ImageEditorFrameBorder.Width > imageEditorFrameBorderWidth)
-			{
-				imageEditorFrameBorderWidth = ImageEditorFrameBorder.Width;
-			}*/
-
 			c.LogActivity("AdjustImage border width " + ImageEditorFrameBorder.Width + " variable " + imageEditorFrameBorderWidth);
 
 			ImageEditorControls.Visibility = ViewStates.Visible;

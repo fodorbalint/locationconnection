@@ -857,12 +857,7 @@ namespace LocationConnection
 		}
 		public void OnGlobalLayout()
 		{
-			Rect r = new Rect();
-			context.MainLayout.GetWindowVisibleDisplayFrame(r);
-			int screenHeight = context.MainLayout.RootView.Height;
-			int keyboardHeight = screenHeight - r.Bottom;
-
-			if (keyboardHeight > screenHeight * 0.15 && context.IsBottom())
+			if (context.c.IsKeyboardOpen(context.MainLayout) && context.IsBottom())
 			{
 				context.ScrollToBottom(true); //list is no longer scrollable if no animation is used.
 			}

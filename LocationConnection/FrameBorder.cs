@@ -42,15 +42,14 @@ namespace LocationConnection
 		{
 			base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
 			
-			if (context.configChanged)
+			if (!context.c.IsKeyboardOpen(context.MainLayout))
 			{
-				context.configChanged = false;
-				context.c.LogActivity("FrameBorder OnMeasure setting var, Width " + Width + " MeasuredWidth " + MeasuredWidth);
+				context.c.LogActivity("OnMeasure setting var, Width " + Width + " MeasuredWidth " + MeasuredWidth);
 				context.imageEditorFrameBorderWidth = MeasuredWidth;
 			}
 			else
 			{
-				context.c.LogActivity("FrameBorder OnMeasure not setting var, Width " + Width + " MeasuredWidth " + MeasuredWidth);
+				context.c.LogActivity("OnMeasure not setting var, Width " + Width + " MeasuredWidth " + MeasuredWidth);
 			}
 		}
 			   
@@ -58,7 +57,6 @@ namespace LocationConnection
 																				//OnMeasure is called up until 30 ms after, but ImageEditorFrameBorder still has the old size at that time.
 		{
 			base.OnConfigurationChanged(newConfig);
-			context.configChanged = true;
 
 			context.c.LogActivity("OnConfigurationChanged newW " + newConfig.ScreenWidthDp * BaseActivity.pixelDensity + " newH " + newConfig.ScreenHeightDp * BaseActivity.pixelDensity + " border width " + context.ImageEditorFrameBorder.Width + " variable " + context.imageEditorFrameBorderWidth);
 		}

@@ -1211,6 +1211,27 @@ namespace LocationConnection
 			}
 		}
 
+		public bool IsKeyboardOpen(View layout)
+		{
+			Rect r = new Rect();
+			layout.GetWindowVisibleDisplayFrame(r);
+
+			Android.Util.DisplayMetrics metrics = new Android.Util.DisplayMetrics();
+			context.WindowManager.DefaultDisplay.GetMetrics(metrics);
+			int screenHeight = metrics.HeightPixels;
+			int keyboardHeight = screenHeight - r.Bottom;
+
+			LogActivity("IsKeyboardOpen screenHeight " + screenHeight + " r.Bottom " + r.Bottom + " keyboardHeight " + keyboardHeight);
+			if (keyboardHeight > screenHeight * 0.2)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
 		/*
 		protected void CreateLocationRequest()
 		{
