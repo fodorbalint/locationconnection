@@ -111,7 +111,7 @@ namespace LocationConnection
 
 		LocationReceiver locationReceiver;
 
-		int footerHeight, mapHeight;
+		public int footerHeight, mapHeight;
 
 		protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -584,7 +584,7 @@ namespace LocationConnection
 		{
 			if (footerHeight != Footer.Height)
 			{
-				c.CW("Footer_LayoutChange");
+				//c.LogActivity("Footer_LayoutChange");
 				SetHeight();
 				footerHeight = Footer.Height;
 			}
@@ -595,7 +595,7 @@ namespace LocationConnection
 			int newMapHeight = (MapContainer.Visibility == ViewStates.Visible) ? MapContainer.Height : 0;
 			if (mapHeight != newMapHeight)
 			{
-				c.CW("MapContainer_LayoutChange");
+				//c.LogActivity("MapContainer_LayoutChange");
 				SetHeight();
 				mapHeight = newMapHeight;
 			}
@@ -606,7 +606,7 @@ namespace LocationConnection
 			int newMapHeight = (MapContainer.Visibility == ViewStates.Visible) ? MapContainer.Height : 0;
 			if (footerHeight != Footer.Height || mapHeight != newMapHeight)
 			{
-				c.CW("ScrollLayout_LayoutChange");
+				//c.LogActivity("ScrollLayout_LayoutChange");
 				SetHeight();
 				footerHeight = Footer.Height;
 				mapHeight = newMapHeight;

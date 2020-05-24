@@ -552,8 +552,6 @@ namespace LocationConnection
 				base.OnResume();
 				if (!initialized || onCreateError) { return; }
 
-				
-
 				if (File.Exists(c.locationLogFile))
 				{
 					TruncateLocationLog();
@@ -1426,7 +1424,8 @@ namespace LocationConnection
 				OpenSearch.SetBackgroundResource(0);
 				FilterLayout.Visibility = ViewStates.Visible;
 
-				c.LogActivity("OpenFilters_Click Session.GeoFilter false UseGeoContainer.Visibility " + UseGeoContainer.Visibility);
+				DistanceFilters.RequestLayout(); //Without this, there would be an empty space in place of UseGeoContainer in this situation:
+				// As a not logged in user, have distance filtering (UseGeoContainer) open. Switch to search, and bring up the keyboard. Log in with a user who does not filter by distance. Switch from search mode to filters.
 
 				if ((bool)Settings.SearchOpen)
 				{

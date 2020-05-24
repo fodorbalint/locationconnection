@@ -50,8 +50,9 @@ namespace LocationConnection
 		public RegisterCommonMethods rc;
 		public float lastScale;
 		public InputMethodManager imm;
-		Timer t;
+		public Timer t;
 		public bool active;
+		public bool configChanged;
 
 		public abstract void SaveRegData();
 
@@ -60,12 +61,16 @@ namespace LocationConnection
 			base.OnResume();
 
 			active = true;
+			configChanged = true;
 
-			c.LogActivity("Starting timer from OnResume");
+			c.LogActivity("OnResume border width " + ImageEditorFrameBorder.Width + " variable " + imageEditorFrameBorderWidth);
+
+			/*c.LogActivity("Starting timer from OnResume");
 			t = new Timer();
 			t.Interval = 100;
-			t.Elapsed += T_Elapsed;
+			t.Elapsed += Timer_Elapsed;
 			t.Start();
+			timerCounter = 0;*/
 		}
 
 		protected override void OnPause()
@@ -273,14 +278,14 @@ namespace LocationConnection
 
 		public void AdjustImage()
 		{
-			c.CW("AdjustImage 0 imageEditorFrameBorderWidth " + imageEditorFrameBorderWidth);
+			/*c.CW("AdjustImage 0 imageEditorFrameBorderWidth " + imageEditorFrameBorderWidth);
 
 			if (ImageEditorFrameBorder.Width > imageEditorFrameBorderWidth)
 			{
 				imageEditorFrameBorderWidth = ImageEditorFrameBorder.Width;
-			}
+			}*/
 
-			c.CW("AdjustImage 1 imageEditorFrameBorderWidth " + imageEditorFrameBorderWidth);
+			c.LogActivity("AdjustImage border width " + ImageEditorFrameBorder.Width + " variable " + imageEditorFrameBorderWidth);
 
 			ImageEditorControls.Visibility = ViewStates.Visible;
 			TopSeparator.Visibility = ViewStates.Visible;
@@ -311,12 +316,17 @@ namespace LocationConnection
 			return Bitmap.CreateBitmap(source, 0, 0, source.Width, source.Height, matrix, true);
 		}
 
-		public void T_Elapsed(object sender, ElapsedEventArgs e) //it takes 30-50 ms from OnResume start / OnConfiguration changed for the layout to get the new values.
+		/*public int timerCounter;
+		public void Timer_Elapsed(object sender, ElapsedEventArgs e) //it takes 30-50 ms from OnResume start / OnConfiguration changed for the layout to get the new values.
 		{
-			((Timer)sender).Stop();
+			timerCounter++;
+			if (timerCounter > 20)
+			{
+				((Timer)sender).Stop();
+			}
 
-			c.LogActivity("T_Elapsed " + timerCounter + " border width " + ImageEditorFrameBorder.Width);
-			imageEditorFrameBorderWidth = ImageEditorFrameBorder.Width;
-		}
+			c.LogActivity("Timer_Elapsed " + timerCounter + " border width " + ImageEditorFrameBorder.Width);
+			//imageEditorFrameBorderWidth = ImageEditorFrameBorder.Width;
+		}*/
 	}
 }

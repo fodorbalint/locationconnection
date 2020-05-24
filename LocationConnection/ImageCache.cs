@@ -157,8 +157,16 @@ namespace LocationConnection
                         //context.c.CW("Cancelled loading " + userID + " at " + imgID); 
                         //context.c.LogActivity("Cancelled loading " + userID + " at " + imgID);
                         
-                        //For a chatlist with 3 items, the 4 imageViews are used. The first is called 13 times (with all 3 IDs), the second called once, the third once, and the fourth 24 times (with all 3 IDs).
-                        imageViewToLoadLater[imageView] = saveName;
+                        //For a chatlist with 3 items, 4 imageViews are used. The first is called 13 times (with all 3 IDs), the second called once, the third once, and the fourth 24 times (with all 3 IDs).
+                        try
+                        {
+                            imageViewToLoadLater[imageView] = saveName;
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception("imageViewToLoadLater cannot add ID " + userID + ": " + ex.Message + " - imageViewToLoadLater " + imageViewToLoadLater);
+                        }
+                        
                         return;
                     }
 
@@ -178,9 +186,17 @@ namespace LocationConnection
                         bytes = await task;
                     }
 
-                    if (imagesInProgress.IndexOf(saveName) != -1)
+                    int index = imagesInProgress.IndexOf(saveName);
+                    if (index != -1)
                     {
-                        imagesInProgress.Remove(saveName);
+                        try
+                        {
+                            imagesInProgress.Remove(saveName);
+                        }
+                        catch
+                        {
+                            throw new Exception("imagesInProgress remove error at index " + index + ", ID " + userID + " Length " + imagesInProgress.Count);
+                        }                        
                     }
 
                     //context.c.CW("Completed " + userID + " at " + imgID);
@@ -243,7 +259,7 @@ namespace LocationConnection
             }
             catch (Exception ex)
             {
-                context.c.ReportErrorSilent("ImageViewToLoadLater " + imageViewToLoadLater + " imagesInProgress " + imagesInProgress + " userID " + userID + " " + ex.Message + System.Environment.NewLine + ex.StackTrace);
+                context.c.ReportErrorSilent("ImageCache error at userID " + userID + ": " + ex.Message + System.Environment.NewLine + ex.StackTrace);
             }
         }
 

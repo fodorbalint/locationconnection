@@ -478,7 +478,7 @@
         android:visibility="invisible"
         android:id="@+id/ImageEditor">        
     </LocationConnection.ScaleImageView>
-    <View
+    <LocationConnection.FrameBorder
         android:layout_width="0px"
 		android:layout_height="0px"
         app:layout_constraintTop_toTopOf="@+id/ImageEditorFrame"
@@ -493,7 +493,7 @@
         android:background="@drawable/border"
         android:visibility="invisible"
         android:id="@+id/ImageEditorFrameBorder">        
-    </View>
+    </LocationConnection.FrameBorder>
     <LinearLayout
         android:layout_width="match_parent"
 		android:layout_height="wrap_content"

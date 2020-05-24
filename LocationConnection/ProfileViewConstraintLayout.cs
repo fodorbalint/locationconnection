@@ -46,6 +46,9 @@ namespace LocationConnection
 			context.ScrollLayout.ScrollY = 0;
 			context.CastShadows(0);
 
+			//context.c.LogActivity("ProfileViewConstraintLayout OnConfigurationChanged");
+			context.footerHeight = 0; //to ensure, SetHeight() will be called.
+
 			base.OnConfigurationChanged(newConfig);
 		}
 	}
