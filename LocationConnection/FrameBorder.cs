@@ -44,17 +44,16 @@ namespace LocationConnection
 			
 			if (!context.c.IsKeyboardOpen(context.MainLayout))
 			{
-				context.c.LogActivity("OnMeasure setting var, Width " + Width + " MeasuredWidth " + MeasuredWidth);
+				//context.c.LogActivity("OnMeasure setting var, Width " + Width + " MeasuredWidth " + MeasuredWidth);
 				context.imageEditorFrameBorderWidth = MeasuredWidth;
 			}
 			else
 			{
-				context.c.LogActivity("OnMeasure not setting var, Width " + Width + " MeasuredWidth " + MeasuredWidth);
+				//context.c.LogActivity("OnMeasure not setting var, Width " + Width + " MeasuredWidth " + MeasuredWidth);
 			}
 		}
 			   
 		protected override void OnConfigurationChanged(Configuration newConfig) //When changing orientation while in the file picker dialog: On Android 8 and 9, it is gets called once just before OnActivityResult, and once again after OnResume. On Android 10, it is not called after OnResume.
-																				//OnMeasure is called up until 30 ms after, but ImageEditorFrameBorder still has the old size at that time.
 		{
 			base.OnConfigurationChanged(newConfig);
 

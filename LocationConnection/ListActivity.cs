@@ -162,7 +162,6 @@ namespace LocationConnection
                 base.OnCreate(savedInstanceState);
 				//Xamarin.Essentials.Platform.Init(this, savedInstanceState); needed?
 
-				File.Delete(CommonMethods.logFile);
 				onCreateError = false;
 				thisInstance = this;
 				initialized = true;
@@ -861,48 +860,31 @@ namespace LocationConnection
 
 		public bool IsPlayServicesAvailable() //Newer Huawei devices do not support play store.
 		{
-			c.LogActivity("IsPlayServicesAvailable");
-			c.LogActivity("GoogleApiAvailability.Instance " + GoogleApiAvailability.Instance);
-			if (!(GoogleApiAvailability.Instance is null))
+			int resultCode = GoogleApiAvailability.Instance.IsGooglePlayServicesAvailable(this);
+			c.LogActivity("IsPlayServicesAvailable resultCode: " + resultCode);
+			if (resultCode != ConnectionResult.Success)
 			{
-				int resultCode = GoogleApiAvailability.Instance.IsGooglePlayServicesAvailable(this);
-				c.LogActivity("resultCode: " + resultCode);
-				if (resultCode != ConnectionResult.Success)
+				if (GoogleApiAvailability.Instance.IsUserResolvableError(resultCode))
 				{
-					if (GoogleApiAvailability.Instance.IsUserResolvableError(resultCode))
-					{
-						c.Alert(res.GetString(Resource.String.GooglePlayNotAvailableWithError) + " " + GoogleApiAvailability.Instance.GetErrorString(resultCode));
-						c.ReportErrorSilent("IsPlayServicesAvailable resolvable error: " + resultCode + " - " + GoogleApiAvailability.Instance.GetErrorString(resultCode));
-					}
-					else
-					{
-						if (!File.Exists(googleServiceFile))
-						{
-							File.WriteAllText(googleServiceFile, "");
-
-							c.Alert(res.GetString(Resource.String.GooglePlayNotAvailableWithError) + " " + GoogleApiAvailability.Instance.GetErrorString(resultCode));
-							c.ReportErrorSilent("IsPlayServicesAvailable unresolvable error: " + resultCode + " - " + GoogleApiAvailability.Instance.GetErrorString(resultCode));
-						}
-					}
-
-					return false;
+					c.Alert(res.GetString(Resource.String.GooglePlayNotAvailableWithError) + " " + GoogleApiAvailability.Instance.GetErrorString(resultCode));
+					c.ReportErrorSilent("IsPlayServicesAvailable resolvable error: " + resultCode + " - " + GoogleApiAvailability.Instance.GetErrorString(resultCode));
 				}
 				else
 				{
-					return true;
-				}
-			}
-			else
-			{
-				if (!File.Exists(googleServiceFile))
-				{
-					File.WriteAllText(googleServiceFile, "");
+					if (!File.Exists(googleServiceFile))
+					{
+						File.WriteAllText(googleServiceFile, "");
 
-					c.Alert(res.GetString(Resource.String.GooglePlayNotAvailable));
-					c.ReportErrorSilent("IsPlayServicesAvailable instance null");
+						c.Alert(res.GetString(Resource.String.GooglePlayNotAvailableWithError) + " " + GoogleApiAvailability.Instance.GetErrorString(resultCode));
+						c.ReportErrorSilent("IsPlayServicesAvailable unresolvable error: " + resultCode + " - " + GoogleApiAvailability.Instance.GetErrorString(resultCode));
+					}
 				}
 
 				return false;
+			}
+			else
+			{
+				return true;
 			}
 		}
 

@@ -19,8 +19,9 @@ namespace LocationConnection
     public class ImageCache
     {
         BaseActivity context;
-        public static volatile List<string> imagesInProgress = new List<string>(); //using list is unreliable, when I add  103 to 1|4|7|104|6, it becames 1|4|7|104|6|6. Sometimes an empty stirng is present. Adding volatile did not help. 
-        public static volatile Dictionary<ImageView, string> imageViewToLoadLater = new Dictionary<ImageView, string>();
+        public static List<string> imagesInProgress = new List<string>(); //using list is unreliable, when I add  103 to 1|4|7|104|6, it becames 1|4|7|104|6|6. Sometimes an empty stirng is present. Adding volatile did not help. 
+        public static Dictionary<ImageView, string> imageViewToLoadLater = new Dictionary<ImageView, string>();
+        private static readonly object lockObj = new object();
 
         public ImageCache(BaseActivity context)
         {
@@ -100,11 +101,15 @@ namespace LocationConnection
                     //context.c.CW("Exists " + userID + " at " + imgID);
                     //context.c.LogActivity("Exists " + userID + " at " + imgID);
 
-                    if (imageViewToLoadLater.ContainsKey(imageView))
+                    lock (lockObj)
                     {
-                        imageViewToLoadLater.Remove(imageView);
-                    }
+                        //context.c.LogActivity("locking existing at " + userID);
 
+                        if (imageViewToLoadLater.ContainsKey(imageView))
+                        {
+                            imageViewToLoadLater.Remove(imageView);
+                        }
+                    }
                     
                     context.RunOnUiThread(() => {
                         imageView.SetImageBitmap(Load(saveName)); //takes 3-4 ms
@@ -152,28 +157,33 @@ namespace LocationConnection
                         }
                     }
 
-                    if (imagesInProgress.IndexOf(saveName) != -1) //saveName must be used, not userID, because on the profile edit page there are multiple pictures from the same user.
+                    lock (lockObj)
                     {
-                        //context.c.CW("Cancelled loading " + userID + " at " + imgID); 
-                        //context.c.LogActivity("Cancelled loading " + userID + " at " + imgID);
-                        
-                        //For a chatlist with 3 items, 4 imageViews are used. The first is called 13 times (with all 3 IDs), the second called once, the third once, and the fourth 24 times (with all 3 IDs).
-                        try
+                        //context.c.LogActivity("locking new at " + userID);
+
+                        if (imagesInProgress.IndexOf(saveName) != -1) //saveName must be used, not userID, because on the profile edit page there are multiple pictures from the same user.
                         {
-                            imageViewToLoadLater[imageView] = saveName;
+                            //context.c.CW("Cancelled loading " + userID + " at " + imgID); 
+                            //context.c.LogActivity("Cancelled loading " + userID + " at " + imgID);
+
+                            //For a chatlist with 3 items, 4 imageViews are used. The first is called 13 times (with all 3 IDs), the second called once, the third once, and the fourth 24 times (with all 3 IDs).
+                            try
+                            {
+                                imageViewToLoadLater[imageView] = saveName;
+                            }
+                            catch (Exception ex)
+                            {
+                                context.c.ReportErrorSilent("imageViewToLoadLater cannot add ID " + userID + ": " + ex.Message + " - imageViewToLoadLater " + imageViewToLoadLater);
+                            }
+
+                            return;
                         }
-                        catch (Exception ex)
-                        {
-                            throw new Exception("imageViewToLoadLater cannot add ID " + userID + ": " + ex.Message + " - imageViewToLoadLater " + imageViewToLoadLater);
-                        }
-                        
-                        return;
+
+                        imagesInProgress.Add(saveName);
                     }
 
                     //context.c.CW("Requesting " + userID + " at " + imgID); //+ " arr " + string.Join('|', imagesInProgress) if used at Completed, "Collection was modified; enumeration operation may not execute" error may occur.
                     //context.c.LogActivity("Requesting " + userID + " at " + imgID);
-
-                    imagesInProgress.Add(saveName);
 
                     byte[] bytes = null;
 
@@ -186,17 +196,20 @@ namespace LocationConnection
                         bytes = await task;
                     }
 
-                    int index = imagesInProgress.IndexOf(saveName);
-                    if (index != -1)
+                    lock (lockObj)
                     {
-                        try
+                        int index = imagesInProgress.IndexOf(saveName);
+                        if (index != -1)
                         {
-                            imagesInProgress.Remove(saveName);
+                            try
+                            {
+                                imagesInProgress.Remove(saveName);
+                            }
+                            catch
+                            {
+                                context.c.ReportErrorSilent("imagesInProgress remove error at index " + index + ", ID " + userID + " Length " + imagesInProgress.Count);
+                            }
                         }
-                        catch
-                        {
-                            throw new Exception("imagesInProgress remove error at index " + index + ", ID " + userID + " Length " + imagesInProgress.Count);
-                        }                        
                     }
 
                     //context.c.CW("Completed " + userID + " at " + imgID);

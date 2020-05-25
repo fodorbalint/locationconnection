@@ -61,13 +61,6 @@ namespace LocationConnection
 
 			active = true;
 			c.LogActivity("OnResume border width " + ImageEditorFrameBorder.Width + " variable " + imageEditorFrameBorderWidth);
-
-			/*c.LogActivity("Starting timer from OnResume");
-			t = new Timer();
-			t.Interval = 100;
-			t.Elapsed += Timer_Elapsed;
-			t.Start();
-			timerCounter = 0;*/
 		}
 
 		protected override void OnPause()
@@ -90,17 +83,7 @@ namespace LocationConnection
 				Android.Net.Uri selectedFile = data.Data;
 
 				/*
-				 We can get info via provider - using Images
-				 selectedFile:
-					content://com.android.providers.media.documents/document/image%3A53287;
-				 selectedFile.Path:
-					/document/image:53287;False;False
-
-				 We can get info via provider - using Gallery
-				 selectedFile:
-					content://media/external/images/media/33424
-				 selectedFile.Path:
-					/external/images/media/33424;False;False
+				 Images and gallery selection: see comment after function
 				 
 				 File does not exist - using SD card / fix #2
 				 selectedFile:
@@ -199,25 +182,69 @@ namespace LocationConnection
 			}
 		}
 
+		/*
+		Picture selected from Images (Android 8-10):
+
+		selectedFile: content://com.android.providers.media.documents/document/image:812
+		selectedFile.Path: /document/image:812
+		0:image:812; 1:image/jpeg; 2:20200524_135011.jpg; 3:1590321011000; 4:16389; 5:1804976;
+		document_id image:812
+		Image resolved to /storage/emulated/0/DCIM/Camera/20200524_135011.jpg
+
+		Picture from Gallery (Android 10)
+
+		selectedFile: content://media/external/images/media/812
+		selectedFile.Path: /external/images/media/812
+		0:; 1:; 2:; 3:; 4:; 5:90; 6:2208; 7:0; 8:Camera; 9:; 10:external_primary; 11:1590321011; 12:; 13:20200524_135011.jpg; 14:1590321011458; 15:image/jpeg; 16:812; 17:/storage/emulated/0/DCIM/Camera/20200524_135011.jpg; 18:; 19:1804976; 20:20200524_135011; 21:2944; 22:; 23:0; 24:1920763097; 25:; 26:0; 27:1590321011; 28:; 29:DCIM; 30:Camera; 31:; 32:; 33:-1739773001; 34:DCIM/Camera/;
+		Data at index 17
+
+		Android 9
+
+		selectedFile: content://media/external/images/media/73412
+		selectedFile.Path: /external/images/media/73412
+		0:73412; 1:/storage/emulated/0/DCIM/Camera/IMG_20200522_112801.jpg; 2:1852812; 3:IMG_20200522_112801.jpg; 4:image/jpeg; 5:IMG_20200522_112801; 6:1590139682; 7:; 8:1590139682; 9:; 10:; 11:; 12:; 13:; 14:1590139681685; 15:0; 16:-5615316856834233471; 17:-1739773001; 18:Camera; 19:2336; 20:4160; 21:; 22:; 23:; 24:; 25:; 26:; 27:0; 28:; 29:0; 30:; 31:; 32:1;
+		Data at index 1
+
+		Android 8
+
+		selectedFile: content://media/external/images/media/7137
+		selectedFile.Path: /external/images/media/7137
+		0:7137; 1:/storage/emulated/0/DCIM/Camera/20200524_143124.jpg; 2:3728745; 3:20200524_143124.jpg; 4:image/jpeg; 5:20200524_143124; 6:1590323484; 7:1590323484; 8:; 9:; 10:; 11:; 12:; 13:1590323484314; 14:90; 15:541715872148713776; 16:-1739773001; 17:Camera; 18:5312; 19:2988; 20:65537; 21:65537; 22:0; 23:0; 24:20200524_143124.jpg; 25:0; 26:0; 27:; 28:;
+		Data at index 1
+
+		Local image selected from Google Photos (Android 10):
+
+		selectedFile: content://com.google.android.apps.photos.contentprovider/-1/1/content://media/external/images/media/812/ORIGINAL/NONE/image/jpeg/656313712
+		selectedFile.Path: /-1/1/content://media/external/images/media/812/ORIGINAL/NONE/image/jpeg/656313712
+		0:812; 1:20200524_135011.jpg; 2:1804976; 3:image/jpeg; 4:/storage/emulated/0/DCIM/Camera/20200524_135011.jpg; 5:90; 6:1590321011458; 7:; 8:; 9:;
+
+		Downloaded or local image from Google Photos (tested in Android 9)
+
+		selectedFile: content://com.google.android.apps.photos.contentprovider/0/1/mediakey:/local%3A3f57f21b-00be-4969-b719-475b722aa5f0/ORIGINAL/NONE/image/jpeg/1274422508
+		selectedFile.Path: /0/1/mediakey:/local:3f57f21b-00be-4969-b719-475b722aa5f0/ORIGINAL/NONE/image/jpeg/1274422508
+		0:0; 1:20200522_120306.jpg; 2:2038799; 3:image/jpeg; 4:; 5:0; 6:1590141785000; 7:55.7179; 8:12.4513; 9:;
+		Data at index 4, empty
+
+		Downloads do not work (tested in Android 9)
+
+		selectedFile: content://com.android.providers.downloads.documents/document/6087
+		selectedFile.Path: /document/6087
+		0:6087; 1:image/png; 2:chroma-444.png; 3:chroma-444.png; 4:1579346983185; 5:71; 6:25326;
+		Id is not found in second query
+
+		*/
+
 		public string GetPathToImage(Android.Net.Uri uri)
 		{
-			//This method only finds images from the gallery, for images it returns null
-			/*var cu = ContentResolver.Query(uri, new string[] { Android.Provider.MediaStore.Images.Media.InterfaceConsts.Data }, null, null, null);
-			cu.MoveToFirst();
-			string p = cu.GetString(0);
-			cu.Close();
+			string path;
+			string document_id = null;
 
-			c.LogActivity("Path found early: " + p + " colIndex " + colIndex);*/
-
-
-			string doc_id = "";
 			using (var c1 = ContentResolver.Query(uri, null, null, null, null))
 			{
-				if (c1 is null)
+				if (c1.Count == 0) //the image has just been deleted.
 				{
-					throw new Exception("Cursor at first query is null");
+					throw new Exception("The image does not exist.");
 				}
-				c.LogActivity("First cursor colcount: " + c1.ColumnCount + " rowCount: " + c1.Count); // 6 columns for images, 33 columns for gallery. Using ID in the projection would result in an empty document_id string for images.
 				c1.MoveToFirst();
 
 				string row = "";
@@ -227,22 +254,30 @@ namespace LocationConnection
 				}				
 
 				c.LogActivity(row);
-				/* Images:
-				 * image:73381 - image/jpeg - P1000148_cut_4-5.JPG - 1590000387000 - 131077 - 7428059
-				 * Gallery:
-				 * 73412 - /storage/emulated/0/DCIM/Camera/IMG_20200522_112801.jpg - 1852812 - IMG_20200522_112801.jpg - image/jpeg - IMG_20200522_112801
-				 */
 
 				int colIndex = c1.GetColumnIndex(Android.Provider.MediaStore.Images.Media.InterfaceConsts.Data);
 				c.LogActivity("Data col index: " + colIndex);
 
 				if (colIndex != -1) //image picked from gallery
 				{
-					return c1.GetString(colIndex);
+					path = c1.GetString(colIndex);
+					if (path != null)
+					{
+						return path;
+					}
+					else //Google Photos
+					{
+						//This is not it, the second query will return 0 rows.
+						//document_id = uri.Path.Substring(uri.Path.LastIndexOf("/") + 1);
+						throw new Exception("Data is null");
+					}
 				}
 
-				string document_id = c1.GetString(0); //if the picture was just deleted, this error is thrown: Index 0 requested, with a size of 0
-				
+				//if (document_id is null)
+				//{
+					document_id = c1.GetString(0); //We don't know what the 0 column stands for in terms of InterfaceConsts. Android.Provider.MediaStore.Images.Media.InterfaceConsts.Id is not it.
+				//}
+
 				if (document_id is null)
 				{
 					throw new Exception("document_id is null");
@@ -253,20 +288,19 @@ namespace LocationConnection
 				//OneDrive: /Drive/ID/1/Item/RID/6028F4288AEF832B!6520/Stream/1/Property/3B 2018-01-05 (00).png
 				c.LogActivity("GetPathToImage document_id " + document_id); //from gallery: 73412 | from images: image:73412
 
-				doc_id = document_id.Substring(document_id.LastIndexOf(":") + 1);
+				document_id = document_id.Substring(document_id.LastIndexOf(":") + 1);
 			}
 
-			string path = null;
+			
 
 			// The projection contains the columns we want to return in our query.
 			string selection = Android.Provider.MediaStore.Images.Media.InterfaceConsts.Id + " =? "; //_id=?
-			using (var cursor = ContentResolver.Query(Android.Provider.MediaStore.Images.Media.ExternalContentUri, new string[] { Android.Provider.MediaStore.Images.Media.InterfaceConsts.Data }, selection, new string[] { doc_id }, null))
+			using (var cursor = ContentResolver.Query(Android.Provider.MediaStore.Images.Media.ExternalContentUri, new string[] { Android.Provider.MediaStore.Images.Media.InterfaceConsts.Data }, selection, new string[] { document_id }, null))
 			{
-				if (cursor is null)
+				if (cursor.Count == 0)
 				{
-					throw new Exception("Cursor at second query is null");
+					throw new Exception("Id is invalid.");
 				}
-				c.LogActivity("Second cursor colcount: " + cursor.ColumnCount + " rowCount: " + cursor.Count);
 				cursor.MoveToFirst();
 				path = cursor.GetString(0);
 			}

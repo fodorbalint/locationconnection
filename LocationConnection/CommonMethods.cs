@@ -57,26 +57,10 @@ namespace LocationConnection
 
 		public CommonMethods(Activity context)
 		{
-			this.context = context;
-			if (!(context is null)) //CommonMethods is called with null context from Firebase OnNewToken
+			this.context = context; //CommonMethods is called with null context from Firebase OnNewToken
+			if (!(context is null) && !(Settings.DisplaySize is null)) 
 			{
-				if (Settings.DisplaySize == 1)
-				{
-					alertTextSize = float.Parse(context.Resources.GetString(Resource.String.alertTextSizeNormal), CultureInfo.InvariantCulture);
-					logAlertTextSize = float.Parse(context.Resources.GetString(Resource.String.logAlertTextSizeNormal), CultureInfo.InvariantCulture);
-					alertPadding = float.Parse(context.Resources.GetString(Resource.String.alertPaddingNormal), CultureInfo.InvariantCulture);
-					logAlertPadding = float.Parse(context.Resources.GetString(Resource.String.logAlertPaddingNormal), CultureInfo.InvariantCulture);
-					textSmall = Resource.Style.TextSmallNormal;
-
-				}
-				else
-				{
-					alertTextSize = float.Parse(context.Resources.GetString(Resource.String.alertTextSizeSmall), CultureInfo.InvariantCulture);
-					logAlertTextSize = float.Parse(context.Resources.GetString(Resource.String.logAlertTextSizeSmall), CultureInfo.InvariantCulture);
-					alertPadding = float.Parse(context.Resources.GetString(Resource.String.alertPaddingSmall), CultureInfo.InvariantCulture);
-					logAlertPadding = float.Parse(context.Resources.GetString(Resource.String.logAlertPaddingSmall), CultureInfo.InvariantCulture);
-					textSmall = Resource.Style.TextSmallSmall;
-				}
+				SetTextSize();
 			}
 		}
 
@@ -148,7 +132,30 @@ namespace LocationConnection
 						field.SetValue(null, defField.GetValue(null));
 					}
 				}
-			}			
+			}
+
+			SetTextSize();
+		}
+
+		private void SetTextSize()
+		{
+			if (Settings.DisplaySize == 1)
+			{
+				alertTextSize = float.Parse(context.Resources.GetString(Resource.String.alertTextSizeNormal), CultureInfo.InvariantCulture);
+				logAlertTextSize = float.Parse(context.Resources.GetString(Resource.String.logAlertTextSizeNormal), CultureInfo.InvariantCulture);
+				alertPadding = float.Parse(context.Resources.GetString(Resource.String.alertPaddingNormal), CultureInfo.InvariantCulture);
+				logAlertPadding = float.Parse(context.Resources.GetString(Resource.String.logAlertPaddingNormal), CultureInfo.InvariantCulture);
+				textSmall = Resource.Style.TextSmallNormal;
+
+			}
+			else
+			{
+				alertTextSize = float.Parse(context.Resources.GetString(Resource.String.alertTextSizeSmall), CultureInfo.InvariantCulture);
+				logAlertTextSize = float.Parse(context.Resources.GetString(Resource.String.logAlertTextSizeSmall), CultureInfo.InvariantCulture);
+				alertPadding = float.Parse(context.Resources.GetString(Resource.String.alertPaddingSmall), CultureInfo.InvariantCulture);
+				logAlertPadding = float.Parse(context.Resources.GetString(Resource.String.logAlertPaddingSmall), CultureInfo.InvariantCulture);
+				textSmall = Resource.Style.TextSmallSmall;
+			}
 		}
 
 		public void SaveSettings()
@@ -1221,7 +1228,7 @@ namespace LocationConnection
 			int screenHeight = metrics.HeightPixels;
 			int keyboardHeight = screenHeight - r.Bottom;
 
-			LogActivity("IsKeyboardOpen screenHeight " + screenHeight + " r.Bottom " + r.Bottom + " keyboardHeight " + keyboardHeight);
+			//LogActivity("IsKeyboardOpen screenHeight " + screenHeight + " r.Bottom " + r.Bottom + " keyboardHeight " + keyboardHeight);
 			if (keyboardHeight > screenHeight * 0.2)
 			{
 				return true;
