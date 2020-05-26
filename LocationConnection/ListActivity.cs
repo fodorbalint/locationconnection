@@ -1651,6 +1651,7 @@ namespace LocationConnection
 		{
 			if (UseGeoNo.Checked)
 			{
+				imm.HideSoftInputFromWindow(DistanceSourceAddressText.WindowToken, 0);
 				UseGeoContainer.Visibility = ViewStates.Gone;
 				Session.GeoFilter = false;
 				if ((bool)Settings.IsMapView && !(bool)Session.UseLocation)
@@ -1683,6 +1684,7 @@ namespace LocationConnection
 		{
 			if (DistanceSourceCurrent.Checked)
 			{
+				imm.HideSoftInputFromWindow(DistanceSourceAddressText.WindowToken, 0);
 				DistanceSourceAddressText.Visibility = ViewStates.Gone;
 				AddressOK.Visibility = ViewStates.Gone;
 				if (!c.IsLocationEnabled())

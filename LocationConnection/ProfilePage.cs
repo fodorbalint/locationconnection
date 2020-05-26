@@ -85,7 +85,18 @@ namespace LocationConnection
 				/*
 				 Images and gallery selection: see comment after function
 				 
-				 File does not exist - using SD card / fix #2
+				 File does not exist - using Emulator Downloads folder / fix #1
+				 selectedFile:
+					content://com.android.providers.downloads.documents/document/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2F....jpg
+				 selectedFile.Path:
+					/document.raw:/storage/emulated/0/Download/....jpg
+
+				OnePlus 8 Pro: Files / fix #2
+				selectedFile: content://com.android.externalstorage.documents/document/primary:DCIM/Camera/Marco/OnePlus 8 PRO Benjamin Rasmussen Macro Vertical 1.jpg
+				selectedFile.Path: /document/primary:DCIM/Camera/Marco/OnePlus 8 PRO Benjamin Rasmussen Macro Vertical 1.jpg
+				0:primary:DCIM/Camera/Marco/OnePlus 8 PRO Benjamin Rasmussen Macro Vertical 1.jpg; 1:image/jpeg; 2:OnePlus 8 PRO Benjamin Rasmussen Macro Vertical 1.jpg; 3:1590403763000; 4:16711; 5:2413083;
+
+				File does not exist - using SD card / fix #3
 				 selectedFile:
 					content://com.android.externalstorage.documents/document/E910-4E32%3APictures%2F....jpg;
 				 selectedFile.Path:
@@ -96,12 +107,6 @@ namespace LocationConnection
 					content://com.ghisler.android.TotalCommander.files/storage/emulated/0/Documents/....jpg;
 				 selectedFile.Path:
 					/storage/emulated/0/Documents/....jpg;False;True
-				 
-				 File does not exist - using Emulator Downloads folder / fix #1
-				 selectedFile:
-					content://com.android.providers.downloads.documents/document/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2F....jpg
-				 selectedFile.Path:
-					/document.raw:/storage/emulated/0/Download/....jpg
 				 */
 
 				string path = selectedFile.Path;
@@ -114,29 +119,42 @@ namespace LocationConnection
 				}
 				if (!File.Exists(path))
 				{
-					string str = Regex.Replace(selectedFile.Path, @"/document/([A-Z\d]{4}-[A-Z\d]{4}):", "/storage/$1/"); // fix #2
-					if (!File.Exists(str))
+					path = selectedFile.Path.Replace("/document/primary:", "/storage/emulated/0/"); // fix #2
+					if (!File.Exists(path))
 					{
-						try
+						string str = Regex.Replace(selectedFile.Path, @"/document/([A-Z\d]{4}-[A-Z\d]{4}):", "/storage/$1/"); // fix #3
+						if (!File.Exists(str))
 						{
-							selectedFileStr = GetPathToImage(selectedFile);
+
+							try
+							{
+								selectedFileStr = GetPathToImage(selectedFile);
+							}
+							catch (Exception ex)
+							{
+								c.LogActivity("UploadImagePathNotFound: " + ex.Message + " " + ex.StackTrace.Replace("\n", " "));
+								c.ReportError(res.GetString(Resource.String.UploadImagePathNotFound));
+								return;
+							}
+							c.LogActivity("Image resolved to " + selectedFileStr);
 						}
-						catch (Exception ex)
+						else
 						{
-							c.LogActivity("UploadImagePathNotFound: " + ex.Message + " " + ex.StackTrace.Replace("\n"," "));
-							c.ReportError(res.GetString(Resource.String.UploadImagePathNotFound));
-							return;
+							selectedFileStr = str;
+							c.LogActivity("Image resolved by fix 3 to " + selectedFileStr);
 						}
-						c.LogActivity("Image resolved to " + selectedFileStr);
 					}
 					else
 					{
-						selectedFileStr = str;
+						selectedFileStr = path;
+						c.LogActivity("Image resolved by fix 2 to " + selectedFileStr);
 					}
+					
 				}
 				else
 				{
 					selectedFileStr = path;
+					c.LogActivity("Image path exists " + selectedFileStr);
 				}
 
 				selectedImageName = selectedFileStr.Substring(selectedFileStr.LastIndexOf("/") + 1);

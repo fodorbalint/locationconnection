@@ -33,6 +33,7 @@ namespace LocationConnection
 		float startCenterX, startCenterY;
 		float xDist, yDist;
 		bool outOfFrameX, outOfFrameY;
+		Snackbar snack;
 
 		public RegisterCommonMethods(ProfilePage context)
 		{
@@ -229,7 +230,14 @@ namespace LocationConnection
 		public async Task UploadFile(string fileName, string regsessionid) //use Task<int> for return value
 		{
 			context.imagesUploading = true;
-			context.RunOnUiThread(() => { StartAnim(); });
+			context.RunOnUiThread(() => {
+				StartAnim();
+				if (!(snack is null))
+				{
+					snack.Dismiss();
+					snack = null;
+				}
+			});
 
 			try
 			{
@@ -252,15 +260,17 @@ namespace LocationConnection
 				}
 				await client.UploadFileTaskAsync(url, fileName);
 			}
-			catch (Exception ex)
+			catch (WebException ex)
 			{
-				context.LoaderCircle.Visibility = ViewStates.Invisible;
-				context.LoaderCircle.ClearAnimation();
-
-				context.imagesUploading = false;
-				context.RunOnUiThread(() => {
-					context.c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
-				});
+				//Client_UploadFileCompleted is called too which resets the views
+				if (((HttpWebResponse)ex.Response).StatusCode == HttpStatusCode.InternalServerError)
+				{
+					context.c.ErrorAlert(context.res.GetString(Resource.String.OutOfMemory));
+				}
+				else
+				{
+					context.c.ReportErrorSilent("Upload image error: " + ((HttpWebResponse)ex.Response).StatusCode + " " + ex.Message + System.Environment.NewLine + ex.StackTrace);
+				}
 			}
 		}
 
@@ -298,15 +308,10 @@ namespace LocationConnection
 					}
 					else
 					{
-						Console.WriteLine("--------upload finished-----" + context);
-						if (!(context is null))
-						{
-							Console.WriteLine("--------upload finished 2 -----" + context.ImagesProgress);
-						}
 						RegisterActivity.regsessionid = arr[1];
-						if (!File.Exists(RegisterActivity.regSessionFile))
+						if (!File.Exists(BaseActivity.regSessionFile))
 						{
-							File.WriteAllText(RegisterActivity.regSessionFile, RegisterActivity.regsessionid);
+							File.WriteAllText(BaseActivity.regSessionFile, RegisterActivity.regsessionid);
 						}
 						context.SaveRegData();
 					}
@@ -315,7 +320,7 @@ namespace LocationConnection
 				}
 				else if (responseString.Substring(0, 6) == "ERROR_")
 				{
-					context.c.Snack(context.Resources.GetIdentifier(responseString.Substring(6), "string", context.PackageName));
+					snack = context.c.SnackIndef(context.Resources.GetIdentifier(responseString.Substring(6), "string", context.PackageName));
 				}
 				else
 				{
@@ -335,7 +340,13 @@ namespace LocationConnection
 			}
 			catch (Exception ex)
 			{
-				context.c.ReportErrorSilent(ex.Message + System.Environment.NewLine + ex.StackTrace);
+				context.imagesUploading = false;
+				context.ImagesProgressText.Text = "";
+
+				if (!(ex.InnerException is WebException))
+				{
+					context.c.ReportErrorSilent(ex.Message + " --- " + ex.InnerException + " --- " + System.Environment.NewLine + ex.StackTrace);
+				}
 			}
 		}
 

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Location Connection</string>
 	<string name="app_name_short">Connection</string>
-    <string name="versionInfo">Version: 1.4 - 25 May 2020\n\nCreated by Balint Fodor\n\nContact: fodorbalint@gmail.com\nlocationconnection.me\n\nPrivacy policy:\nhttps://locationconnection.me/?page=legal#privacy\n\nSource code:\nhttps://github.com/fodorbalint?tab=repositories</string>
+    <string name="versionInfo">Version: 1.4 - 26 May 2020\n\nCreated by Balint Fodor\n\nContact: fodorbalint@gmail.com\nlocationconnection.me\n\nPrivacy policy:\nhttps://locationconnection.me/?page=legal#privacy\n\nSource code:\nhttps://github.com/fodorbalint?tab=repositories</string>
 
 	<!-- General -->
 
@@ -75,6 +75,7 @@
 	<string name="EmailExists">Email already exists.</string>
 	<string name="WrongImageExtension">Only jpg, jpeg and png files are allowed.</string>
 	<string name="NotAnImage">The uploaded file is not an image.</string>
+	<string name="OutOfMemory">The server ran out of memory.\nTry again, or upload the image in smaller resolution.\nMaximum allowed size: 4000 x 4000 px\nRecommended: 1440 x 1440 px</string>
 	<string name="PictureTooLarge">The uploaded image exceeds the 20 MB limit.</string>
 	<string name="PictureSizeTooLarge">The uploaded image exceeds 4000 x 4000 pixel limit.</string>
 	<string name="PasswordMismatch">Incorrect password. Log out to reset it.</string>
