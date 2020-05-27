@@ -503,24 +503,25 @@
         android:visibility="invisible"
         android:clickable="true"
         android:id="@+id/ImageEditorControls">
+        <ImageButton
+            android:layout_width="41.14dp"
+    		android:layout_height="41.14dp"
+            android:layout_marginLeft="4.29dp"
+    		android:src="@drawable/ic_cross48_small"
+    		android:tooltipText="@string/ImageEditorCancel"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:id="@+id/ImageEditorCancel" />  
         <TextView
             android:layout_width="0px"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8.57dp"
+            android:layout_marginRight="8.57dp"
             android:layout_marginTop="8.57dp"
             android:layout_marginBottom="8.57dp"
             android:layout_weight="1"
             android:text="@string/ImageEditorLabel"
 			android:theme="@style/BlackTextSmallSmall"
-            android:id="@+id/ImageEditorLabel" />
-        <ImageButton
-            android:layout_width="41.14dp"
-    		android:layout_height="41.14dp"
-            android:layout_marginLeft="8.57dp"
-    		android:src="@drawable/ic_cross48_small"
-    		android:tooltipText="@string/ImageEditorCancel"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:id="@+id/ImageEditorCancel" />  
+            android:id="@+id/ImageEditorLabel" />        
         <ImageButton
             android:layout_width="41.14dp"
     		android:layout_height="41.14dp"

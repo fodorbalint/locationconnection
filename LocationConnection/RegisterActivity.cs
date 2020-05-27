@@ -55,6 +55,7 @@ namespace LocationConnection
 		private bool registerCompleted;
 		private int spinnerItem;
 		private int spinnerItemDropdown;
+		private bool eulaLoaded;
 
 		protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -146,6 +147,8 @@ namespace LocationConnection
 					regsessionid = File.ReadAllText(regSessionFile);
 				}
 
+				eulaLoaded = false;
+
 				EulaText.Touch += EulaText_Touch;
 
 				Register.Click += Register_Click;
@@ -162,12 +165,29 @@ namespace LocationConnection
 		{
 			try
 			{
+				CommonMethods.LogActivityStatic("OnResume start c " + c + " ImageEditorFrameBorder " + ImageEditorFrameBorder + " ImagesUploaded " + ImagesUploaded);
 				base.OnResume();
 
 				if (!ListActivity.initialized) { return; }
 
+				saveData = true;
+				if (ImageEditorFrameBorder is null) // Huawei Y6 fix
+				{	
+					saveData = false;
+					c.LogActivity("Recreating activity");
+					Recreate();
+
+					/* Equivalent to
+					Intent i = new Intent(this, typeof(RegisterActivity));
+					i.SetFlags(ActivityFlags.ClearTop);
+					StartActivity(i);*/
+					return;
+				}
+
 				GetScreenMetrics(false);
 				ImagesUploaded.SetTileSize();
+
+				c.LogActivity("Tile size set");
 				MainLayout.RequestFocus();
 
 				if (!(ListActivity.listProfiles is null))
@@ -240,11 +260,12 @@ namespace LocationConnection
 					ResetForm();
 				}
 
-				if (!imageEditorOpen)
+				if (!eulaLoaded)
 				{
 					string responseString = await c.MakeRequest("action=eula"); //deleting images from server
 					if (responseString.Substring(0, 2) == "OK")
 					{
+						eulaLoaded = true;
 						if (Build.VERSION.SdkInt >= BuildVersionCodes.N)
 						{
 							EulaText.TextFormatted = Html.FromHtml(responseString.Substring(3), FromHtmlOptions.ModeCompact);
@@ -259,10 +280,12 @@ namespace LocationConnection
 						c.ReportError(responseString);
 					}
 				}
-				else
+
+				if (imageEditorOpen)
 				{
 					AdjustImage();
 				}
+
 				c.LogActivity("OnResume end");
 			}
 			catch (Exception ex)
@@ -276,7 +299,7 @@ namespace LocationConnection
 			base.OnPause();
 			if (!ListActivity.initialized) { return; }
 
-			if (!registerCompleted)
+			if (!registerCompleted && saveData)
 			{
 				SaveRegData();
 			}
@@ -582,3 +605,4 @@ namespace LocationConnection
         }
 	}
 }
+ 

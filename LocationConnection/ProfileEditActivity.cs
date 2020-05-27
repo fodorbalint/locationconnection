@@ -143,6 +143,19 @@ namespace LocationConnection
 				base.OnResume();
 				if (!ListActivity.initialized) { return; }
 
+				if (ImageEditorFrameBorder is null) //Huawei Y6 fix
+				{
+					saveData = false;
+					c.LogActivity("Recreating activity");
+					Recreate();
+
+					/* Equivalent to
+					Intent i = new Intent(this, typeof(RegisterActivity));
+					i.SetFlags(ActivityFlags.ClearTop);
+					StartActivity(i);*/
+					return;
+				}
+
 				EditAccountDataSection.Visibility = ViewStates.Gone;
 				EditChangePasswordSection.Visibility = ViewStates.Gone;
 				EditLocationSettingsSection.Visibility = ViewStates.Gone;

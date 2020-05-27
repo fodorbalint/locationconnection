@@ -38,20 +38,24 @@ namespace LocationConnection
 		public ImageButton ImageEditorCancel, ImageEditorOK;
 		public View TopSeparator;
 
+		public static int imageEditorFrameBorderWidth;
+
 		public List<string> uploadedImages;		
 		public bool imagesUploading;
 		public bool imagesDeleting;
 		public Resources res;
-		public bool imageEditorOpen;
-		float sizeRatio;
-		Bitmap bm;
+		public static bool imageEditorOpen;
+		static float sizeRatio;
+		static Bitmap bm;
 
-		public string selectedFileStr, selectedImageName;
+		public static string selectedFileStr, selectedImageName;
 		public RegisterCommonMethods rc;
 		public float lastScale;
 		public InputMethodManager imm;
 		public Timer t;
 		public bool active;
+
+		public bool saveData; //Huawei Y6 fix
 
 		public abstract void SaveRegData();
 
@@ -60,7 +64,14 @@ namespace LocationConnection
 			base.OnResume();
 
 			active = true;
-			c.LogActivity("OnResume border width " + ImageEditorFrameBorder.Width + " variable " + imageEditorFrameBorderWidth);
+			if (!(ImageEditorFrameBorder is null))
+			{
+				CommonMethods.LogActivityStatic("OnResume border width " + ImageEditorFrameBorder.Width + " variable " + imageEditorFrameBorderWidth);
+			}
+			else //On Huawei Y6 this happens. RegisterActivity.OnResume will crash if the views are not set.
+			{
+				CommonMethods.LogActivityStatic("OnResume ImageEditorFrameBorder is null");
+			}	
 		}
 
 		protected override void OnPause()
@@ -72,131 +83,140 @@ namespace LocationConnection
 
 		protected async override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
 		{
-			base.OnActivityResult(requestCode, resultCode, data);
-
-			if (requestCode == 1 && resultCode == Result.Ok)
+			base.OnActivityResult(requestCode, resultCode, data); 
+			
+			try
 			{
-				if (imagesUploading) //can happen if we click on the upload button twice fast enough
+				if (requestCode == 1 && resultCode == Result.Ok)
 				{
-					return;
-				}
-				Android.Net.Uri selectedFile = data.Data;
+					if (imagesUploading) //can happen if we click on the upload button twice fast enough
+					{
+						return;
+					}
+					Android.Net.Uri selectedFile = data.Data;
 
-				/*
-				 Images and gallery selection: see comment after function
-				 
-				 File does not exist - using Emulator Downloads folder / fix #1
-				 selectedFile:
-					content://com.android.providers.downloads.documents/document/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2F....jpg
-				 selectedFile.Path:
-					/document.raw:/storage/emulated/0/Download/....jpg
+					/*
+					 Images and gallery selection: see comment after function
 
-				OnePlus 8 Pro: Files / fix #2
-				selectedFile: content://com.android.externalstorage.documents/document/primary:DCIM/Camera/Marco/OnePlus 8 PRO Benjamin Rasmussen Macro Vertical 1.jpg
-				selectedFile.Path: /document/primary:DCIM/Camera/Marco/OnePlus 8 PRO Benjamin Rasmussen Macro Vertical 1.jpg
-				0:primary:DCIM/Camera/Marco/OnePlus 8 PRO Benjamin Rasmussen Macro Vertical 1.jpg; 1:image/jpeg; 2:OnePlus 8 PRO Benjamin Rasmussen Macro Vertical 1.jpg; 3:1590403763000; 4:16711; 5:2413083;
+					 File does not exist - using Emulator Downloads folder / fix #1
+					 selectedFile:
+						content://com.android.providers.downloads.documents/document/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2F....jpg
+					 selectedFile.Path:
+						/document.raw:/storage/emulated/0/Download/....jpg
 
-				File does not exist - using SD card / fix #3
-				 selectedFile:
-					content://com.android.externalstorage.documents/document/E910-4E32%3APictures%2F....jpg;
-				 selectedFile.Path:
-					/document/E910-4E32:Pictures/....jpg;False;False
-				 
-				 File exists - using Total Commander
-				 selectedFile:
-					content://com.ghisler.android.TotalCommander.files/storage/emulated/0/Documents/....jpg;
-				 selectedFile.Path:
-					/storage/emulated/0/Documents/....jpg;False;True
-				 */
+					OnePlus 8 Pro: Files / fix #2
+					selectedFile: content://com.android.externalstorage.documents/document/primary:DCIM/Camera/Marco/OnePlus 8 PRO Benjamin Rasmussen Macro Vertical 1.jpg
+					selectedFile.Path: /document/primary:DCIM/Camera/Marco/OnePlus 8 PRO Benjamin Rasmussen Macro Vertical 1.jpg
+					0:primary:DCIM/Camera/Marco/OnePlus 8 PRO Benjamin Rasmussen Macro Vertical 1.jpg; 1:image/jpeg; 2:OnePlus 8 PRO Benjamin Rasmussen Macro Vertical 1.jpg; 3:1590403763000; 4:16711; 5:2413083;
 
-				string path = selectedFile.Path;
+					File does not exist - using SD card / fix #3
+					 selectedFile:
+						content://com.android.externalstorage.documents/document/E910-4E32%3APictures%2F....jpg;
+					 selectedFile.Path:
+						/document/E910-4E32:Pictures/....jpg;False;False
 
-				c.LogActivity("selectedFile: " + selectedFile + " selectedFile.Path: " + selectedFile.Path);
-				if (path.IndexOf(":") != -1) //fix #1
-				{
-					int colonPos = path.IndexOf(":");
-					path = path.Substring(colonPos + 1);
-				}
-				if (!File.Exists(path))
-				{
-					path = selectedFile.Path.Replace("/document/primary:", "/storage/emulated/0/"); // fix #2
+					 File exists - using Total Commander
+					 selectedFile:
+						content://com.ghisler.android.TotalCommander.files/storage/emulated/0/Documents/....jpg;
+					 selectedFile.Path:
+						/storage/emulated/0/Documents/....jpg;False;True
+					 */
+
+					string path = selectedFile.Path;
+
+					c.LogActivity("selectedFile: " + selectedFile + " selectedFile.Path: " + selectedFile.Path);
+					if (path.IndexOf(":") != -1) //fix #1
+					{
+						int colonPos = path.IndexOf(":");
+						path = path.Substring(colonPos + 1);
+					}
 					if (!File.Exists(path))
 					{
-						string str = Regex.Replace(selectedFile.Path, @"/document/([A-Z\d]{4}-[A-Z\d]{4}):", "/storage/$1/"); // fix #3
-						if (!File.Exists(str))
+						path = selectedFile.Path.Replace("/document/primary:", "/storage/emulated/0/"); // fix #2
+						if (!File.Exists(path))
 						{
+							string str = Regex.Replace(selectedFile.Path, @"/document/([A-Z\d]{4}-[A-Z\d]{4}):", "/storage/$1/"); // fix #3
+							if (!File.Exists(str))
+							{
 
-							try
-							{
-								selectedFileStr = GetPathToImage(selectedFile);
+								try
+								{
+									selectedFileStr = GetPathToImage(selectedFile);
+								}
+								catch (Exception ex)
+								{
+									c.LogActivity("UploadImagePathNotFound: " + ex.Message + " " + ex.StackTrace.Replace("\n", " "));
+									c.ReportError(res.GetString(Resource.String.UploadImagePathNotFound));
+									return;
+								}
+								c.LogActivity("Image resolved to " + selectedFileStr);
 							}
-							catch (Exception ex)
+							else
 							{
-								c.LogActivity("UploadImagePathNotFound: " + ex.Message + " " + ex.StackTrace.Replace("\n", " "));
-								c.ReportError(res.GetString(Resource.String.UploadImagePathNotFound));
-								return;
+								selectedFileStr = str;
+								c.LogActivity("Image resolved by fix 3 to " + selectedFileStr);
 							}
-							c.LogActivity("Image resolved to " + selectedFileStr);
 						}
 						else
 						{
-							selectedFileStr = str;
-							c.LogActivity("Image resolved by fix 3 to " + selectedFileStr);
+							selectedFileStr = path;
+							c.LogActivity("Image resolved by fix 2 to " + selectedFileStr);
 						}
+
 					}
 					else
 					{
 						selectedFileStr = path;
-						c.LogActivity("Image resolved by fix 2 to " + selectedFileStr);
+						c.LogActivity("Image path exists " + selectedFileStr);
 					}
-					
+
+					selectedImageName = selectedFileStr.Substring(selectedFileStr.LastIndexOf("/") + 1);
+
+					if (uploadedImages.IndexOf(selectedImageName) != -1)
+					{
+						c.Snack(Resource.String.ImageExists);
+						return;
+					}
+
+					ExifInterface exif = new ExifInterface(selectedFileStr);
+					int orientation = exif.GetAttributeInt(ExifInterface.TagOrientation, (int)Android.Media.Orientation.Undefined);
+
+					bm = BitmapFactory.DecodeFile(selectedFileStr);
+
+					c.CW("Image width " + bm.Width + " height " + bm.Height + " orientation " + orientation);
+					c.LogActivity("Image width " + bm.Width + " height " + bm.Height + " orientation " + orientation);
+
+					switch (orientation)
+					{
+						case (int)Android.Media.Orientation.Rotate90:
+							bm = RotateImage(bm, 90);
+							break;
+						case (int)Android.Media.Orientation.Rotate180:
+							bm = RotateImage(bm, 180);
+							break;
+						case (int)Android.Media.Orientation.Rotate270:
+							bm = RotateImage(bm, 270);
+							break;
+					}
+
+					sizeRatio = (float)bm.Width / bm.Height;
+
+					c.LogActivity("Image rotated if needed, sizeRatio: " + sizeRatio);
+
+					if (sizeRatio == 1)
+					{
+						await rc.UploadFile(selectedFileStr, RegisterActivity.regsessionid); //works for profile edit too
+					}
+					else
+					{
+						//called before OnResume. If the keyboard was open, screen size is reduced.
+						imageEditorOpen = true;
+					}
 				}
-				else
-				{
-					selectedFileStr = path;
-					c.LogActivity("Image path exists " + selectedFileStr);
-				}
-
-				selectedImageName = selectedFileStr.Substring(selectedFileStr.LastIndexOf("/") + 1);
-
-				if (uploadedImages.IndexOf(selectedImageName) != -1)
-				{
-					c.Snack(Resource.String.ImageExists);
-					return;
-				}
-
-				ExifInterface exif = new ExifInterface(selectedFileStr);
-				int orientation = exif.GetAttributeInt(ExifInterface.TagOrientation, (int)Android.Media.Orientation.Undefined);
-
-				bm = BitmapFactory.DecodeFile(selectedFileStr);
-
-				c.CW("Image width " + bm.Width + " height " + bm.Height + " orientation " + orientation + " file " + selectedFileStr);
-				c.LogActivity("Image width " + bm.Width + " height " + bm.Height + " orientation " + orientation + " file " + selectedFileStr);
-
-				switch (orientation)
-				{
-					case (int)Android.Media.Orientation.Rotate90:
-						bm = RotateImage(bm, 90);
-						break;
-					case (int)Android.Media.Orientation.Rotate180:
-						bm = RotateImage(bm, 180);
-						break;
-					case (int)Android.Media.Orientation.Rotate270:
-						bm = RotateImage(bm, 270);
-						break;
-				}
-
-				sizeRatio = (float)bm.Width / bm.Height;
-
-				if (sizeRatio == 1)
-				{
-					await rc.UploadFile(selectedFileStr, RegisterActivity.regsessionid); //works for profile edit too
-				}
-				else
-				{
-					//called before OnResume. If the keyboard was open, screen size is reduced.
-					imageEditorOpen = true;					
-				}
+			}
+			catch (Exception ex)
+			{
+				c.ReportErrorSilent("OnActivityResult error: " + ex.Message + " " + ex.StackTrace);
 			}
 		}
 

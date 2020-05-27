@@ -159,7 +159,7 @@ namespace LocationConnection
 			context.ImageEditorFrameBorder.Visibility = ViewStates.Invisible;
 			context.ImageEditorControls.Visibility = ViewStates.Invisible;
 			context.TopSeparator.Visibility = ViewStates.Invisible;
-			context.imageEditorOpen = false;
+			ProfilePage.imageEditorOpen = false;
 		}
 
 		public async void ImageEditorOK_Click(object sender, EventArgs e)
@@ -183,8 +183,8 @@ namespace LocationConnection
 
 			Bitmap bm = Bitmap.CreateBitmap(context.ImageEditor.bm, (int)Math.Round(x), (int)Math.Round(y), (int)Math.Round(cropW), (int)Math.Round(cropH));
 
-			string fileName = System.IO.Path.Combine(CommonMethods.cacheFolder, context.selectedImageName);
-			string ext = context.selectedImageName.Substring(context.selectedImageName.LastIndexOf(".") + 1).ToLower();
+			string fileName = System.IO.Path.Combine(CommonMethods.cacheFolder, ProfilePage.selectedImageName);
+			string ext = ProfilePage.selectedImageName.Substring(ProfilePage.selectedImageName.LastIndexOf(".") + 1).ToLower();
 
 			try
 			{
@@ -211,7 +211,7 @@ namespace LocationConnection
 			context.ImageEditorFrameBorder.Visibility = ViewStates.Invisible;
 			context.ImageEditorControls.Visibility = ViewStates.Invisible;
 			context.TopSeparator.Visibility = ViewStates.Invisible;
-			context.imageEditorOpen = false;
+			ProfilePage.imageEditorOpen = false;
 
 			//FileInfo fi = new FileInfo(fileName);
 			//context.c.CW(fileName + " Image size: " + fi.Length + " " + ext);
@@ -453,6 +453,7 @@ namespace LocationConnection
 				context.LocationShareAll.Checked = false;
 				context.LocationShareLike.Checked = false;
 				context.LocationShareMatch.Checked = false;
+				context.LocationShareNone.Checked = true;
 			}
 		}
 
@@ -521,6 +522,7 @@ namespace LocationConnection
 				context.DistanceShareAll.Checked = false;
 				context.DistanceShareLike.Checked = false;
 				context.DistanceShareMatch.Checked = false;
+				context.DistanceShareNone.Checked = true;
 			}
 		}
 

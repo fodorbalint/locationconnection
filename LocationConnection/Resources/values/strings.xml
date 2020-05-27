@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Location Connection</string>
 	<string name="app_name_short">Connection</string>
-    <string name="versionInfo">Version: 1.4 - 26 May 2020\n\nCreated by Balint Fodor\n\nContact: fodorbalint@gmail.com\nlocationconnection.me\n\nPrivacy policy:\nhttps://locationconnection.me/?page=legal#privacy\n\nSource code:\nhttps://github.com/fodorbalint?tab=repositories</string>
+    <string name="versionInfo">Version: 1.4 - 28 May 2020\n\nCreated by Balint Fodor\n\nContact: fodorbalint@gmail.com\nlocationconnection.me\n\nPrivacy policy:\nhttps://locationconnection.me/?page=legal#privacy\n\nSource code:\nhttps://github.com/fodorbalint?tab=repositories</string>
 
 	<!-- General -->
 

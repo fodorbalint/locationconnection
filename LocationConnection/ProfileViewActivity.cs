@@ -32,8 +32,10 @@ namespace LocationConnection
 		SupportMapFragment ProfileViewMap;
 		ImageButton EditSelfBack, BackButton, PreviousButton, HideButton, LikeButton, NextButton;
 		Button EditSelf, MapStreet, MapSatellite;
+		IMenuItem MenuReport, MenuBlock;
 
 		Android.Content.Res.Resources res;
+		bool menuCreated;
 		bool mapLoaded;
 		bool userLoaded;
 		bool mapSet;
@@ -295,6 +297,7 @@ namespace LocationConnection
 
 						PreviousButton.Visibility = ViewStates.Visible;
 						NextButton.Visibility = ViewStates.Visible;
+
 						if (c.IsLoggedIn())
 						{
 							HideButton.Visibility = ViewStates.Visible;
@@ -338,6 +341,11 @@ namespace LocationConnection
 						break;
 				}
 
+				if (menuCreated)
+				{
+					SetMenu();
+				}
+
 				Name.RequestLayout(); //margins are not always set. For example when deleting user, and viewing a profile afterwards, or when getting a match notification on self page, and then clicking on the user's profile. Sets Username too.
 
 				refreshTimer = new Timer();
@@ -372,11 +380,36 @@ namespace LocationConnection
 
 		public override bool OnCreateOptionsMenu(IMenu menu)
 		{
+			MenuInflater.Inflate(Resource.Menu.menu_profileview, menu);
+			MenuReport = menu.FindItem(Resource.Id.MenuReport);
+			MenuBlock = menu.FindItem(Resource.Id.MenuBlock);
+
+			menuCreated = true;
+			SetMenu();
+
+			return base.OnCreateOptionsMenu(menu);
+		}
+
+		private void SetMenu()
+		{
 			if (c.IsLoggedIn())
 			{
-				MenuInflater.Inflate(Resource.Menu.menu_profileview, menu);
+				if (pageType == Constants.ProfileViewType_Self)
+				{
+					MenuReport.SetVisible(false);
+					MenuBlock.SetVisible(false);
+				}
+				else
+				{
+					MenuReport.SetVisible(true);
+					MenuBlock.SetVisible(true);
+				}
 			}
-			return base.OnCreateOptionsMenu(menu);
+			else
+			{
+				MenuReport.SetVisible(false);
+				MenuBlock.SetVisible(false);
+			}
 		}
 
 		public override bool OnOptionsItemSelected(IMenuItem item)

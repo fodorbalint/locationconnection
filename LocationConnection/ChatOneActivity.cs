@@ -32,12 +32,12 @@ namespace LocationConnection
 		Android.Support.V7.Widget.Toolbar PageToolbar;
 		ConstraintLayout ChatViewProfile;
 		public ListView ChatMessageWindow;
-		IMenuItem MenuFriend, MenuLocationUpdates, MenuUnmatch, MenuReport, MenuBlock;
 		ImageButton ChatOneBack, ChatSendMessage;
 		ImageView ChatTargetImage;
 		TextView TargetName, MatchDate, UnmatchDate;
 		public TextView NoMessages;
 		public EditText ChatEditMessage;
+		IMenuItem MenuFriend, MenuLocationUpdates, MenuUnmatch, MenuReport, MenuBlock;
 
 		public Resources res;
 		InputMethodManager imm;
@@ -211,8 +211,8 @@ namespace LocationConnection
 			MenuUnmatch = menu.FindItem(Resource.Id.MenuUnmatch);
 			MenuReport = menu.FindItem(Resource.Id.MenuReport);
 			MenuBlock = menu.FindItem(Resource.Id.MenuBlock);
-			menuCreated = true;
 
+			menuCreated = true;
 			SetMenu();
 
 			return base.OnCreateOptionsMenu(menu);
@@ -233,7 +233,7 @@ namespace LocationConnection
 			{
 				targetID = (int)Session.CurrentMatch.TargetID;
 			}
-			
+
 			if (IsUpdatingTo(targetID))
 			{
 				MenuLocationUpdates.SetTitle(Resource.String.MenuStopLocationUpdates);
@@ -243,11 +243,81 @@ namespace LocationConnection
 				MenuLocationUpdates.SetTitle(Resource.String.MenuStartLocationUpdates);
 			}
 
-			MenuLocationUpdates.SetVisible(false);
-			MenuFriend.SetVisible(false);
-			MenuUnmatch.SetVisible(false);
-			MenuReport.SetVisible(false);
-			MenuBlock.SetVisible(false);
+			if (!(Session.CurrentMatch is null)) //not from notification
+			{
+				if (!(Session.CurrentMatch.UnmatchDate is null))
+				{
+					MenuFriend.SetVisible(false);
+
+					if (Session.CurrentMatch.TargetID == IntentData.blockedID)
+					{
+						MenuUnmatch.SetVisible(false);
+						MenuReport.SetVisible(false);
+						MenuBlock.SetVisible(false);
+					}
+					else
+					{
+						MenuUnmatch.SetVisible(true);
+						MenuReport.SetVisible(true);
+						MenuBlock.SetVisible(true);
+					}
+				}
+				else
+				{
+					MenuFriend.SetVisible(true);
+					MenuUnmatch.SetVisible(true);
+					MenuReport.SetVisible(true);
+					MenuBlock.SetVisible(true);
+				}
+
+				if (!(Session.CurrentMatch.Active is null)) //if not coming from Profile View list
+				{
+					if ((bool)Session.CurrentMatch.Active)
+					{
+						if ((bool)Session.UseLocation && c.IsLocationEnabled())
+						{
+							MenuLocationUpdates.SetVisible(true);
+						}
+						else
+						{
+							MenuLocationUpdates.SetVisible(false);
+						}
+					}
+					else
+					{
+						MenuLocationUpdates.SetVisible(false);
+					}
+				}
+				else
+				{
+					MenuLocationUpdates.SetVisible(false);
+				}
+
+				if (!(Session.CurrentMatch.Friend is null)) //can otherwise be null or false
+				{
+					if ((bool)Session.CurrentMatch.Friend)
+					{
+						MenuFriend.SetTitle(Resource.String.MenuRemoveFriend);
+					}
+					else
+					{
+						MenuFriend.SetTitle(Resource.String.MenuAddFriend);
+					}
+				}
+				else
+				{
+					MenuFriend.SetTitle(Resource.String.MenuAddFriend);
+					MenuFriend.SetVisible(false);
+				}
+			}
+			else
+			{
+				MenuLocationUpdates.SetVisible(false);
+				MenuFriend.SetVisible(true);
+				MenuUnmatch.SetVisible(true);
+				MenuReport.SetVisible(true);
+				MenuBlock.SetVisible(true);
+			}
 		}
 
 		public override bool OnOptionsItemSelected(IMenuItem item)
@@ -342,60 +412,28 @@ namespace LocationConnection
 			{
 				dt = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds((long)Session.CurrentMatch.UnmatchDate).ToLocalTime();
 				UnmatchDate.Text = res.GetString(Resource.String.Unmatched) + ": " + dt.ToString("dd MMMM yyyy HH:mm");
-				MenuFriend.SetVisible(false);
 				
 				if (Session.CurrentMatch.TargetID == IntentData.blockedID)
 				{
 					IntentData.blockedID = null;
-					MenuUnmatch.SetVisible(false);
-					MenuReport.SetVisible(false);
-					MenuBlock.SetVisible(false);
-				}
-				else
-				{
-					MenuUnmatch.SetVisible(true);
-					MenuReport.SetVisible(true);
-					MenuBlock.SetVisible(true);
 				}
 			}
 			else
 			{
 				UnmatchDate.Text = "";
-				MenuFriend.SetVisible(true);
-				MenuUnmatch.SetVisible(true);
-				MenuReport.SetVisible(true);
-				MenuBlock.SetVisible(true);
 			}
 
 			if ((bool)Session.CurrentMatch.Active)
 			{
-				if ((bool)Session.UseLocation && c.IsLocationEnabled())
-				{
-					MenuLocationUpdates.SetVisible(true);
-				}
-				else
-				{
-					MenuLocationUpdates.SetVisible(false);
-				}
 				ChatEditMessage.Enabled = true;
 				ChatSendMessage.Enabled = true;
 				ChatSendMessage.ImageAlpha = 255;
 			}
 			else
 			{
-				MenuLocationUpdates.SetVisible(false);
 				ChatEditMessage.Enabled = false;
 				ChatSendMessage.Enabled = false;
 				ChatSendMessage.ImageAlpha = 128;
-			}
-
-			if (!(bool)Session.CurrentMatch.Friend)
-			{
-				MenuFriend.SetTitle(Resource.String.MenuAddFriend);
-			}
-			else
-			{
-				MenuFriend.SetTitle(Resource.String.MenuRemoveFriend);
 			}
 
 			messageItems = new List<MessageItem>();
@@ -414,6 +452,11 @@ namespace LocationConnection
 			adapter = new ChatMessageWindowAdapter(this, messageItems);
 			ChatMessageWindow.Adapter = adapter; //Without using list, 213 item created in 646 ms / 385 ms on subsequent loading
 			ScrollToBottom(false);
+
+			if (menuCreated) //menu is not yet created after OnCreate.
+			{
+				SetMenu();
+			}
 		}
 
 		public void AddMessageItem(string messageItem)

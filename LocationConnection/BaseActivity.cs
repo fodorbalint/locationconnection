@@ -55,8 +55,6 @@ namespace LocationConnection
 
 		public static bool firstRun = false;
 
-		public int imageEditorFrameBorderWidth;
-
 		protected override void OnCreate(Bundle savedInstanceState)
 		{
 			base.OnCreate(savedInstanceState);
