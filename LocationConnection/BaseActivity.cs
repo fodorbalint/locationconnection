@@ -89,7 +89,7 @@ namespace LocationConnection
 			c.LogActivity(LocalClassName.Split(".")[1] + " OnResume");
 
 			//When opening app, Android sometimes resumes an Activity while the static variables are cleared out, resulting in error
-			if (!ListActivity.initialized)
+			if (!ListActivity.initialized && !(this is RegisterActivity) && !(this is ProfileEditActivity))
 			{
 				c.LogActivity(LocalClassName.Split(".")[1] + " Not initialized");
 

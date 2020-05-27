@@ -900,7 +900,56 @@ namespace LocationConnection
 				str += field.Name + ": " + field.GetValue(null) + "\n";
 			}
 			return str;
-		}		
+		}
+		
+		public string SerializeSession()
+		{
+			string str = "";
+			Type type = typeof(Session);
+			FieldInfo[] fieldInfo = type.GetFields();
+			foreach (FieldInfo field in fieldInfo)
+			{
+				if (field.Name == "Pictures")
+				{
+					str += field.Name + ":" + string.Join("|",(string[])field.GetValue(null)) + "\n";
+				}
+				else
+				{
+					str += field.Name + ":" + field.GetValue(null) + "\n";
+				}
+				
+			}
+			return str;
+		}
+
+		public void DeSerializeSession(string str)
+		{
+			string[] lines = str.Split("\n");
+			foreach (string line in lines)
+			{
+				int pos = line.IndexOf(":");
+				if (pos == -1)
+				{
+					continue;
+				}
+				string key = line.Substring(0, pos);
+				string value = line.Substring(pos + 1);
+
+				Type type = typeof(Session);
+				FieldInfo fieldInfo = type.GetField(key);
+				Type type1 = Nullable.GetUnderlyingType(fieldInfo.FieldType) ?? fieldInfo.FieldType;
+				object safeValue;
+				if (key == "Pictures")
+				{
+					safeValue = value.Split("|");
+				}
+				else
+				{
+					safeValue = ((string)value == "") ? null : Convert.ChangeType(value, type1, CultureInfo.InvariantCulture);
+				}
+				fieldInfo.SetValue(null, safeValue);
+			}
+		}
 
 		public long Now()
 		{

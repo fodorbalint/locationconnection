@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -39,7 +40,45 @@ namespace LocationConnection
 		{
 			try { 
 				base.OnCreate(savedInstanceState);
-				if (!ListActivity.initialized) { return; }
+
+				c.CW("OnCreate savedInstanceState " + (savedInstanceState is null));
+
+
+
+				//Test reset
+
+				/*savedInstanceState = new Bundle();
+				savedInstanceState.PutString("Session", c.SerializeSession());
+
+				ListActivity.initialized = false;
+				Type type = typeof(Session);
+				FieldInfo[] fieldInfo = type.GetFields();
+				foreach (FieldInfo field in fieldInfo)
+				{
+					field.SetValue(null, null);
+				}*/
+
+
+
+				if (!ListActivity.initialized && !(savedInstanceState is null))
+				{
+					c.LogActivity(LocalClassName.Split(".")[1] + " Not initialized, restoring");
+
+					ListActivity.initialized = true;
+					GetScreenMetrics(true);
+					c.LoadSettings(false);
+					c.DeSerializeSession(savedInstanceState.GetString("Session"));
+				}
+				else if (!ListActivity.initialized && savedInstanceState is null)
+				{
+					c.LogActivity(LocalClassName.Split(".")[1] + " Not initialized");
+
+					c.ReportErrorSilent("Initialization error");
+
+					Intent i = new Intent(this, typeof(ListActivity));
+					i.SetFlags(ActivityFlags.ReorderToFront);
+					StartActivity(i);
+				}
 
 				if (Settings.DisplaySize == 1)
 				{
@@ -141,20 +180,8 @@ namespace LocationConnection
 		{
 			try {
 				base.OnResume();
+
 				if (!ListActivity.initialized) { return; }
-
-				if (ImageEditorFrameBorder is null) //Huawei Y6 fix
-				{
-					saveData = false;
-					c.LogActivity("Recreating activity");
-					Recreate();
-
-					/* Equivalent to
-					Intent i = new Intent(this, typeof(RegisterActivity));
-					i.SetFlags(ActivityFlags.ClearTop);
-					StartActivity(i);*/
-					return;
-				}
 
 				EditAccountDataSection.Visibility = ViewStates.Gone;
 				EditChangePasswordSection.Visibility = ViewStates.Gone;
@@ -213,10 +240,12 @@ namespace LocationConnection
 					DeactivateAccount.Text = res.GetString(Resource.String.ActivateAccount);
 				}
 
-				if (imageEditorOpen)
+				if (!string.IsNullOrEmpty(selectedFileStr))
 				{
-					AdjustImage();
+					OnResumeEnd();
 				}
+
+				c.LogActivity("OnResume end");
 			}
 			catch (Exception ex)
 			{
@@ -224,10 +253,18 @@ namespace LocationConnection
 			}
 		}
 
+		protected override void OnSaveInstanceState(Bundle outState) //called after OnPause
+		{
+			base.OnSaveInstanceState(outState);
+
+			outState.PutString("Session", c.SerializeSession());
+		}
+
 		protected override void OnPause()
 		{
 			base.OnPause();
 
+			c.CW("ProfileEdit OnPause");
 			imm.HideSoftInputFromWindow(Description.WindowToken, 0);
 		}
 

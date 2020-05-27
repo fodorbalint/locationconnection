@@ -101,7 +101,6 @@ namespace LocationConnection
 
 		public void Images_Click(object sender, System.EventArgs e)
 		{
-			//context.imm.HideSoftInputFromInputMethod(context.Description.WindowToken, 0);
 			if (context.uploadedImages.Count < Constants.MaxNumPictures)
 			{
 				if (!context.imagesUploading && !context.imagesDeleting)
@@ -154,16 +153,17 @@ namespace LocationConnection
 		}
 		public void ImageEditorCancel_Click(object sender, EventArgs e)
 		{
+			ProfilePage.selectedFileStr = null; 
 			context.ImageEditorFrame.Visibility = ViewStates.Invisible;
 			context.ImageEditor.Visibility = ViewStates.Invisible;
 			context.ImageEditorFrameBorder.Visibility = ViewStates.Invisible;
 			context.ImageEditorControls.Visibility = ViewStates.Invisible;
 			context.TopSeparator.Visibility = ViewStates.Invisible;
-			ProfilePage.imageEditorOpen = false;
 		}
 
 		public async void ImageEditorOK_Click(object sender, EventArgs e)
 		{
+			ProfilePage.selectedFileStr = null;
 			//device rotation needs to be handled
 			if (context.ImageEditor.IsOutOfFrameX() || context.ImageEditor.IsOutOfFrameY())
 			{
@@ -211,7 +211,6 @@ namespace LocationConnection
 			context.ImageEditorFrameBorder.Visibility = ViewStates.Invisible;
 			context.ImageEditorControls.Visibility = ViewStates.Invisible;
 			context.TopSeparator.Visibility = ViewStates.Invisible;
-			ProfilePage.imageEditorOpen = false;
 
 			//FileInfo fi = new FileInfo(fileName);
 			//context.c.CW(fileName + " Image size: " + fi.Length + " " + ext);
@@ -229,6 +228,7 @@ namespace LocationConnection
 
 		public async Task UploadFile(string fileName, string regsessionid) //use Task<int> for return value
 		{
+			ProfilePage.selectedFileStr = null;
 			context.imagesUploading = true;
 			context.RunOnUiThread(() => {
 				StartAnim();

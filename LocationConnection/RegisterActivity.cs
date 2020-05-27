@@ -31,6 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
@@ -62,7 +63,26 @@ namespace LocationConnection
 			try
 			{
 				base.OnCreate(savedInstanceState);
-				if (!ListActivity.initialized) { return; }
+
+
+
+				//Test reset
+
+				/*ListActivity.initialized = false;
+				Type type = typeof(Settings);
+				FieldInfo[] fieldInfo = type.GetFields();
+				foreach (FieldInfo field in fieldInfo)
+				{
+					field.SetValue(null, null);
+				}*/
+
+
+
+				if (!ListActivity.initialized) { //Huawei Y6 and Honor 20 Pro, after selecting image. OnCreate is called, with static variables from other activities being cleared out.
+					ListActivity.initialized = true;
+					GetScreenMetrics(true);
+					c.LoadSettings(false);
+				}
 
 				if (Settings.DisplaySize == 1)
 				{
@@ -165,29 +185,10 @@ namespace LocationConnection
 		{
 			try
 			{
-				CommonMethods.LogActivityStatic("OnResume start c " + c + " ImageEditorFrameBorder " + ImageEditorFrameBorder + " ImagesUploaded " + ImagesUploaded);
 				base.OnResume();
-
-				if (!ListActivity.initialized) { return; }
-
-				saveData = true;
-				if (ImageEditorFrameBorder is null) // Huawei Y6 fix
-				{	
-					saveData = false;
-					c.LogActivity("Recreating activity");
-					Recreate();
-
-					/* Equivalent to
-					Intent i = new Intent(this, typeof(RegisterActivity));
-					i.SetFlags(ActivityFlags.ClearTop);
-					StartActivity(i);*/
-					return;
-				}
 
 				GetScreenMetrics(false);
 				ImagesUploaded.SetTileSize();
-
-				c.LogActivity("Tile size set");
 				MainLayout.RequestFocus();
 
 				if (!(ListActivity.listProfiles is null))
@@ -281,9 +282,9 @@ namespace LocationConnection
 					}
 				}
 
-				if (imageEditorOpen)
+				if (!string.IsNullOrEmpty(selectedFileStr))
 				{
-					AdjustImage();
+					OnResumeEnd();
 				}
 
 				c.LogActivity("OnResume end");
@@ -297,9 +298,8 @@ namespace LocationConnection
 		protected override void OnPause()
 		{
 			base.OnPause();
-			if (!ListActivity.initialized) { return; }
 
-			if (!registerCompleted && saveData)
+			if (!registerCompleted)
 			{
 				SaveRegData();
 			}
