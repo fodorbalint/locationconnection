@@ -44,12 +44,15 @@ namespace LocationConnection
 			
 			if (!context.c.IsKeyboardOpen(context.MainLayout))
 			{
-				//context.c.LogActivity("OnMeasure setting var, Width " + Width + " MeasuredWidth " + MeasuredWidth);
-				ProfilePage.imageEditorFrameBorderWidth = MeasuredWidth;
+				context.c.LogActivity("OnMeasure setting var, Width " + Width + " MeasuredWidth " + MeasuredWidth);
+				if (MeasuredWidth != 0)
+				{
+					ProfilePage.imageEditorFrameBorderWidth = MeasuredWidth;
+				}
 			}
 			else
 			{
-				//context.c.LogActivity("OnMeasure not setting var, Width " + Width + " MeasuredWidth " + MeasuredWidth);
+				context.c.LogActivity("OnMeasure not setting var, Width " + Width + " MeasuredWidth " + MeasuredWidth);
 			}
 		}
 			   

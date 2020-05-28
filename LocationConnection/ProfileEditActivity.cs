@@ -64,12 +64,14 @@ namespace LocationConnection
 
 				if (!ListActivity.initialized && !(savedInstanceState is null))
 				{
-					c.LogActivity(LocalClassName.Split(".")[1] + " Not initialized, restoring");
+					c.LogActivity("ProfileEditActivity not initialized, restoring");
 
 					ListActivity.initialized = true;
+					IntentData.profileViewPageType = Constants.ProfileViewType_Self;
 					GetScreenMetrics(true);
 					c.LoadSettings(false);
 					c.DeSerializeSession(savedInstanceState.GetString("Session"));
+					imageEditorFrameBorderWidth = savedInstanceState.GetInt("imageEditorFrameBorderWidth");
 				}
 				else if (!ListActivity.initialized && savedInstanceState is null)
 				{
@@ -194,6 +196,7 @@ namespace LocationConnection
 				MainScroll.ScrollY = 0;
 
 				MainLayout.RequestFocus();
+				Images.Enabled = true; 
 				SetSexChoice();
 				Email.Text = Session.Email;
 				Username.Text = Session.Username;
@@ -255,19 +258,23 @@ namespace LocationConnection
 			}
 		}
 
-		protected override void OnSaveInstanceState(Bundle outState) //called after OnPause
-		{
-			base.OnSaveInstanceState(outState);
-
-			outState.PutString("Session", c.SerializeSession());
-		}
-
 		protected override void OnPause()
 		{
 			base.OnPause();
 
 			c.CW("ProfileEdit OnPause");
 			imm.HideSoftInputFromWindow(Description.WindowToken, 0);
+		}
+
+		protected override void OnSaveInstanceState(Bundle outState) //called after OnPause, and if we deleted the account, called after MainActivity.OnResume is finished.
+		{
+			base.OnSaveInstanceState(outState);
+
+			if (!IntentData.logout && c.IsLoggedIn()) //for when the user deletes the account.
+			{
+				outState.PutString("Session", c.SerializeSession());
+			}
+			outState.PutInt("imageEditorFrameBorderWidth", imageEditorFrameBorderWidth);
 		}
 
 		private void SetSexChoice()

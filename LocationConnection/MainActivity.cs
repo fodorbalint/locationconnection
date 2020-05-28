@@ -45,9 +45,8 @@ namespace LocationConnection
             try
             {
 				base.OnCreate(savedInstanceState);
-				if (!ListActivity.initialized) { return; }
 
-				if (Settings.DisplaySize == 1)
+				if (Settings.DisplaySize == 1 || Settings.DisplaySize is null)
 				{
 					SetContentView(Resource.Layout.activity_main_normal);
 				}
@@ -90,6 +89,7 @@ namespace LocationConnection
 		{
 			try { 
 				base.OnResume();
+
 				if (!ListActivity.initialized) { return; }
 
 				MainLayout.RequestFocus();

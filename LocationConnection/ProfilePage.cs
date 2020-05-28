@@ -52,7 +52,6 @@ namespace LocationConnection
 		public float lastScale;
 		public InputMethodManager imm;
 		public Timer t;
-		public bool active;
 
 		public abstract void SaveRegData();
 
@@ -60,76 +59,11 @@ namespace LocationConnection
 		{
 			base.OnResume();
 
-			active = true;
 			if (!(ImageEditorFrameBorder is null))
 			{
 				CommonMethods.LogActivityStatic("OnResume border width " + ImageEditorFrameBorder.Width + " variable " + imageEditorFrameBorderWidth);
-			}
-			else //On Huawei Y6 this happens. RegisterActivity.OnResume will crash if the views are not set.
-			{
-				CommonMethods.LogActivityStatic("OnResume ImageEditorFrameBorder is null");
 			}	
 		}
-
-		public async void OnResumeEnd()
-		{
-			c.LogActivity("OnResumeEnd uploadedImages: " + uploadedImages);
-
-			if (uploadedImages.IndexOf(selectedImageName) != -1)
-			{
-				c.Snack(Resource.String.ImageExists);
-				return;
-			}
-
-			ExifInterface exif = new ExifInterface(selectedFileStr);
-			int orientation = exif.GetAttributeInt(ExifInterface.TagOrientation, (int)Android.Media.Orientation.Undefined);
-
-			bm = BitmapFactory.DecodeFile(selectedFileStr);
-
-			c.LogActivity("bm " + bm);
-
-			c.CW("Image width " + bm.Width + " height " + bm.Height + " orientation " + orientation);
-			c.LogActivity("Image width " + bm.Width + " height " + bm.Height + " orientation " + orientation);
-
-			switch (orientation)
-			{
-				case (int)Android.Media.Orientation.Rotate90:
-					bm = RotateImage(bm, 90);
-					break;
-				case (int)Android.Media.Orientation.Rotate180:
-					bm = RotateImage(bm, 180);
-					break;
-				case (int)Android.Media.Orientation.Rotate270:
-					bm = RotateImage(bm, 270);
-					break;
-			}
-
-			sizeRatio = (float)bm.Width / bm.Height;
-
-			c.LogActivity("Image rotated if needed, sizeRatio: " + sizeRatio);
-
-			if (sizeRatio == 1)
-			{
-				await rc.UploadFile(selectedFileStr, RegisterActivity.regsessionid); //works for profile edit too
-			}
-			else
-			{
-				AdjustImage();
-			}
-		}
-
-		protected override void OnPause()
-		{
-			base.OnPause();
-
-			active = false;
-		}
-
-		/*protected override void OnSaveInstanceState(Bundle outState)
-		{
-			base.OnSaveInstanceState(outState);
-			outState.PutSerializable("Session", uploadedImages);
-		}*/
 
 		protected async override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
 		{
@@ -221,6 +155,10 @@ namespace LocationConnection
 						selectedFileStr = path;
 						c.LogActivity("Image path exists " + selectedFileStr);
 					}
+
+					//For Huawei Honor 20 Pro that crashes RegisterActivity/ProfileEditActivity half second after OnResume is finished. The underlying activity is called, with all static variables being cleared out.
+					//File.WriteAllText(selectedImageFile, selectedFileStr); 
+					//File.WriteAllText(frameBorderWidthFile, imageEditorFrameBorderWidth.ToString());
 
 					selectedImageName = selectedFileStr.Substring(selectedFileStr.LastIndexOf("/") + 1);
 				}
@@ -354,6 +292,53 @@ namespace LocationConnection
 				path = cursor.GetString(0);
 			}
 			return path;
+		}
+
+		public async void OnResumeEnd()
+		{
+			c.LogActivity("OnResumeEnd uploadedImages: " + uploadedImages);
+
+			if (uploadedImages.IndexOf(selectedImageName) != -1)
+			{
+				c.Snack(Resource.String.ImageExists);
+				return;
+			}
+
+			ExifInterface exif = new ExifInterface(selectedFileStr);
+			int orientation = exif.GetAttributeInt(ExifInterface.TagOrientation, (int)Android.Media.Orientation.Undefined);
+
+			bm = BitmapFactory.DecodeFile(selectedFileStr);
+
+			c.LogActivity("bm " + bm);
+
+			c.CW("Image width " + bm.Width + " height " + bm.Height + " orientation " + orientation);
+			c.LogActivity("Image width " + bm.Width + " height " + bm.Height + " orientation " + orientation);
+
+			switch (orientation)
+			{
+				case (int)Android.Media.Orientation.Rotate90:
+					bm = RotateImage(bm, 90);
+					break;
+				case (int)Android.Media.Orientation.Rotate180:
+					bm = RotateImage(bm, 180);
+					break;
+				case (int)Android.Media.Orientation.Rotate270:
+					bm = RotateImage(bm, 270);
+					break;
+			}
+
+			sizeRatio = (float)bm.Width / bm.Height;
+
+			c.LogActivity("Image rotated if needed, sizeRatio: " + sizeRatio);
+
+			if (sizeRatio == 1)
+			{
+				await rc.UploadFile(selectedFileStr, RegisterActivity.regsessionid); //works for profile edit too
+			}
+			else
+			{
+				AdjustImage();
+			}
 		}
 
 		public void AdjustImage()

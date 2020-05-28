@@ -189,26 +189,35 @@ namespace LocationConnection
 		
 		protected override void OnDraw(Canvas canvas)
 		{
-			base.OnDraw(canvas);
-
-			//context.c.CW("OnDraw scaleFactor " + scaleFactor + " Width " + Width + " Height " + Height + " bmWidth " + bm.Width + " bmHeight " + bm.Height + " intrinsicWidth " + intrinsicWidth + " intrinsicHeight " + intrinsicHeight);
-
-			canvas.Save();
-			canvas.Translate(-(scaleFactor - 1) * canvas.Width / 2, -(scaleFactor - 1) * canvas.Height / 2);
-			canvas.Scale(scaleFactor, scaleFactor);
-
-			Rect frameToDraw = new Rect(0, 0, bm.Width, bm.Height);
-			RectF whereToDraw = new RectF((float)Width / 2 - intrinsicWidth / 2 + xDist, (float)Height / 2 - intrinsicHeight / 2 + yDist, (float)Width / 2 - intrinsicWidth / 2 + xDist + intrinsicWidth, (float)Height / 2 - intrinsicHeight / 2 + yDist + intrinsicHeight);
-
-			//context.c.CW("Where to x " + ((float)Width / 2 - intrinsicWidth / 2 + xDist) + " y " + ((float)Height / 2 - intrinsicHeight / 2 + yDist) + " right " + ((float)Width / 2 - intrinsicWidth / 2 + xDist + intrinsicWidth) + " bottom " + ((float)Height / 2 - intrinsicHeight / 2 + yDist + intrinsicHeight) + " BorderY " + (context.ImageEditorFrameBorder.GetY() - context.ImageEditor.GetY()) + " BorderH " + context.ImageEditorFrameBorder.Height + " scaleFactor " + scaleFactor);
-
-			Paint paint = new Paint
+			base.OnDraw(canvas); 
+			
+			try
 			{
-				AntiAlias = true
-			};
-			canvas.DrawBitmap(bm, frameToDraw, whereToDraw, paint);
+				context.c.LogActivity("OnDraw canvas + " + canvas + "scaleFactor " + scaleFactor + " Width " + Width + " Height " + Height + " bmWidth " + bm.Width + " bmHeight " + bm.Height + " intrinsicWidth " + intrinsicWidth + " intrinsicHeight " + intrinsicHeight);
 
-			canvas.Restore();
+				canvas.Save();
+				canvas.Translate(-(scaleFactor - 1) * canvas.Width / 2, -(scaleFactor - 1) * canvas.Height / 2);
+				canvas.Scale(scaleFactor, scaleFactor);
+
+				Rect frameToDraw = new Rect(0, 0, bm.Width, bm.Height);
+				RectF whereToDraw = new RectF((float)Width / 2 - intrinsicWidth / 2 + xDist, (float)Height / 2 - intrinsicHeight / 2 + yDist, (float)Width / 2 - intrinsicWidth / 2 + xDist + intrinsicWidth, (float)Height / 2 - intrinsicHeight / 2 + yDist + intrinsicHeight);
+
+				//context.c.CW("Where to x " + ((float)Width / 2 - intrinsicWidth / 2 + xDist) + " y " + ((float)Height / 2 - intrinsicHeight / 2 + yDist) + " right " + ((float)Width / 2 - intrinsicWidth / 2 + xDist + intrinsicWidth) + " bottom " + ((float)Height / 2 - intrinsicHeight / 2 + yDist + intrinsicHeight) + " BorderY " + (context.ImageEditorFrameBorder.GetY() - context.ImageEditor.GetY()) + " BorderH " + context.ImageEditorFrameBorder.Height + " scaleFactor " + scaleFactor);
+
+				Paint paint = new Paint
+				{
+					AntiAlias = true
+				};
+				canvas.DrawBitmap(bm, frameToDraw, whereToDraw, paint);
+
+				canvas.Restore();
+
+				//context.c.CW("OnDraw scaleFactor " + scaleFactor + " Width " + Width + " Height " + Height + " bmWidth " + bm.Width + " bmHeight " + bm.Height + " intrinsicWidth " + intrinsicWidth + " intrinsicHeight " + intrinsicHeight);
+			}
+			catch (Exception ex)
+			{
+				context.c.ReportErrorSilent("OnDraw error " + ex.Message + " " + ex.StackTrace);
+			}
 		}
 
 		public bool IsOutOfFrameY() //0.001 is to take account for the comparison of float numbers. Touch move resolution is larger.

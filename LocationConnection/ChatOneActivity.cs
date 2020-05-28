@@ -56,9 +56,8 @@ namespace LocationConnection
 			try
 			{
 				base.OnCreate(savedInstanceState);
-				if (!ListActivity.initialized) { return; }
 
-				if (Settings.DisplaySize == 1)
+				if (Settings.DisplaySize == 1 || Settings.DisplaySize is null)
 				{
 					SetContentView(Resource.Layout.activity_chatone_normal);
 					messageOwn = Resource.Drawable.message_own_normal;

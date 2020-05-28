@@ -146,6 +146,7 @@ namespace LocationConnection
 
 		public void SelectImage()
 		{
+			context.c.LogActivity("Opening file selector");
 			context.Images.Enabled = false;
 			Intent i = new Intent();
 			i.SetType("image/*");

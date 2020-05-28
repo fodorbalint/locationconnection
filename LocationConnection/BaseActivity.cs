@@ -31,6 +31,8 @@ namespace LocationConnection
 		public static string tokenUptoDateFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "tokenuptodate.txt");
 		public static string regSessionFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "regsession.txt");
 		public static string regSaveFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "regsave.txt");
+		//public static string selectedImageFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "selectedimage.txt");
+		//public static string frameBorderWidthFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "frameborderwidth.txt");
 
 		public View MainLayout;
 		private ChatReceiver chatReceiver;
@@ -86,15 +88,28 @@ namespace LocationConnection
 				InitLocationUpdates();
 			}
 
-			c.LogActivity(LocalClassName.Split(".")[1] + " OnResume");
+			c.LogActivity(LocalClassName.Split(".")[1] + " OnResume selectedFileStr " + ProfilePage.selectedFileStr + " Session.ID " + Session.ID);
 
-			//When opening app, Android sometimes resumes an Activity while the static variables are cleared out, resulting in error
-			if (!ListActivity.initialized && !(this is RegisterActivity) && !(this is ProfileEditActivity))
+			if ((this is ListActivity || this is MainActivity) && !c.IsLoggedIn() && !string.IsNullOrEmpty(ProfilePage.selectedFileStr)) //Huawei Honor 20 Pro, being redirected from RegisterActivity, but all static variables are cleared out, so this is never called. RegisterActivity's onPause was never called either.
+			{
+				c.LogActivity("Restarting RegisterActivity");
+				Intent i = new Intent(this, typeof(RegisterActivity));
+				i.SetFlags(ActivityFlags.ReorderToFront);
+				StartActivity(i);
+			}
+			else if ((this is ProfileViewActivity) && c.IsLoggedIn() && !string.IsNullOrEmpty(ProfilePage.selectedFileStr)) //Huawei Honor 20 Pro, being redirected from ProfileEdit to ProfileView
+			{
+				c.LogActivity("Restarting ProfileEditActivity");
+				Intent i = new Intent(this, typeof(ProfileEditActivity));
+				i.SetFlags(ActivityFlags.ReorderToFront);
+				StartActivity(i);
+			}
+			else if (!ListActivity.initialized) //When opening app, Android sometimes resumes an Activity while the static variables are cleared out, resulting in error
 			{
 				c.LogActivity(LocalClassName.Split(".")[1] + " Not initialized");
-
-				c.ReportErrorSilent("Initialization error");
 				
+				c.ReportErrorSilent("Initialization error");
+
 				Intent i = new Intent(this, typeof(ListActivity)); //current activity has to go through OnResume, therefore we cannot handle initialization errors in OnCreate
 				i.SetFlags(ActivityFlags.ReorderToFront); //ListActivity must be recreated.
 				StartActivity(i);

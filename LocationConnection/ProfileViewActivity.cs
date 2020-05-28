@@ -119,9 +119,8 @@ namespace LocationConnection
         {
 			try {
 				base.OnCreate(savedInstanceState);
-				if (!ListActivity.initialized) { return; }
 
-				if (Settings.DisplaySize == 1)
+				if (Settings.DisplaySize == 1 || Settings.DisplaySize is null)
 				{
 					SetContentView(Resource.Layout.activity_profileview_normal);
 					icLike = Resource.Drawable.ic_like_normal;

@@ -78,10 +78,16 @@ namespace LocationConnection
 
 
 
-				if (!ListActivity.initialized) { //Huawei Y6 and Honor 20 Pro, after selecting image. OnCreate is called, with static variables from other activities being cleared out.
+				if (!ListActivity.initialized) { //Huawei Y6 after selecting image. OnCreate is called, with static variables from other activities being cleared out.
+					//Honor 20 Pro does not call OnCreate, but will call ListActvity after onResume ends anyway. ProfileEditActivity will call ProfileViewActivity, which is gets the Not initialized error, and be therefore redirected to ListActivity.
+					c.LogActivity("RegisterActivity not initialized, restoring");
 					ListActivity.initialized = true;
 					GetScreenMetrics(true);
 					c.LoadSettings(false);
+					if (!(savedInstanceState is null))
+					{
+						imageEditorFrameBorderWidth = savedInstanceState.GetInt("imageEditorFrameBorderWidth");
+					}
 				}
 
 				if (Settings.DisplaySize == 1)
@@ -187,9 +193,12 @@ namespace LocationConnection
 			{
 				base.OnResume();
 
+				if (!ListActivity.initialized) { return; }
+
 				GetScreenMetrics(false);
 				ImagesUploaded.SetTileSize();
 				MainLayout.RequestFocus();
+				Images.Enabled = true;
 
 				if (!(ListActivity.listProfiles is null))
 				{
@@ -302,6 +311,13 @@ namespace LocationConnection
 			{
 				SaveRegData();
 			}
+		}
+
+		protected override void OnSaveInstanceState(Bundle outState) //called after OnPause
+		{
+			base.OnSaveInstanceState(outState);
+
+			outState.PutInt("imageEditorFrameBorderWidth", imageEditorFrameBorderWidth);
 		}
 
 		public override void SaveRegData()

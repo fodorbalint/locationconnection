@@ -44,9 +44,8 @@ namespace LocationConnection
 		{
 			try { 
 				base.OnCreate(savedInstanceState);
-				if (!ListActivity.initialized) { return; }
 
-				if (Settings.DisplaySize == 1)
+				if (Settings.DisplaySize == 1 || Settings.DisplaySize is null)
 				{
 					SetContentView(Resource.Layout.activity_location_normal);
 					icMapmarker = Resource.Drawable.ic_mapmarker_normal;
