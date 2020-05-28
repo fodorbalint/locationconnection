@@ -46,8 +46,9 @@ namespace LocationConnection
 
 
 				//Test reset
-
-				/*savedInstanceState = new Bundle();
+				/*
+				ListActivity.initialized = false;
+				savedInstanceState = new Bundle();
 				savedInstanceState.PutString("Session", c.SerializeSession());
 
 				ListActivity.initialized = false;
@@ -56,7 +57,8 @@ namespace LocationConnection
 				foreach (FieldInfo field in fieldInfo)
 				{
 					field.SetValue(null, null);
-				}*/
+				}
+				*/
 
 
 

@@ -913,6 +913,10 @@ namespace LocationConnection
 				{
 					str += field.Name + ":" + string.Join("|",(string[])field.GetValue(null)) + "\n";
 				}
+				else if (field.Name == "Description")
+				{
+					str += field.Name + ":" + field.GetValue(null).ToString().Replace("\n", "[newline]") + "\n";
+				}
 				else
 				{
 					str += field.Name + ":" + field.GetValue(null) + "\n";
@@ -943,9 +947,13 @@ namespace LocationConnection
 				{
 					safeValue = value.Split("|");
 				}
+				else if (key == "Description")
+				{
+					safeValue = value.Replace("[newline]", "\n");
+				}
 				else
 				{
-					safeValue = ((string)value == "") ? null : Convert.ChangeType(value, type1, CultureInfo.InvariantCulture);
+					safeValue = (value == "") ? null : Convert.ChangeType(value, type1, CultureInfo.InvariantCulture);
 				}
 				fieldInfo.SetValue(null, safeValue);
 			}

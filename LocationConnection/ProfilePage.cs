@@ -133,8 +133,10 @@ namespace LocationConnection
 
 		protected async override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
 		{
-			base.OnActivityResult(requestCode, resultCode, data); 
-			
+			base.OnActivityResult(requestCode, resultCode, data);
+
+			c.CW("OnActivityResult " + resultCode);
+			Images.Enabled = true;
 			try
 			{
 				if (requestCode == 1 && resultCode == Result.Ok)

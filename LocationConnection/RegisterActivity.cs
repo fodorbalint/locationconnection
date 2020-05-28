@@ -203,8 +203,7 @@ namespace LocationConnection
 
 				if (File.Exists(regSaveFile))
 				{
-					string content = File.ReadAllText(regSaveFile);
-					string[] arr = content.Split(";");
+					string[] arr = File.ReadAllLines(regSaveFile);
 					Sex.SetSelection(int.Parse(arr[0]));
 					Email.Text = arr[1];
 					Password.Text = arr[2];
@@ -249,7 +248,7 @@ namespace LocationConnection
 						rc.StartAnim();
 					}
 
-					Description.Text = arr[7];
+					Description.Text = arr[7].Replace("[newline]", "\n"); ;
 
 					UseLocationSwitch.Checked = bool.Parse(arr[8]);
 					rc.EnableLocationSwitches(UseLocationSwitch.Checked);
@@ -307,10 +306,10 @@ namespace LocationConnection
 
 		public override void SaveRegData()
 		{
-			File.WriteAllText(regSaveFile, Sex.SelectedItemId + ";" + Email.Text.Trim() + ";" + Password.Text.Trim() + ";" + ConfirmPassword.Text.Trim()
-					+ ";" + Username.Text.Trim() + ";" + Name.Text.Trim()
-					+ ";" + string.Join("|", uploadedImages) + ";" + Description.Text.Trim()
-					+ ";" + UseLocationSwitch.Checked + ";" + rc.GetLocationShareLevel() + ";" + rc.GetDistanceShareLevel());
+			File.WriteAllText(regSaveFile, Sex.SelectedItemId + "\n" + Email.Text.Trim() + "\n" + Password.Text.Trim() + "\n" + ConfirmPassword.Text.Trim()
+					+ "\n" + Username.Text.Trim() + "\n" + Name.Text.Trim()
+					+ "\n" + string.Join("|", uploadedImages) + "\n" + Description.Text.Trim().Replace("\n", "[newline]")
+					+ "\n" + UseLocationSwitch.Checked + "\n" + rc.GetLocationShareLevel() + "\n" + rc.GetDistanceShareLevel());
 		}
 
 		private void ResetForm()
