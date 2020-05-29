@@ -15,7 +15,7 @@ Bug fixes
 - In some situations the back button on the profile page covers the name and the username.
 - In a certain situation an empty space appears in place of the distance filters.
 
-1.3 - 15. May 2020
+1.3 - 15 May 2020
 
 An image editor was created for cropping pictures before uploading, and a tutorial added to the help center.
 
@@ -28,7 +28,7 @@ Bug fixes:
 - When stepping back from profile edit page with the keyboard open with location being turned off, introduction text does not align to the bottom.
 - On a profile page, scrolling the pictures by dragging them does not immediately update the status indicator circles.
 
-1.2 - 7. April 2020
+1.2 - 7 April 2020
 
 Block/report feature have been added.
 
@@ -48,14 +48,14 @@ Furthermore, the following bugs have been fixed:
 - It is possible to delete uploaded pictures one after another too fast, which results incorrect view.
 - When switching on location, map does not appear upon returning to your profile page.
 
-1.1 - 31. December 2019
+1.1 - 31 December 2019
 
 Performance impromevents (Map does not need to be set every time)
 Bug fixed: Location is visible from opening profile from chat one, even though location sharing is not on with matches/friends.
 Stopping real-time location updates on logout.
 Small layout
 
-1.0 - 16. December 2019
+1.0 - 16 December 2019
 
 Character transmitting problems fixed, which affected using symbols like & # + in all text fields
 Fixed-size marker added on the location history map.
