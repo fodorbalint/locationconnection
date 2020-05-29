@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Location Connection</string>
 	<string name="app_name_short">Connection</string>
-    <string name="versionInfo">Version: 1.4 - 29 May 2020\n\nCreated by Balint Fodor\n\nContact: fodorbalint@gmail.com\nlocationconnection.me\n\nPrivacy policy:\nhttps://locationconnection.me/?page=legal#privacy\n\nSource code:\nhttps://github.com/fodorbalint?tab=repositories</string>
+    <string name="versionInfo">Version: 1.4 - 29 May 2020\n\nCreated by Balint Fodor\n\nContact: fodorbalint@gmail.com\n\nWebsite: locationconnection.me\n\nPrivacy policy:\nlocationconnection.me/?page=legal#privacy\n\nSource code:\ngithub.com/fodorbalint?tab=repositories</string>
 
 	<!-- General -->
 
@@ -104,6 +104,9 @@
 	<string name="ImagesUploading">Wait until the picture finished uploading.</string>
 	<string name="ImagesDeleting">Wait until picture deletion is finished.</string>
 	<string name="UploadImagePathNotFound">File cannot be accessed.\n- If it is from a cloud service (such as Google Photos or OneDrive), save it first to your local file system.\n- Select photo from Images or Gallery.</string>
+	<string name="TooLargeBitmap">The image is too large to draw: [width] x [height] px.\nReduce the resolution, or crop the image to square to upload it directly.</string>
+	<string name="OtherBitmapError">The image cannot be displayed: [error]\nCrop the image to sqare to upload it directly.</string>
+	<string name="CropImageError">Image cropping failed:</string>
 	<string name="ImagesProgressText">Uploading... (This may take up to a minute.)</string>
     <string name="ImagesProgressTextPercent">Uploading:</string>    
     <string name="ImagesRearrange">Press and hold an image to rearrange.</string>
@@ -257,9 +260,9 @@
 		<item>Friends</item>
 		<item>Matches</item>
 		<item>Liked</item>
-		<item>Liked by</item>
+		<item>Liked you</item>
 		<item>Hid</item>
-		<item>Hid by</item>
+		<item>Hid you</item>
 	</string-array>
 	<string-array name="ListTypeEntries_values" translatable="false">
 		<item>public</item>

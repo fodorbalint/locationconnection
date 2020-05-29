@@ -90,28 +90,13 @@ namespace LocationConnection
 
 			c.LogActivity(LocalClassName.Split(".")[1] + " OnResume selectedFileStr " + ProfilePage.selectedFileStr + " Session.ID " + Session.ID);
 
-			if ((this is ListActivity || this is MainActivity) && !c.IsLoggedIn() && !string.IsNullOrEmpty(ProfilePage.selectedFileStr)) //Huawei Honor 20 Pro, being redirected from RegisterActivity, but all static variables are cleared out, so this is never called. RegisterActivity's onPause was never called either.
-			{
-				c.LogActivity("Restarting RegisterActivity");
-				Intent i = new Intent(this, typeof(RegisterActivity));
-				i.SetFlags(ActivityFlags.ReorderToFront);
-				StartActivity(i);
-			}
-			else if ((this is ProfileViewActivity) && c.IsLoggedIn() && !string.IsNullOrEmpty(ProfilePage.selectedFileStr)) //Huawei Honor 20 Pro, being redirected from ProfileEdit to ProfileView
-			{
-				c.LogActivity("Restarting ProfileEditActivity");
-				Intent i = new Intent(this, typeof(ProfileEditActivity));
-				i.SetFlags(ActivityFlags.ReorderToFront);
-				StartActivity(i);
-			}
-			else if (!ListActivity.initialized) //When opening app, Android sometimes resumes an Activity while the static variables are cleared out, resulting in error
+			if (!ListActivity.initialized) //When opening app, Android sometimes resumes an Activity while the static variables are cleared out, resulting in error
 			{
 				c.LogActivity(LocalClassName.Split(".")[1] + " Not initialized");
 				
 				c.ReportErrorSilent("Initialization error");
 
 				Intent i = new Intent(this, typeof(ListActivity)); //current activity has to go through OnResume, therefore we cannot handle initialization errors in OnCreate
-				i.SetFlags(ActivityFlags.ReorderToFront); //ListActivity must be recreated.
 				StartActivity(i);
 			}
 

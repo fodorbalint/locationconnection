@@ -216,6 +216,18 @@ namespace LocationConnection
 			}
 			catch (Exception ex)
 			{
+				context.rc.ImageEditorCancel_Click(null, null);
+
+				// Canvas: trying to draw too large(127844352bytes) bitmap.
+				if (ex.Message.IndexOf("trying to draw too large") != -1)
+				{
+					context.c.ErrorAlert(context.res.GetString(Resource.String.TooLargeBitmap).Replace("[width]", bm.Width.ToString()).Replace("[height]", bm.Height.ToString()));
+				}
+				else
+				{
+					context.c.ErrorAlert(context.res.GetString(Resource.String.OtherBitmapError).Replace("[error]", ex.Message));
+				}
+
 				context.c.ReportErrorSilent("OnDraw error " + ex.Message + " " + ex.StackTrace);
 			}
 		}

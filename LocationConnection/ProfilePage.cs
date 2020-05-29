@@ -296,7 +296,7 @@ namespace LocationConnection
 
 		public async void OnResumeEnd()
 		{
-			c.LogActivity("OnResumeEnd uploadedImages: " + uploadedImages);
+			c.LogActivity("OnResumeEnd uploadedImages " + uploadedImages);
 
 			if (uploadedImages.IndexOf(selectedImageName) != -1)
 			{
@@ -305,7 +305,14 @@ namespace LocationConnection
 			}
 
 			ExifInterface exif = new ExifInterface(selectedFileStr);
-			int orientation = exif.GetAttributeInt(ExifInterface.TagOrientation, (int)Android.Media.Orientation.Undefined);
+
+			c.LogActivity("OnResumeEnd exif " + exif);
+
+			int orientation = 0;
+			if (!(exif is null))
+			{
+				orientation = exif.GetAttributeInt(ExifInterface.TagOrientation, (int)Android.Media.Orientation.Undefined);
+			}
 
 			bm = BitmapFactory.DecodeFile(selectedFileStr);
 

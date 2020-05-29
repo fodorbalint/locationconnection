@@ -917,11 +917,18 @@ namespace LocationConnection
 				{
 					str += field.Name + ":" + field.GetValue(null).ToString().Replace("\n", "[newline]") + "\n";
 				}
+				else if (field.Name == "Latitude" || field.Name == "Longitude" || field.Name == "OtherLatitude" || field.Name == "OtherLongitude")
+				{
+					str += field.Name + ":" + ((double)field.GetValue(null)).ToString(CultureInfo.InvariantCulture) + "\n";
+				}
+				else if (field.Name == "ResponseRate")
+				{
+					str += field.Name + ":" + ((float)field.GetValue(null)).ToString(CultureInfo.InvariantCulture) + "\n";
+				}
 				else
 				{
 					str += field.Name + ":" + field.GetValue(null) + "\n";
 				}
-				
 			}
 			return str;
 		}
