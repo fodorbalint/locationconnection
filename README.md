@@ -1,5 +1,4 @@
 # Changelog - Location Connection Android
-
 1.4 - 28 May 2020
 
 Bug fixes
