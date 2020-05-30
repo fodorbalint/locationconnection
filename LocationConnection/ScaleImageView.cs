@@ -57,134 +57,141 @@ namespace LocationConnection
 		//out of frame image is allowed to come closer. Image in frame is not allowed to go out, only by pinching action.
 		public override bool OnTouchEvent(MotionEvent e)
 		{
-			detector.OnTouchEvent(e);
-			
-			if (e.PointerCount > 1)
+			try
 			{
-				moveAllowed = false;
-			}
+				detector.OnTouchEvent(e);
 
-			switch (e.Action)
-			{
-				case MotionEventActions.Down:
+				if (e.PointerCount > 1)
+				{
+					moveAllowed = false;
+				}
 
-					prevTouchX = touchStartX = e.GetX();
-					prevTouchY = touchStartY = e.GetY();
-					startCenterX = xDist + Width / 2;
-					startCenterY = yDist + Height / 2;
+				switch (e.Action)
+				{
+					case MotionEventActions.Down:
 
-					outOfFrameY = IsOutOfFrameY();
-					outOfFrameX = IsOutOfFrameX();
+						prevTouchX = touchStartX = e.GetX();
+						prevTouchY = touchStartY = e.GetY();
+						startCenterX = xDist + Width / 2;
+						startCenterY = yDist + Height / 2;
 
-					moveAllowed = true;
+						outOfFrameY = IsOutOfFrameY();
+						outOfFrameX = IsOutOfFrameX();
 
-					break;
-				case MotionEventActions.Move:
-					if (!moveAllowed)
-					{
-						return true;
-					}
+						moveAllowed = true;
 
-					float evX = e.GetX();// + currentCenterX - startCenterX; //coordinates relative to the image's original position
-					float evY = e.GetY();// + currentCenterY - startCenterY;
-
-					float newxDist = startCenterX + (evX - touchStartX) / scaleFactor - Width / 2;
-					float newyDist = startCenterY + (evY - touchStartY) / scaleFactor - Height / 2;
-
-					//context.c.CW("ImageEditor_Touch Move " + newxDist + " " + startCenterX + " " + touchStartX + " " + );
-
-					if (outOfFrameY && (yDist <= 0 && newyDist < yDist || yDist > 0 && newyDist > yDist)) //out of frame, new distance is greater than previous
-					{
-						touchStartY += evY - prevTouchY;
-					}
-					else if (outOfFrameY) //new distance is smaller
-					{
-						if (yDist <= 0 && newyDist > (intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2) //making sure not to go out of frame the opposite end. (when the image is scaled back to 1:1, and moved fast, it can happen)
+						break;
+					case MotionEventActions.Move:
+						if (!moveAllowed)
 						{
-							yDist = (intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2;
-							touchStartY += newyDist - (intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2; //moving start touch position, so an opposite move will react immediately
+							return true;
 						}
-						else if (yDist > 0 && newyDist < -(intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2)
+
+						float evX = e.GetX();// + currentCenterX - startCenterX; //coordinates relative to the image's original position
+						float evY = e.GetY();// + currentCenterY - startCenterY;
+
+						float newxDist = startCenterX + (evX - touchStartX) / scaleFactor - Width / 2;
+						float newyDist = startCenterY + (evY - touchStartY) / scaleFactor - Height / 2;
+
+						//context.c.CW("ImageEditor_Touch Move " + newxDist + " " + startCenterX + " " + touchStartX + " " + );
+
+						if (outOfFrameY && (yDist <= 0 && newyDist < yDist || yDist > 0 && newyDist > yDist)) //out of frame, new distance is greater than previous
 						{
-							yDist = -(intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2;
-							touchStartY += newyDist - -(intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2;
+							touchStartY += evY - prevTouchY;
+						}
+						else if (outOfFrameY) //new distance is smaller
+						{
+							if (yDist <= 0 && newyDist > (intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2) //making sure not to go out of frame the opposite end. (when the image is scaled back to 1:1, and moved fast, it can happen)
+							{
+								yDist = (intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2;
+								touchStartY += newyDist - (intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2; //moving start touch position, so an opposite move will react immediately
+							}
+							else if (yDist > 0 && newyDist < -(intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2)
+							{
+								yDist = -(intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2;
+								touchStartY += newyDist - -(intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2;
+							}
+							else
+							{
+								yDist = newyDist;
+							}
+
+							outOfFrameY = IsOutOfFrameY();
 						}
 						else
 						{
 							yDist = newyDist;
+
+							if (yDist <= 0 && (-yDist + context.ImageEditorFrameBorder.Height / scaleFactor / 2) > intrinsicHeight / 2) //going out of frame too high
+							{
+
+								yDist = -(intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2;
+								touchStartY += newyDist - -(intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2;
+							}
+							else if (yDist > 0 && (yDist + context.ImageEditorFrameBorder.Height / scaleFactor / 2) > intrinsicHeight / 2) //going out of frame too low
+							{
+								yDist = (intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2;
+								touchStartY += newyDist - (intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2;
+							}
+							// else in frame 
 						}
 
-						outOfFrameY = IsOutOfFrameY();
-					}
-					else
-					{
-						yDist = newyDist;
 
-						if (yDist <= 0 && (-yDist + context.ImageEditorFrameBorder.Height / scaleFactor / 2) > intrinsicHeight / 2) //going out of frame too high
+						if (outOfFrameX && (xDist <= 0 && newxDist < xDist || xDist > 0 && newxDist > xDist)) //out of frame, new is distance greater than previous
 						{
-
-							yDist = -(intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2;
-							touchStartY += newyDist - -(intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2;
+							touchStartX += evX - prevTouchX;
 						}
-						else if (yDist > 0 && (yDist + context.ImageEditorFrameBorder.Height / scaleFactor / 2) > intrinsicHeight / 2) //going out of frame too low
+						else if (outOfFrameX)
 						{
-							yDist = (intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2;
-							touchStartY += newyDist - (intrinsicHeight - context.ImageEditorFrameBorder.Height / scaleFactor) / 2;
-						}
-						// else in frame 
-					}
+							if (xDist <= 0 && newxDist > (intrinsicWidth - context.ImageEditorFrameBorder.Width / scaleFactor) / 2) //making sure not to go out of frame the opposite end. (when the image is scaled back to 1:1, and moved fast, it can happen)
+							{
+								xDist = (intrinsicWidth - context.ImageEditorFrameBorder.Width / scaleFactor) / 2;
+								touchStartX += newxDist - (intrinsicWidth - context.ImageEditorFrameBorder.Width / scaleFactor) / 2; //moving start touch position, so an opposite move will react immediately
+							}
+							else if (xDist > 0 && newxDist < -(intrinsicWidth - context.ImageEditorFrameBorder.Width / scaleFactor) / 2)
+							{
+								xDist = -(intrinsicWidth - context.ImageEditorFrameBorder.Width / scaleFactor) / 2;
+								touchStartX += newxDist - -(intrinsicWidth - context.ImageEditorFrameBorder.Width / scaleFactor) / 2; //moving start touch position, so an opposite move will react immediately
+							}
+							else
+							{
+								xDist = newxDist;
+							}
 
-
-					if (outOfFrameX && (xDist <= 0 && newxDist < xDist || xDist > 0 && newxDist > xDist)) //out of frame, new is distance greater than previous
-					{
-						touchStartX += evX - prevTouchX;
-					}
-					else if (outOfFrameX)
-					{
-						if (xDist <= 0 && newxDist > (intrinsicWidth - context.ImageEditorFrameBorder.Width / scaleFactor) / 2) //making sure not to go out of frame the opposite end. (when the image is scaled back to 1:1, and moved fast, it can happen)
-						{
-							xDist = (intrinsicWidth - context.ImageEditorFrameBorder.Width / scaleFactor) / 2;
-							touchStartX += newxDist - (intrinsicWidth - context.ImageEditorFrameBorder.Width / scaleFactor) / 2; //moving start touch position, so an opposite move will react immediately
-						}
-						else if (xDist > 0 && newxDist < -(intrinsicWidth - context.ImageEditorFrameBorder.Width / scaleFactor) / 2)
-						{
-							xDist = -(intrinsicWidth - context.ImageEditorFrameBorder.Width / scaleFactor) / 2;
-							touchStartX += newxDist - -(intrinsicWidth - context.ImageEditorFrameBorder.Width / scaleFactor) / 2; //moving start touch position, so an opposite move will react immediately
+							outOfFrameX = IsOutOfFrameX();
 						}
 						else
 						{
 							xDist = newxDist;
+
+							if (xDist <= 0 && (-xDist + context.ImageEditorFrameBorder.Width / scaleFactor / 2) > intrinsicWidth / 2) //going out of frame too left
+							{
+								xDist = -(intrinsicWidth - context.ImageEditorFrameBorder.Width / scaleFactor) / 2;
+								touchStartX += newxDist - -(intrinsicWidth - context.ImageEditorFrameBorder.Width / scaleFactor) / 2; //moving start touch position, so an opposite move will react immediately
+							}
+							else if (xDist > 0 && (xDist + context.ImageEditorFrameBorder.Width / scaleFactor / 2) > intrinsicWidth / 2) //going out of frame too right
+							{
+								xDist = (intrinsicWidth - context.ImageEditorFrameBorder.Width / scaleFactor) / 2;
+								touchStartX += newxDist - (intrinsicWidth - context.ImageEditorFrameBorder.Width / scaleFactor) / 2;
+							}
+							// else in frame
 						}
 
-						outOfFrameX = IsOutOfFrameX();
-					}
-					else
-					{
-						xDist = newxDist;
+						prevTouchX = evX;
+						prevTouchY = evY;
 
-						if (xDist <= 0 && (-xDist + context.ImageEditorFrameBorder.Width / scaleFactor / 2) > intrinsicWidth / 2) //going out of frame too left
-						{
-							xDist = -(intrinsicWidth - context.ImageEditorFrameBorder.Width / scaleFactor) / 2;
-							touchStartX += newxDist - -(intrinsicWidth - context.ImageEditorFrameBorder.Width / scaleFactor) / 2; //moving start touch position, so an opposite move will react immediately
-						}
-						else if (xDist > 0 && (xDist + context.ImageEditorFrameBorder.Width / scaleFactor / 2) > intrinsicWidth / 2) //going out of frame too right
-						{
-							xDist = (intrinsicWidth - context.ImageEditorFrameBorder.Width / scaleFactor) / 2;
-							touchStartX += newxDist - (intrinsicWidth - context.ImageEditorFrameBorder.Width / scaleFactor) / 2;
-						}
-						// else in frame
-					}
+						//context.c.CW("ImageEditor_Touch Move " + touchStartX + " " + touchStartY + " " + xDist + " " + yDist + " " + outOfFrameX + " " + newxDist);
 
-					prevTouchX = evX;
-					prevTouchY = evY;
-
-					//context.c.CW("ImageEditor_Touch Move " + touchStartX + " " + touchStartY + " " + xDist + " " + yDist + " " + outOfFrameX + " " + newxDist);
-
-					break;
+						break;
+				}
+				Invalidate();
 			}
-			Invalidate();
+			catch (Exception ex)
+			{
+				context.c.ReportErrorSilent("OnTouchEvent error  action " + e.Action + " x " + e.GetX() + " y " + e.GetY() + " count " + e.PointerCount + " --- " + ex.Message + " " + ex.StackTrace);
+			}
+			
 			return true;
-			//return base.OnTouchEvent(e);
 		}
 		
 		protected override void OnDraw(Canvas canvas)
@@ -193,7 +200,7 @@ namespace LocationConnection
 			
 			try
 			{
-				context.c.LogActivity("OnDraw canvas + " + canvas + "scaleFactor " + scaleFactor + " Width " + Width + " Height " + Height + " bmWidth " + bm.Width + " bmHeight " + bm.Height + " intrinsicWidth " + intrinsicWidth + " intrinsicHeight " + intrinsicHeight);
+				//context.c.LogActivity("OnDraw canvas + " + canvas + "scaleFactor " + scaleFactor + " Width " + Width + " Height " + Height + " bmWidth " + bm.Width + " bmHeight " + bm.Height + " intrinsicWidth " + intrinsicWidth + " intrinsicHeight " + intrinsicHeight);
 
 				canvas.Save();
 				canvas.Translate(-(scaleFactor - 1) * canvas.Width / 2, -(scaleFactor - 1) * canvas.Height / 2);

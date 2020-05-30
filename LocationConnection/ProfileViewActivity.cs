@@ -1295,6 +1295,7 @@ namespace LocationConnection
 			}
 			else
 			{
+				#pragma warning disable CS0162
 				string url;
 				if (Constants.isTestDB)
 				{
@@ -1304,6 +1305,7 @@ namespace LocationConnection
 				{
 					url = Constants.HostName + Constants.UploadFolder + "/" + folder + "/" + Constants.LargeImageSize + "/" + picture;
 				}
+				#pragma warning restore CS0162
 
 				//c.LogActivity("LoadPicture start ID " + folder + " index " + index );
 				//c.CW("LoadPicture start index " + index + " ID " + folder);

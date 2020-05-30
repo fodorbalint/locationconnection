@@ -14,6 +14,8 @@ namespace LocationConnection
 {
 	class Session
 	{
+		#pragma warning disable CS0649
+
 		//------ login data
 		public static string SessionID;
 
@@ -77,5 +79,7 @@ namespace LocationConnection
 		public static byte LastSearchType;
 		public static string SnackMessage;
 		public static MatchItem CurrentMatch; //not necessarily a match
+
+		#pragma warning restore CS0649
 	}
 }

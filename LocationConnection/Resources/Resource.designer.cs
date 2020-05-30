@@ -2084,83 +2084,83 @@ namespace LocationConnection
 		public partial class Color
 		{
 			
-			// aapt resource value: 0x7F060020
-			public const int abc_background_cache_hint_selector_material_dark = 2131099680;
-			
 			// aapt resource value: 0x7F060021
-			public const int abc_background_cache_hint_selector_material_light = 2131099681;
+			public const int abc_background_cache_hint_selector_material_dark = 2131099681;
 			
 			// aapt resource value: 0x7F060022
-			public const int abc_btn_colored_borderless_text_material = 2131099682;
+			public const int abc_background_cache_hint_selector_material_light = 2131099682;
 			
 			// aapt resource value: 0x7F060023
-			public const int abc_btn_colored_text_material = 2131099683;
+			public const int abc_btn_colored_borderless_text_material = 2131099683;
 			
 			// aapt resource value: 0x7F060024
-			public const int abc_color_highlight_material = 2131099684;
+			public const int abc_btn_colored_text_material = 2131099684;
 			
 			// aapt resource value: 0x7F060025
-			public const int abc_hint_foreground_material_dark = 2131099685;
+			public const int abc_color_highlight_material = 2131099685;
 			
 			// aapt resource value: 0x7F060026
-			public const int abc_hint_foreground_material_light = 2131099686;
+			public const int abc_hint_foreground_material_dark = 2131099686;
 			
 			// aapt resource value: 0x7F060027
-			public const int abc_input_method_navigation_guard = 2131099687;
+			public const int abc_hint_foreground_material_light = 2131099687;
 			
 			// aapt resource value: 0x7F060028
-			public const int abc_primary_text_disable_only_material_dark = 2131099688;
+			public const int abc_input_method_navigation_guard = 2131099688;
 			
 			// aapt resource value: 0x7F060029
-			public const int abc_primary_text_disable_only_material_light = 2131099689;
+			public const int abc_primary_text_disable_only_material_dark = 2131099689;
 			
 			// aapt resource value: 0x7F06002A
-			public const int abc_primary_text_material_dark = 2131099690;
+			public const int abc_primary_text_disable_only_material_light = 2131099690;
 			
 			// aapt resource value: 0x7F06002B
-			public const int abc_primary_text_material_light = 2131099691;
+			public const int abc_primary_text_material_dark = 2131099691;
 			
 			// aapt resource value: 0x7F06002C
-			public const int abc_search_url_text = 2131099692;
+			public const int abc_primary_text_material_light = 2131099692;
 			
 			// aapt resource value: 0x7F06002D
-			public const int abc_search_url_text_normal = 2131099693;
+			public const int abc_search_url_text = 2131099693;
 			
 			// aapt resource value: 0x7F06002E
-			public const int abc_search_url_text_pressed = 2131099694;
+			public const int abc_search_url_text_normal = 2131099694;
 			
 			// aapt resource value: 0x7F06002F
-			public const int abc_search_url_text_selected = 2131099695;
+			public const int abc_search_url_text_pressed = 2131099695;
 			
 			// aapt resource value: 0x7F060030
-			public const int abc_secondary_text_material_dark = 2131099696;
+			public const int abc_search_url_text_selected = 2131099696;
 			
 			// aapt resource value: 0x7F060031
-			public const int abc_secondary_text_material_light = 2131099697;
+			public const int abc_secondary_text_material_dark = 2131099697;
 			
 			// aapt resource value: 0x7F060032
-			public const int abc_tint_btn_checkable = 2131099698;
+			public const int abc_secondary_text_material_light = 2131099698;
 			
 			// aapt resource value: 0x7F060033
-			public const int abc_tint_default = 2131099699;
+			public const int abc_tint_btn_checkable = 2131099699;
 			
 			// aapt resource value: 0x7F060034
-			public const int abc_tint_edittext = 2131099700;
+			public const int abc_tint_default = 2131099700;
 			
 			// aapt resource value: 0x7F060035
-			public const int abc_tint_seek_thumb = 2131099701;
+			public const int abc_tint_edittext = 2131099701;
 			
 			// aapt resource value: 0x7F060036
-			public const int abc_tint_spinner = 2131099702;
+			public const int abc_tint_seek_thumb = 2131099702;
 			
 			// aapt resource value: 0x7F060037
-			public const int abc_tint_switch_track = 2131099703;
+			public const int abc_tint_spinner = 2131099703;
 			
 			// aapt resource value: 0x7F060038
-			public const int accent_material_dark = 2131099704;
+			public const int abc_tint_switch_track = 2131099704;
 			
 			// aapt resource value: 0x7F060039
-			public const int accent_material_light = 2131099705;
+			public const int accent_material_dark = 2131099705;
+			
+			// aapt resource value: 0x7F06003A
+			public const int accent_material_light = 2131099706;
 			
 			// aapt resource value: 0x7F060000
 			public const int BackgroundLocation = 2131099648;
@@ -2168,47 +2168,47 @@ namespace LocationConnection
 			// aapt resource value: 0x7F060001
 			public const int BackgroundLocationDark = 2131099649;
 			
-			// aapt resource value: 0x7F06003A
-			public const int background_floating_material_dark = 2131099706;
-			
 			// aapt resource value: 0x7F06003B
-			public const int background_floating_material_light = 2131099707;
+			public const int background_floating_material_dark = 2131099707;
 			
 			// aapt resource value: 0x7F06003C
-			public const int background_material_dark = 2131099708;
+			public const int background_floating_material_light = 2131099708;
 			
 			// aapt resource value: 0x7F06003D
-			public const int background_material_light = 2131099709;
+			public const int background_material_dark = 2131099709;
 			
 			// aapt resource value: 0x7F06003E
-			public const int bright_foreground_disabled_material_dark = 2131099710;
+			public const int background_material_light = 2131099710;
 			
 			// aapt resource value: 0x7F06003F
-			public const int bright_foreground_disabled_material_light = 2131099711;
+			public const int bright_foreground_disabled_material_dark = 2131099711;
 			
 			// aapt resource value: 0x7F060040
-			public const int bright_foreground_inverse_material_dark = 2131099712;
+			public const int bright_foreground_disabled_material_light = 2131099712;
 			
 			// aapt resource value: 0x7F060041
-			public const int bright_foreground_inverse_material_light = 2131099713;
+			public const int bright_foreground_inverse_material_dark = 2131099713;
 			
 			// aapt resource value: 0x7F060042
-			public const int bright_foreground_material_dark = 2131099714;
+			public const int bright_foreground_inverse_material_light = 2131099714;
 			
 			// aapt resource value: 0x7F060043
-			public const int bright_foreground_material_light = 2131099715;
+			public const int bright_foreground_material_dark = 2131099715;
 			
 			// aapt resource value: 0x7F060044
-			public const int browser_actions_bg_grey = 2131099716;
+			public const int bright_foreground_material_light = 2131099716;
 			
 			// aapt resource value: 0x7F060045
-			public const int browser_actions_divider_color = 2131099717;
+			public const int browser_actions_bg_grey = 2131099717;
 			
 			// aapt resource value: 0x7F060046
-			public const int browser_actions_text_color = 2131099718;
+			public const int browser_actions_divider_color = 2131099718;
 			
 			// aapt resource value: 0x7F060047
-			public const int browser_actions_title_color = 2131099719;
+			public const int browser_actions_text_color = 2131099719;
+			
+			// aapt resource value: 0x7F060048
+			public const int browser_actions_title_color = 2131099720;
 			
 			// aapt resource value: 0x7F060002
 			public const int ButtonOnContent = 2131099650;
@@ -2216,23 +2216,23 @@ namespace LocationConnection
 			// aapt resource value: 0x7F060003
 			public const int ButtonOnWhite = 2131099651;
 			
-			// aapt resource value: 0x7F060048
-			public const int button_material_dark = 2131099720;
-			
 			// aapt resource value: 0x7F060049
-			public const int button_material_light = 2131099721;
+			public const int button_material_dark = 2131099721;
 			
 			// aapt resource value: 0x7F06004A
-			public const int cardview_dark_background = 2131099722;
+			public const int button_material_light = 2131099722;
 			
 			// aapt resource value: 0x7F06004B
-			public const int cardview_light_background = 2131099723;
+			public const int cardview_dark_background = 2131099723;
 			
 			// aapt resource value: 0x7F06004C
-			public const int cardview_shadow_end_color = 2131099724;
+			public const int cardview_light_background = 2131099724;
 			
 			// aapt resource value: 0x7F06004D
-			public const int cardview_shadow_start_color = 2131099725;
+			public const int cardview_shadow_end_color = 2131099725;
+			
+			// aapt resource value: 0x7F06004E
+			public const int cardview_shadow_start_color = 2131099726;
 			
 			// aapt resource value: 0x7F060004
 			public const int ChatHeader = 2131099652;
@@ -2252,14 +2252,14 @@ namespace LocationConnection
 			// aapt resource value: 0x7F060009
 			public const int ChatTargetDark = 2131099657;
 			
-			// aapt resource value: 0x7F06004E
-			public const int colorAccent = 2131099726;
+			// aapt resource value: 0x7F06000A
+			public const int ChatTimeText = 2131099658;
 			
 			// aapt resource value: 0x7F06004F
-			public const int colorAccentLight = 2131099727;
+			public const int colorAccent = 2131099727;
 			
 			// aapt resource value: 0x7F060050
-			public const int colorPrimary = 2131099728;
+			public const int colorAccentLight = 2131099728;
 			
 			// aapt resource value: 0x7F060051
 			public const int colorPrimaryDark = 2131099729;
@@ -2297,14 +2297,14 @@ namespace LocationConnection
 			// aapt resource value: 0x7F06005C
 			public const int common_google_signin_btn_tint = 2131099740;
 			
-			// aapt resource value: 0x7F06000A
-			public const int ContentBackground = 2131099658;
-			
 			// aapt resource value: 0x7F06000B
-			public const int ContentBackground90 = 2131099659;
+			public const int ContentBackground = 2131099659;
 			
 			// aapt resource value: 0x7F06000C
-			public const int ContentDarkBackground = 2131099660;
+			public const int ContentBackground90 = 2131099660;
+			
+			// aapt resource value: 0x7F06000D
+			public const int ContentDarkBackground = 2131099661;
 			
 			// aapt resource value: 0x7F06005D
 			public const int design_bottom_navigation_shadow_color = 2131099741;
@@ -2363,11 +2363,11 @@ namespace LocationConnection
 			// aapt resource value: 0x7F06006F
 			public const int error_color_material_light = 2131099759;
 			
-			// aapt resource value: 0x7F06000D
-			public const int ForegroundLocation = 2131099661;
-			
 			// aapt resource value: 0x7F06000E
-			public const int ForegroundLocationDark = 2131099662;
+			public const int ForegroundLocation = 2131099662;
+			
+			// aapt resource value: 0x7F06000F
+			public const int ForegroundLocationDark = 2131099663;
 			
 			// aapt resource value: 0x7F060070
 			public const int foreground_material_dark = 2131099760;
@@ -2375,14 +2375,14 @@ namespace LocationConnection
 			// aapt resource value: 0x7F060071
 			public const int foreground_material_light = 2131099761;
 			
-			// aapt resource value: 0x7F06000F
-			public const int ForgotButton = 2131099663;
-			
 			// aapt resource value: 0x7F060010
-			public const int GradientMax = 2131099664;
+			public const int ForgotButton = 2131099664;
 			
 			// aapt resource value: 0x7F060011
-			public const int Gray = 2131099665;
+			public const int GradientMax = 2131099665;
+			
+			// aapt resource value: 0x7F060012
+			public const int Gray = 2131099666;
 			
 			// aapt resource value: 0x7F060072
 			public const int highlighted_text_material_dark = 2131099762;
@@ -2390,41 +2390,41 @@ namespace LocationConnection
 			// aapt resource value: 0x7F060073
 			public const int highlighted_text_material_light = 2131099763;
 			
-			// aapt resource value: 0x7F060012
-			public const int IconBackgroundDark = 2131099666;
-			
 			// aapt resource value: 0x7F060013
-			public const int IconBackgroundLight = 2131099667;
+			public const int IconBackgroundDark = 2131099667;
+			
+			// aapt resource value: 0x7F060014
+			public const int IconBackgroundLight = 2131099668;
 			
 			// aapt resource value: 0x7F060074
 			public const int ic_launcher_background = 2131099764;
 			
-			// aapt resource value: 0x7F060014
-			public const int ListBackground = 2131099668;
-			
 			// aapt resource value: 0x7F060015
-			public const int ListButton = 2131099669;
+			public const int ListBackground = 2131099669;
 			
 			// aapt resource value: 0x7F060016
-			public const int LocationRipple = 2131099670;
+			public const int ListButton = 2131099670;
 			
 			// aapt resource value: 0x7F060017
-			public const int LoginButton = 2131099671;
+			public const int LocationRipple = 2131099671;
 			
 			// aapt resource value: 0x7F060018
-			public const int MainIconGray = 2131099672;
+			public const int LoginButton = 2131099672;
 			
 			// aapt resource value: 0x7F060019
-			public const int MainIconGreen = 2131099673;
+			public const int MainIconGray = 2131099673;
 			
 			// aapt resource value: 0x7F06001A
-			public const int MainIconGreenRipple = 2131099674;
+			public const int MainIconGreen = 2131099674;
 			
 			// aapt resource value: 0x7F06001B
-			public const int MapActiveButton = 2131099675;
+			public const int MainIconGreenRipple = 2131099675;
 			
 			// aapt resource value: 0x7F06001C
-			public const int MapPassiveButton = 2131099676;
+			public const int MapActiveButton = 2131099676;
+			
+			// aapt resource value: 0x7F06001D
+			public const int MapPassiveButton = 2131099677;
 			
 			// aapt resource value: 0x7F060075
 			public const int material_blue_grey_800 = 2131099765;
@@ -2573,14 +2573,14 @@ namespace LocationConnection
 			// aapt resource value: 0x7F0600A5
 			public const int primary_text_disabled_material_light = 2131099813;
 			
-			// aapt resource value: 0x7F06001D
-			public const int RegisterButton = 2131099677;
-			
 			// aapt resource value: 0x7F06001E
-			public const int RippleNext = 2131099678;
+			public const int RegisterButton = 2131099678;
 			
 			// aapt resource value: 0x7F06001F
-			public const int RipplePrev = 2131099679;
+			public const int RippleNext = 2131099679;
+			
+			// aapt resource value: 0x7F060020
+			public const int RipplePrev = 2131099680;
 			
 			// aapt resource value: 0x7F0600A6
 			public const int ripple_material_dark = 2131099814;
@@ -5996,16 +5996,10 @@ namespace LocationConnection
 			public const int ic_launcher = 2131623936;
 			
 			// aapt resource value: 0x7F0E0001
-			public const int ic_launcher_foreground = 2131623937;
+			public const int logo = 2131623937;
 			
 			// aapt resource value: 0x7F0E0002
-			public const int ic_launcher_round = 2131623938;
-			
-			// aapt resource value: 0x7F0E0003
-			public const int logo = 2131623939;
-			
-			// aapt resource value: 0x7F0E0004
-			public const int notification_icon = 2131623940;
+			public const int notification_icon = 2131623938;
 			
 			static Mipmap()
 			{

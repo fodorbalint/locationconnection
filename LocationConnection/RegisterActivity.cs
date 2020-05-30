@@ -257,7 +257,7 @@ namespace LocationConnection
 						rc.StartAnim();
 					}
 
-					Description.Text = arr[7].Replace("[newline]", "\n"); ;
+					Description.Text = arr[7].Replace("[newline]", "\n");
 
 					UseLocationSwitch.Checked = bool.Parse(arr[8]);
 					rc.EnableLocationSwitches(UseLocationSwitch.Checked);
@@ -275,14 +275,7 @@ namespace LocationConnection
 					if (responseString.Substring(0, 2) == "OK")
 					{
 						eulaLoaded = true;
-						if (Build.VERSION.SdkInt >= BuildVersionCodes.N)
-						{
-							EulaText.TextFormatted = Html.FromHtml(responseString.Substring(3), FromHtmlOptions.ModeCompact);
-						}
-						else
-						{
-							EulaText.TextFormatted = Html.FromHtml(responseString.Substring(3)); //.FromHtml("<h2>Title</h2><br><p>Description here</p>");
-						}
+						EulaText.TextFormatted = Html.FromHtml(responseString.Substring(3), FromHtmlOptions.ModeLegacy);
 					}
 					else
 					{
@@ -330,6 +323,11 @@ namespace LocationConnection
 
 		private void ResetForm()
 		{
+			if (File.Exists(regSaveFile))
+			{
+				File.Delete(regSaveFile);
+			}
+			
 			Sex.SetSelection(0);
 			Email.Text = "";
 			Password.Text = "";
@@ -596,10 +594,7 @@ namespace LocationConnection
 						File.Delete(regSessionFile);
 					}
 					regsessionid = "";
-					if (File.Exists(regSaveFile))
-					{
-						File.Delete(regSaveFile);
-					}
+					
 					ResetForm();
 				}
 				else

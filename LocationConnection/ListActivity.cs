@@ -1220,7 +1220,7 @@ namespace LocationConnection
 				res.GetString(Resource.String.DialogYes), res.GetString(Resource.String.DialogNo));
 						if (dialogResponse == res.GetString(Resource.String.DialogYes))
 						{
-							if (UpdateLocationSetting()) {
+							if (UpdateLocationSetting(true)) {
 								InitLocationUpdates();
 								await GetLastLocation();
 								MapViewSecond(); //location was not set or acquired message.
@@ -1267,7 +1267,7 @@ namespace LocationConnection
 							c.LogActivity("PM logged in granted map clicked, mapToSet " + mapToSet);
 						}
 						Session.LocationTime = null;
-						UpdateLocationSetting();
+						UpdateLocationSetting(true);
 					}
 					else
 					{
@@ -1295,9 +1295,12 @@ namespace LocationConnection
 				else
 				{
 					mapToSet = false;
-					Session.UseLocation = false;
 					SetDistanceSourceAddress();
 					c.Snack(Resource.String.LocationNotGranted); //in the dialog the user choose to turn on location, but now denied it. Message needs to be shown.
+					if (c.IsLoggedIn())
+					{
+						UpdateLocationSetting(false);
+					}
 				}
 				//activity will resume, we need to refresh the list.
 				Session.LastDataRefresh = null;
@@ -1308,16 +1311,16 @@ namespace LocationConnection
 			}
 		}
 
-		public bool UpdateLocationSetting()
+		public bool UpdateLocationSetting(bool useLocation)
 		{
-			string url = "action=profileedit&ID=" + Session.ID + "&SessionID=" + Session.SessionID + "&UseLocation=True";
+			string url = "action=profileedit&ID=" + Session.ID + "&SessionID=" + Session.SessionID + "&UseLocation=" + useLocation;
 			string responseString = c.MakeRequestSync(url);
 			if (responseString.Substring(0, 2) == "OK")
 			{
-				Session.UseLocation = true;
+				Session.UseLocation = useLocation;
 				//OnResume will be called which starts location updates and refreshing the list
 
-				if (distanceSourceCurrentClicked)
+				if (useLocation && distanceSourceCurrentClicked)
 				{
 					Session.LastDataRefresh = null;
 					distanceSourceCurrentClicked = false;
@@ -1700,13 +1703,15 @@ namespace LocationConnection
 				res.GetString(Resource.String.DialogYes), res.GetString(Resource.String.DialogNo));
 					if (dialogResponse == res.GetString(Resource.String.DialogYes))
 					{
-						UpdateLocationSetting();
-						InitLocationUpdates();
-						await GetLastLocation();
+						if (UpdateLocationSetting(true))
+						{
+							InitLocationUpdates();
+							await GetLastLocation();
 
-						Session.ResultsFrom = 1;
-						recenterMap = true;
-						await Task.Run(() => LoadList());
+							Session.ResultsFrom = 1;
+							recenterMap = true;
+							await Task.Run(() => LoadList());
+						}
 					}
 					else
 					{

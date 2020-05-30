@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#000000</color><!-- selected bottomnavigation item color -->
     <color name="colorPrimaryDark">#000000</color><!-- toolbar -->
     <color name="colorAccent">#2fac6e</color><!-- controls 43%, #44CC88 at 53% -->
     <color name="colorAccentLight">#53d091</color>	<!-- 57% -->
@@ -10,6 +9,7 @@
     <color name="ListBackground">#c0c0c0</color> <!-- 75% -->
     <color name="ButtonOnWhite">#cccccc</color> <!-- 80% -->
     <color name="ButtonOnContent">#c2c2c2</color> <!-- 76% -->
+	<color name="ChatTimeText">#606060</color>
     <color name="GradientMax">#50000000</color>
     <color name="LoginButton">#f6e2bb</color> <!-- 246, 226, 187 -->
     <color name="ForgotButton">#ffb3be</color>  <!-- 255, 179, 190 -->

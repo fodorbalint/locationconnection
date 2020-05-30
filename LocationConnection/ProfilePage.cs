@@ -65,7 +65,7 @@ namespace LocationConnection
 			}	
 		}
 
-		protected async override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
+		protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
 		{
 			base.OnActivityResult(requestCode, resultCode, data);
 

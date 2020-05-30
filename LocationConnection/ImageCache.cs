@@ -40,6 +40,7 @@ namespace LocationConnection
             }
             else
             {
+                #pragma warning disable CS0162
                 string url;
                 if (Constants.isTestDB)
                 {
@@ -49,6 +50,7 @@ namespace LocationConnection
                 {
                     url = Constants.HostName + Constants.UploadFolder + "/" + userID + "/" + Constants.SmallImageSize.ToString() + "/" + picture;
                 }
+                #pragma warning restore CS0162
 
                 byte[] bytes = null;
 
@@ -133,6 +135,7 @@ namespace LocationConnection
                         imageView.SetImageResource(Resource.Drawable.loadingimage);
                     });
 
+                    #pragma warning disable CS0162
                     string url;
                     if (!temp)
                     {
@@ -156,6 +159,7 @@ namespace LocationConnection
                             url = Constants.HostName + Constants.TempUploadFolder + "/" + userID + "/" + subFolder + "/" + picture;
                         }
                     }
+                    #pragma warning restore CS0162
 
                     lock (lockObj)
                     {

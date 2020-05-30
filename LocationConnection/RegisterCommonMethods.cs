@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,11 +28,6 @@ namespace LocationConnection
 	{
 		ProfilePage context;
 		private WebClient client;
-		float touchStartX, touchStartY;
-		float prevTouchX, prevTouchY;
-		float startCenterX, startCenterY;
-		float xDist, yDist;
-		bool outOfFrameX, outOfFrameY;
 		Snackbar snack;
 
 		public RegisterCommonMethods(ProfilePage context)
@@ -101,6 +96,12 @@ namespace LocationConnection
 
 		public void Images_Click(object sender, System.EventArgs e)
 		{
+			if (!(snack is null))
+			{
+				snack.Dismiss();
+				snack = null;
+			}
+			
 			if (context.uploadedImages.Count < Constants.MaxNumPictures)
 			{
 				if (!context.imagesUploading && !context.imagesDeleting)
@@ -146,7 +147,7 @@ namespace LocationConnection
 
 		public void SelectImage()
 		{
-			context.c.LogActivity("Opening file selector");
+			context.c.LogActivity("Opening file selector");	
 			context.Images.Enabled = false;
 			Intent i = new Intent();
 			i.SetType("image/*");
@@ -234,29 +235,17 @@ namespace LocationConnection
 			}
 		}
 
-		public void StartAnim()
-		{
-			Animation anim = Android.Views.Animations.AnimationUtils.LoadAnimation(context, Resource.Animation.rotate);
-			context.LoaderCircle.Visibility = ViewStates.Visible;
-			context.LoaderCircle.StartAnimation(anim);
-			context.ImagesProgressText.Text = context.res.GetString(Resource.String.ImagesProgressText);
-		}
-
 		public async Task UploadFile(string fileName, string regsessionid) //use Task<int> for return value
 		{
 			ProfilePage.selectedFileStr = null;
 			context.imagesUploading = true;
 			context.RunOnUiThread(() => {
-				StartAnim();
-				if (!(snack is null))
-				{
-					snack.Dismiss();
-					snack = null;
-				}
+				StartAnim();				
 			});
 
 			try
 			{
+				#pragma warning disable CS0162
 				string url;					
 				if (context.c.IsLoggedIn())
 				{
@@ -274,6 +263,7 @@ namespace LocationConnection
 						url += Constants.TestDB;
 					}
 				}
+				#pragma warning restore CS0162
 				await client.UploadFileTaskAsync(url, fileName);
 			}
 			catch (WebException ex)
@@ -281,7 +271,7 @@ namespace LocationConnection
 				//Client_UploadFileCompleted is called too which resets the views
 				if (((HttpWebResponse)ex.Response).StatusCode == HttpStatusCode.InternalServerError)
 				{
-					context.c.ErrorAlert(context.res.GetString(Resource.String.OutOfMemory));
+					await context.c.ErrorAlert(context.res.GetString(Resource.String.OutOfMemory));
 				}
 				else
 				{
@@ -305,8 +295,8 @@ namespace LocationConnection
 
 		private void Client_UploadFileCompleted(object sender, UploadFileCompletedEventArgs e)
 		{
-			context.LoaderCircle.Visibility = ViewStates.Invisible;
-			context.LoaderCircle.ClearAnimation();
+			context.imagesUploading = false;
+			StopAnim();
 
 			try
 			{
@@ -342,8 +332,7 @@ namespace LocationConnection
 				{
 					context.c.ReportError(responseString);
 				}
-				context.imagesUploading = false;
-
+				
 				context.ImagesProgress.Progress = 0;
 				if (context.uploadedImages.Count > 1)
 				{
@@ -356,7 +345,6 @@ namespace LocationConnection
 			}
 			catch (Exception ex)
 			{
-				context.imagesUploading = false;
 				context.ImagesProgressText.Text = "";
 
 				if (!(ex.InnerException is WebException))
@@ -365,6 +353,20 @@ namespace LocationConnection
 				}
 			}
 		}
+
+		public void StartAnim()
+		{
+			Animation anim = Android.Views.Animations.AnimationUtils.LoadAnimation(context, Resource.Animation.rotate);
+			context.LoaderCircle.Visibility = ViewStates.Visible;
+			context.LoaderCircle.StartAnimation(anim);
+			context.ImagesProgressText.Text = context.res.GetString(Resource.String.ImagesProgressText);
+		}
+
+		public void StopAnim()
+        {
+            context.LoaderCircle.Visibility = ViewStates.Invisible;
+			context.LoaderCircle.ClearAnimation();
+        }
 
 		private void Description_Touch(object sender, View.TouchEventArgs e)
 		{

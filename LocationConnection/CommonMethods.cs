@@ -220,12 +220,14 @@ namespace LocationConnection
 				stw.Start();
 				try
 				{
+					#pragma warning disable CS0162
 					string url = Constants.HostName + "?" + query;
 					if (Constants.isTestDB)
 					{
 						url += Constants.TestDB;
 					}
-					
+					#pragma warning restore CS0162
+
 					HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
 					request.Timeout = Constants.RequestTimeout;
 					
@@ -301,11 +303,13 @@ namespace LocationConnection
 			stw.Start();
 			try
 			{
+				#pragma warning disable CS0162
 				string url = Constants.HostName + "?" + query;
 				if (Constants.isTestDB)
 				{
 					url += Constants.TestDB;
 				}
+				#pragma warning restore CS0162
 
 				HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
 				request.Timeout = Constants.RequestTimeout;
