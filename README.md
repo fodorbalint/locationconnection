@@ -1,5 +1,5 @@
 # Changelog - Location Connection Android
-1.4 - 28 May 2020
+1.4 - 30 May 2020
 
 Bug fixes
 - The system navigation bar covers the bottom of page in profile view.
@@ -14,6 +14,7 @@ Bug fixes
 - Delete account section remains open after deleting account and logging in with another user
 - In some situations the back button on the profile page covers the name and the username.
 - In a certain situation an empty space appears in place of the distance filters.
+- If distance filtering is selected by current location, but location permission is not granted, and in the user account location is on, after rejecting the request the user preference will be turned off, but when you log out and in again, the preference is still on.
 
 1.3 - 15 May 2020
 
