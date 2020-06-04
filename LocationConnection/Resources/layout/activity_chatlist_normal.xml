@@ -50,7 +50,7 @@
         app:layout_constraintRight_toRightOf="parent"        
         android:layout_marginRight="0px"
         android:translationX="2dp"
-        android:background="@drawable/status_round_background"
+        android:background="@drawable/status_round_background64_black_4x"
         android:id="@+id/MenuListBg" />
     <View
 		android:layout_width="2dp"

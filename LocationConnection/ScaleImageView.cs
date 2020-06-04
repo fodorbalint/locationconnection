@@ -43,7 +43,6 @@ namespace LocationConnection
 
 		public void Initialize(Context context)
 		{
-			//icon = Context.Resources.GetDrawable(Resource.Drawable.logo280);
 			this.context = (ProfilePage)context;
 			detector = new ScaleGestureDetector(Context, new ScaleListener(this));
 		}

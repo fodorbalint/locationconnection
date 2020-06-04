@@ -29,9 +29,6 @@ namespace LocationConnection
 		public const string EmailFormat = @"^\w+([.+-]?\w+)*@[a-zA-Z0-9]+([.-]?[a-zA-Z0-9]+)*\.[a-zA-z0-9]{2,4}$";
 		public const string CHANNEL_ID = "my_notification_channel";
 		public const int NOTIFICATION_ID = 100;		
-		public const string loadingImage = "loadingimage.png";
-		public const string noImage = "noimage.png";
-		public const string noImageHD = "noimage_hd.png";
 		public const int DataRefreshInterval = 60; //minimum seconds
 		public const int DistanceChangeRefreshDelay = 300;
 		public const int MaxGoogleMapDistance = 20015;

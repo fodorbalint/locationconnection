@@ -1280,7 +1280,7 @@ namespace LocationConnection
 					p.LeftToRight = 1000 + index - 1;
 				}
 				ProfileImage.LayoutParameters = p;
-				ProfileImage.SetImageResource(Resource.Drawable.loadingimage);
+				ProfileImage.SetImageResource(Resource.Drawable.color_loadingimage_light_dfdfdf);
 				ProfileImageScroll.AddView(ProfileImage);
 			}
 		}

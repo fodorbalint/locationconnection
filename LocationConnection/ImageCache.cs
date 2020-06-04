@@ -132,7 +132,7 @@ namespace LocationConnection
                     }
 
                     context.RunOnUiThread(() => {
-                        imageView.SetImageResource(Resource.Drawable.loadingimage);
+                        imageView.SetImageResource(Resource.Drawable.color_loadingimage_light_dfdfdf);
                     });
 
                     #pragma warning disable CS0162

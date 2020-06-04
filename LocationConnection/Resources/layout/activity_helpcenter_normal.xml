@@ -162,7 +162,7 @@
 		app:layout_constraintBottom_toBottomOf="@+id/TutorialFrame"
 		app:layout_constraintLeft_toLeftOf="@+id/TutorialFrame"
 		app:layout_constraintRight_toRightOf="@+id/TutorialFrame"
-		android:src="@drawable/ic_reload"
+		android:src="@drawable/ic_reload36_black_4x"
 		android:visibility="invisible"
 		android:id="@+id/LoaderCircle" />    
 	<LocationConnection.TouchConstraintLayout
