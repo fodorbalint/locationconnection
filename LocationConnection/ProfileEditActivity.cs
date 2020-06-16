@@ -245,7 +245,7 @@ namespace LocationConnection
 					DeactivateAccount.Text = res.GetString(Resource.String.ActivateAccount);
 				}
 
-				if (!string.IsNullOrEmpty(selectedFileStr))
+				if (selectedFile != null)
 				{
 					OnResumeEnd();
 				}

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Location Connection</string>
 	<string name="app_name_short">Connection</string>
-    <string name="versionInfo">Version: 1.4 - 30 May 2020\n\nCreated by Balint Fodor\n\nContact: fodorbalint@gmail.com\n\nWebsite: locationconnection.me\n\nPrivacy policy:\nlocationconnection.me/?page=legal#privacy\n\nSource code:\ngithub.com/fodorbalint?tab=repositories</string>
+    <string name="versionInfo">Version: 1.5 - 16 June 2020\n\nCreated by Balint Fodor\n\nContact: fodorbalint@gmail.com\n\nWebsite: locationconnection.me\n\nPrivacy policy:\nlocationconnection.me/?page=legal#privacy\n\nSource code:\ngithub.com/fodorbalint?tab=repositories</string>
 
 	<!-- General -->
 
@@ -103,9 +103,9 @@
 	<string name="StorageNotGranted">Storage read permission was not granted.</string>
 	<string name="ImagesUploading">Wait until the picture finished uploading.</string>
 	<string name="ImagesDeleting">Wait until picture deletion is finished.</string>
-	<string name="UploadImagePathNotFound">File cannot be accessed.\n- If it is from a cloud service (such as Google Photos or OneDrive), save it first to your local file system.\n- Select photo from Images or Gallery.</string>
 	<string name="TooLargeBitmap">The image is too large to draw: [width] x [height] px.\nReduce the resolution, or crop the image to square to upload it directly.</string>
 	<string name="OtherBitmapError">The image cannot be displayed: [error]\nCrop the image to sqare to upload it directly.</string>
+	<string name="CopyImageError">Image processing failed:</string>
 	<string name="CropImageError">Image cropping failed:</string>
 	<string name="ImagesProgressText">Uploading... (This may take up to a minute.)</string>
     <string name="ImagesProgressTextPercent">Uploading:</string>    
@@ -141,7 +141,6 @@
 	<string name="Cancel">Cancel</string>
 
 	<string name="MaxNumImages">The maximum number of pictures is</string>
-	<string name="ImageExists">This image already exists.</string>
 	<string name="SexEmpty">Please specify your sex.</string>
 	<string name="EmailEmpty">Email must be filled in.</string>
 	<string name="EmailWrong">Wrong email format</string>

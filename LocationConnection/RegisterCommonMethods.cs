@@ -156,7 +156,7 @@ namespace LocationConnection
 		}
 		public void ImageEditorCancel_Click(object sender, EventArgs e)
 		{
-			ProfilePage.selectedFileStr = null; 
+			ProfilePage.selectedFile = null; 
 			context.ImageEditorFrame.Visibility = ViewStates.Invisible;
 			context.ImageEditor.Visibility = ViewStates.Invisible;
 			context.ImageEditorFrameBorder.Visibility = ViewStates.Invisible;
@@ -168,7 +168,7 @@ namespace LocationConnection
 		{
 			try
 			{
-				ProfilePage.selectedFileStr = null;
+				ProfilePage.selectedFile = null;
 				//device rotation needs to be handled
 				if (context.ImageEditor.IsOutOfFrameX() || context.ImageEditor.IsOutOfFrameY())
 				{
@@ -191,23 +191,11 @@ namespace LocationConnection
 
 				context.c.LogActivity("Bitmap created");
 
-				string fileName = System.IO.Path.Combine(CommonMethods.cacheFolder, ProfilePage.selectedImageName);
-				string ext = ProfilePage.selectedImageName.Substring(ProfilePage.selectedImageName.LastIndexOf(".") + 1).ToLower();
-
-				context.c.LogActivity("Filename: " + fileName + " extension: " + ext);
-
+				string fileName = System.IO.Path.Combine(CommonMethods.cacheFolder, "image.jpg");
 				try
 				{
 					FileStream stream = new FileStream(fileName, FileMode.Create);
-					if (ext == "jpg" || ext == "jpeg")
-					{
-						bm.Compress(Bitmap.CompressFormat.Jpeg, 100, stream);
-					}
-					else
-					{
-						bm.Compress(Bitmap.CompressFormat.Png, 100, stream);
-					}
-
+					bm.Compress(Bitmap.CompressFormat.Jpeg, 100, stream);
 					stream.Close();
 				}
 				catch (Exception ex)

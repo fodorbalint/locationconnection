@@ -42,7 +42,7 @@ namespace LocationConnection
 
 		protected override void OnCreate(Bundle savedInstanceState)
 		{
-			try { 
+			try {
 				base.OnCreate(savedInstanceState);
 
 				if (Settings.DisplaySize == 1 || Settings.DisplaySize is null)
@@ -83,8 +83,9 @@ namespace LocationConnection
 
 		protected override void OnResume()
 		{
-			try { 
+			try {
 				base.OnResume();
+				c.LogActivity("LocationActivity resuming, ListActivity.initialized " + ListActivity.initialized);
 				if (!ListActivity.initialized) { return; }
 
 				RegisterReceiver(locationReceiver, new IntentFilter("balintfodor.locationconnection.LocationReceiver"));

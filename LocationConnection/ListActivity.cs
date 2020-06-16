@@ -53,6 +53,7 @@ using Android.Views;
 using Android.Views.Animations;
 using Android.Views.InputMethods;
 using Android.Widget;
+using AndroidX.Core.Graphics;
 using Xamarin.Essentials;
 using static Android.Gms.Maps.GoogleMap;
 
@@ -747,7 +748,6 @@ namespace LocationConnection
 					ListView_Click(null, null);
 				}
 
-				c.CW("First run: " + firstRun);
 				if (firstRun) //if alert is not shown, will be changed next time ListActivity is recreated.
 				{
 					firstRunTimer = new Timer();
@@ -1792,7 +1792,9 @@ namespace LocationConnection
 					Session.OtherLatitude = latValue;
 					Session.OtherLongitude = longValue;
 					Session.OtherAddress = null;
-					DistanceSourceAddressText.Background.SetColorFilter(Color.Rgb(20, 224, 0), PorterDuff.Mode.SrcAtop);
+
+					DistanceSourceAddressText.Background.SetColorFilter(BlendModeColorFilterCompat.CreateBlendModeColorFilterCompat(new Color(ContextCompat.GetColor(this, Resource.Color.ColorFilterGreen)), BlendModeCompat.SrcAtop));
+
 					if (reformat)
 					{
 						DistanceSourceAddressText.Text = latValue + ", " + longValue;

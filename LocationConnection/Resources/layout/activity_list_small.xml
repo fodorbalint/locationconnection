@@ -338,6 +338,7 @@
                     app:layout_constraintRight_toLeftOf="@+id/DistanceLimitInput"
                     android:layout_marginLeft="8.57dp"
                     android:layout_marginTop="4.29dp"
+                    android:clickable="true"
 					android:id="@+id/DistanceLimit" />
                 <EditText
 					android:layout_width="51.43dp"

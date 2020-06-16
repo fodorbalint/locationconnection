@@ -88,7 +88,7 @@ namespace LocationConnection
 				InitLocationUpdates();
 			}
 
-			c.LogActivity(LocalClassName.Split(".")[1] + " OnResume selectedFileStr " + ProfilePage.selectedFileStr + " Session.ID " + Session.ID);
+			c.LogActivity(LocalClassName.Split(".")[1] + " OnResume");
 
 			if (!ListActivity.initialized) //When opening app, Android sometimes resumes an Activity while the static variables are cleared out, resulting in error
 			{

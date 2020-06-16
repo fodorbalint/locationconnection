@@ -283,7 +283,7 @@ namespace LocationConnection
 					}
 				}
 
-				if (!string.IsNullOrEmpty(selectedFileStr))
+				if (selectedFile != null)
 				{
 					OnResumeEnd();
 				}
