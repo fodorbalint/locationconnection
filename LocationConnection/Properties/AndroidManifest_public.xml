@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="7" android:versionName="1.1" package="balintfodor.locationconnection" android:installLocation="auto">
-	<uses-sdk android:minSdkVersion="23" android:targetSdkVersion="28" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="15" android:versionName="1.5" package="balintfodor.locationconnection" android:installLocation="auto">
+	<uses-sdk android:minSdkVersion="23" android:targetSdkVersion="29" />
 	<!-- Google Maps for Android v2 requires OpenGL ES v2 -->
 	<uses-feature android:glEsVersion="0x00020000" android:required="true" />
 	<!-- Permission to receive remote notifications from Google Play Services -->
 	<uses-permission android:name="balintfodor.locationconnection.permission.MAPS_RECEIVE" />
 	<permission android:name="balintfodor.locationconnection.permission.MAPS_RECEIVE" android:protectionLevel="signature" />
-	<application android:allowBackup="false" android:icon="@drawable/ic_logo_square" android:roundIcon="@drawable/ic_logo_round" android:supportsRtl="true" android:theme="@style/AppTheme" android:label="@string/app_name">
+	<application android:largeHeap="true" android:allowBackup="false" android:icon="@mipmap/ic_launcher" android:supportsRtl="true" android:theme="@style/AppTheme" android:label="@string/app_name">
 		<meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="---------------------------------------" />
 		<meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
-		<meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/notification_icon" />
+		<meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@mipmap/notification_icon" />
 		<!-- Necessary for apps that target Android 9.0 or higher -->
 		<uses-library android:name="org.apache.http.legacy" android:required="false" />
 		<receiver android:name="com.google.firebase.iid.FirebaseInstanceIdInternalReceiver" android:exported="false" />
