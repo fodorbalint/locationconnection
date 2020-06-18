@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Timers;
 using Android.App;
 using Android.Content;
@@ -91,7 +92,9 @@ namespace LocationConnection
 
 		public async void OnResumeEnd()
 		{
-			ExifInterface exif = new ExifInterface(ContentResolver.OpenInputStream(selectedFile));
+			ExifInterface exif = null;
+			exif = new ExifInterface(ContentResolver.OpenInputStream(selectedFile));
+			
 			c.LogActivity("OnResumeEnd exif " + exif);
 
 			int orientation = 0;
@@ -100,7 +103,26 @@ namespace LocationConnection
 				orientation = exif.GetAttributeInt(ExifInterface.TagOrientation, (int)Android.Media.Orientation.Undefined);
 			}
 
-			bm = BitmapFactory.DecodeStream(ContentResolver.OpenInputStream(selectedFile));//.DecodeFile(selectedFileStr);
+			try //Original issue: On Android 7.1.1 (Asus ZenFone Zoom S), image loading fails for the 4th time
+			{
+				bm = BitmapFactory.DecodeStream(ContentResolver.OpenInputStream(selectedFile));
+			}
+			catch (Exception ex)
+			{
+				if (ex is OutOfMemoryException) //does not seem to be an happen now that bm is recycled after closing the editor
+				{
+					await c.ErrorAlert(res.GetString(Resource.String.OutOfMemoryError));
+					c.ReportErrorSilent(res.GetString(Resource.String.OutOfMemoryError) + " " + ex.Message);
+					throw ex; //OnResume is now finished, exception will not be caught
+				}
+				else
+				{
+					await c.ErrorAlert(res.GetString(Resource.String.ImageLoadingError) + " " + ex.Message);
+					c.ReportErrorSilent(res.GetString(Resource.String.ImageLoadingError) + " " + ex.Message);
+				}
+				selectedFile = null;
+				return;
+			}
 
 			c.LogActivity("bm " + bm);
 			c.LogActivity("Image width " + bm.Width + " height " + bm.Height + " orientation " + orientation);
@@ -133,11 +155,13 @@ namespace LocationConnection
 				}
 				catch (Exception ex)
 				{
-					c.ReportError(res.GetString(Resource.String.CopyImageError) + " " + ex.Message);
+					await c.ErrorAlert(res.GetString(Resource.String.CopyImageError) + " " + ex.Message);
+					c.ReportErrorSilent(res.GetString(Resource.String.CopyImageError) + " " + ex.Message);
+					selectedFile = null;
 					return;
 				}
 
-				await rc.UploadFile(fileName, RegisterActivity.regsessionid); //works for profile edit too*/
+				rc.UploadFile(fileName, RegisterActivity.regsessionid); //works for profile edit too*/
 			}
 			else
 			{

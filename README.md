@@ -1,7 +1,15 @@
 # Changelog - Location Connection Android
+1.5 - 17 June 2020
+
+Bug fixes:
+- On the profile edit page photo uploading crashes the app if distance filtering for other location was not set.
+- Image uploading issues, especially for photos selected from a cloud service, or on Android 7.1.1, where the app may run out of memory.
+- The distance slider gets highlighted unnecessarily when pressing anywhere in its containing box.
+- If you set address/coordinates while being logged in, and it was not set on your logged out page, this does not disappear after logging out.
+
 1.4 - 30 May 2020
 
-Bug fixes
+Bug fixes:
 - The system navigation bar covers the bottom of page in profile view.
 - Photo uploading errors, and on some phones (including LG G5 and Samsung A71), portrait photos appear in landscape orientation in the editor.
 - When selecting a photo with the keyboard open, the photo will appear smaller than the cutting frame.

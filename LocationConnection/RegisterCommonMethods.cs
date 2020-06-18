@@ -156,19 +156,13 @@ namespace LocationConnection
 		}
 		public void ImageEditorCancel_Click(object sender, EventArgs e)
 		{
-			ProfilePage.selectedFile = null; 
-			context.ImageEditorFrame.Visibility = ViewStates.Invisible;
-			context.ImageEditor.Visibility = ViewStates.Invisible;
-			context.ImageEditorFrameBorder.Visibility = ViewStates.Invisible;
-			context.ImageEditorControls.Visibility = ViewStates.Invisible;
-			context.TopSeparator.Visibility = ViewStates.Invisible;
+			CloseEditor();
 		}
 
 		public async void ImageEditorOK_Click(object sender, EventArgs e)
 		{
 			try
 			{
-				ProfilePage.selectedFile = null;
 				//device rotation needs to be handled
 				if (context.ImageEditor.IsOutOfFrameX() || context.ImageEditor.IsOutOfFrameY())
 				{
@@ -206,16 +200,12 @@ namespace LocationConnection
 
 				context.c.LogActivity("Cropped image created, closing editor");
 
-				context.ImageEditorFrame.Visibility = ViewStates.Invisible;
-				context.ImageEditor.Visibility = ViewStates.Invisible;
-				context.ImageEditorFrameBorder.Visibility = ViewStates.Invisible;
-				context.ImageEditorControls.Visibility = ViewStates.Invisible;
-				context.TopSeparator.Visibility = ViewStates.Invisible;
+				CloseEditor();
 
 				//FileInfo fi = new FileInfo(fileName);
 				//context.c.CW(fileName + " Image size: " + fi.Length + " " + ext);
 
-				await UploadFile(fileName, RegisterActivity.regsessionid); //works for profile edit too
+				UploadFile(fileName, RegisterActivity.regsessionid); //works for profile edit too
 			}
 			catch (Exception ex)
 			{
@@ -223,7 +213,23 @@ namespace LocationConnection
 			}
 		}
 
-		public async Task UploadFile(string fileName, string regsessionid) //use Task<int> for return value
+		public void CloseEditor()
+		{
+			ProfilePage.selectedFile = null;
+			context.ImageEditorFrame.Visibility = ViewStates.Invisible;
+			context.ImageEditor.Visibility = ViewStates.Invisible;
+			context.ImageEditorFrameBorder.Visibility = ViewStates.Invisible;
+			context.ImageEditorControls.Visibility = ViewStates.Invisible;
+			context.TopSeparator.Visibility = ViewStates.Invisible;
+
+			if (context.ImageEditor.bm != null)
+			{
+				context.ImageEditor.bm.Recycle();
+				context.ImageEditor.bm = null;
+			}
+		}
+
+		public void UploadFile(string fileName, string regsessionid) //use Task<int> for return value
 		{
 			ProfilePage.selectedFileStr = null;
 			context.imagesUploading = true;
@@ -252,14 +258,14 @@ namespace LocationConnection
 					}
 				}
 				#pragma warning restore CS0162
-				await client.UploadFileTaskAsync(url, fileName);
+				client.UploadFileTaskAsync(url, fileName);
 			}
 			catch (WebException ex)
 			{
 				//Client_UploadFileCompleted is called too which resets the views
 				if (((HttpWebResponse)ex.Response).StatusCode == HttpStatusCode.InternalServerError)
 				{
-					await context.c.ErrorAlert(context.res.GetString(Resource.String.OutOfMemory));
+					context.c.ErrorAlert(context.res.GetString(Resource.String.OutOfMemory));
 				}
 				else
 				{

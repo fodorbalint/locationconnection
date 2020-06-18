@@ -1063,18 +1063,21 @@ namespace LocationConnection
 				AddressOK.Visibility = ViewStates.Visible;
 			}
 
+			distanceSourceAddressTextChanging = true;
 			if (!string.IsNullOrEmpty(Session.OtherAddress))
 			{
-				distanceSourceAddressTextChanging = true;
 				DistanceSourceAddressText.Text = Session.OtherAddress;
-				distanceSourceAddressTextChanging = false;
 			}
 			else if (!(Session.OtherLatitude is null) && !(Session.OtherLongitude is null))
 			{
-				distanceSourceAddressTextChanging = true;
+				
 				DistanceSourceAddressText.Text = ((double)Session.OtherLatitude).ToString(CultureInfo.InvariantCulture) + ", " + ((double)Session.OtherLongitude).ToString(CultureInfo.InvariantCulture);
-				distanceSourceAddressTextChanging = false;
 			}
+			else
+			{
+				DistanceSourceAddressText.Text = ""; //text will otherwise remain after logging out
+			}
+			distanceSourceAddressTextChanging = false;
 
 			distanceLimitChangedByCode = true;
 			DistanceLimit.Progress = DistanceLimitValToProgress((int)Session.DistanceLimit);

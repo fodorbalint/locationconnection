@@ -288,6 +288,7 @@ namespace LocationConnection
 					OnResumeEnd();
 				}
 
+				c.CW("OnResume end");
 				c.LogActivity("OnResume end");
 			}
 			catch (Exception ex)
