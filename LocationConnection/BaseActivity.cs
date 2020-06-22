@@ -58,6 +58,8 @@ namespace LocationConnection
 
 		public static bool firstRun = false;
 
+		public static BaseActivity visibleContext; //needed for location callback. In SettingsActivity location updates may restart, but LoadListStartup is not called when returning to ListActivity, resulting in the "Getting location..." message to hang.
+
 		protected override void OnCreate(Bundle savedInstanceState)
 		{
 			base.OnCreate(savedInstanceState);
@@ -81,19 +83,16 @@ namespace LocationConnection
 		{
 			base.OnResume();
 			c.CW("Resumed " + LocalClassName.Split(".")[1]);
+			visibleContext = this;
 			RegisterReceiver(chatReceiver, new IntentFilter("balintfodor.locationconnection.ChatReceiver"));
 			
 			isAppVisible = true;
-			if (!(this is RegisterActivity) && !(this is MainActivity) && !(this is ListActivity)) //we need to exclude ListActivity, because we need to show the GettingLocation label
+			if (!(this is ListActivity)) //we need to exclude ListActivity, because we need to show the GettingLocation label
 			{
-				if (!locationUpdating && Session.UseLocation == true && c.IsLocationEnabled()) //the last condition is for handling changing the rate in Settings
+				if (!locationUpdating && Session.UseLocation == true && c.IsLocationEnabled())
 				{
 					StartLocationUpdates();
 				}
-			}
-			else if (this is RegisterActivity || this is MainActivity)
-			{
-				StopLocationUpdates();
 			}
 
 			c.LogActivity(LocalClassName.Split(".")[1] + " OnResume");
@@ -139,6 +138,7 @@ namespace LocationConnection
 		{
 			base.OnPause();
 			c.CW("Paused " + LocalClassName.Split(".")[1]);
+			visibleContext = null;
 			UnregisterReceiver(chatReceiver);
 
 			isAppVisible = false;
@@ -238,7 +238,7 @@ namespace LocationConnection
 			}
 		}
 
-		protected void StartLocationUpdates()
+		protected void StartLocationUpdates() //must run on UI thread
 		{
 			try
 			{
@@ -252,26 +252,24 @@ namespace LocationConnection
 					interval = (int)Settings.InAppLocationRate;
 				}
 
-				c.CW("Starting location updates with interval " + interval);
-				RunOnUiThread(async () => {
-					LocationRequest locationRequest = new LocationRequest()
-							.SetFastestInterval((long)(interval * 1000 * 0.8))
-							.SetInterval(interval * 1000);
-					if (Session.LocationAccuracy == 0)
-					{
-						locationRequest.SetPriority(LocationRequest.PriorityBalancedPowerAccuracy);
-					}
-					else
-					{
-						locationRequest.SetPriority(LocationRequest.PriorityHighAccuracy);
-					}
-					locationCallback = new FusedLocationProviderCallback(this);
-					await fusedLocationProviderClient.RequestLocationUpdatesAsync(locationRequest, locationCallback);
-					locationUpdating = true;
-					currentLocationRate = interval;
-					c.CW("Location updates started");
-					c.LogActivity("Location updates started");
-				});
+				LocationRequest locationRequest = new LocationRequest()
+						.SetFastestInterval((long)(interval * 1000 * 0.8))
+						.SetInterval(interval * 1000);
+				if (Session.LocationAccuracy == 0)
+				{
+					locationRequest.SetPriority(LocationRequest.PriorityBalancedPowerAccuracy);
+				}
+				else
+				{
+					locationRequest.SetPriority(LocationRequest.PriorityHighAccuracy);
+				}
+				locationCallback = new FusedLocationProviderCallback(this);
+				fusedLocationProviderClient.RequestLocationUpdatesAsync(locationRequest, locationCallback);
+				locationUpdating = true;
+				currentLocationRate = interval;
+
+				c.CW("Location updates started with interval " + interval);
+				c.LogActivity("Location updates started with interval " + interval);
 			}
 			catch (Exception ex)
 			{
@@ -279,21 +277,19 @@ namespace LocationConnection
 			}
 		}
 
-		public void StopLocationUpdates()
+		public void StopLocationUpdates() //must run on UI thread
 		{
 			try
 			{
-				RunOnUiThread(() => {
-					if (!(locationCallback is null))
-					{
-						fusedLocationProviderClient.RemoveLocationUpdates(locationCallback);
-						locationUpdating = false;
-						currentLocationRate = 0;
-						firstLocationAcquired = false;
-						c.CW("Location updates stopped");
-						c.LogActivity("Location updates stopped");
-					}
-				});
+				if (!(locationCallback is null))
+				{
+					fusedLocationProviderClient.RemoveLocationUpdates(locationCallback);
+					locationUpdating = false;
+					currentLocationRate = 0;
+					firstLocationAcquired = false;
+					c.CW("Location updates stopped");
+					c.LogActivity("Location updates stopped");
+				}
 			}
 			catch (Exception ex)
 			{
@@ -305,8 +301,10 @@ namespace LocationConnection
 		{
 			c.LogActivity("Restarting location updates");
 			c.CW("Restarting location updates");
+			bool _firstLocationAcquired = firstLocationAcquired;
 			StopLocationUpdates();
 			StartLocationUpdates();
+			firstLocationAcquired = _firstLocationAcquired;
 		}
 
 		public void TruncateLocationLog()

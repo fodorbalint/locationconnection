@@ -545,6 +545,8 @@ namespace LocationConnection
 								Session.Latitude = null;
 								Session.Longitude = null;
 								Session.LocationTime = null;
+
+								Session.LastDataRefresh = null; //For the situation that a logged in user is filtering by current location, and now turns off uselocation. SetDistanceSourceAddress will be called in ListActivity.OnResume
 							}
 						}
 						Session.SnackMessage = res.GetString(Resource.String.SettingsUpdated);

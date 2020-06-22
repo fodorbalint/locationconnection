@@ -116,7 +116,26 @@ namespace LocationConnection
 					locationUpdatesFrom = null;
 					locationUpdatesFromData = null;
 
+					var latitude = Session.Latitude;
+					var longitude = Session.Longitude;
+					var locationTime = Session.LocationTime;
+
+					bool restart = false;
+					if (c.IsLocationEnabled() && Settings.InAppLocationRate != currentLocationRate)
+					{
+						restart = true;
+					}
+
 					c.ClearCurrentUser();
+
+					Session.Latitude = latitude;
+					Session.Longitude = longitude;
+					Session.LocationTime = locationTime;
+
+					if (restart)
+					{
+						RestartLocationUpdates();
+					}
 
 					if (IntentData.authError)
 					{
@@ -126,12 +145,12 @@ namespace LocationConnection
 					LoginEmail.Text = "";
 					LoginPassword.Text = "";
 				}
-				if (!(ListActivity.listProfiles is null)) {
+				if (!(ListActivity.listProfiles is null))
+				{
 					ListActivity.listProfiles.Clear();
 					ListActivity.totalResultCount = null;
 				}
 				Session.LastDataRefresh = null;
-				Session.LocationTime = null;
 			}
             catch (Exception ex)
             {

@@ -222,6 +222,7 @@ namespace LocationConnection
 
 						if (responseString.Substring(0, 2) == "OK")
 						{
+							c.Log("Autologin logged in");
 							if (File.Exists(firebaseTokenFile))
 							{
 								File.WriteAllText(tokenUptoDateFile, "True");
@@ -254,9 +255,13 @@ namespace LocationConnection
 							{
 								if (c.IsLocationEnabled())
 								{
+									c.CW("Autologin location enabled Session.InAppLocationRate " + Session.InAppLocationRate + " currentLocationRate " + currentLocationRate);
+									c.LogActivity("Autologin location enabled Session.InAppLocationRate " + Session.InAppLocationRate + " currentLocationRate " + currentLocationRate);
 									if (Session.InAppLocationRate != currentLocationRate) //only restart if the logged-out rate is different than the logged-in one.
 									{
-										RestartLocationUpdates();
+										this.RunOnUiThread(() => {
+											RestartLocationUpdates(); //first location may or may not exist, but most certainly it does, because location PM was present before logging in. First location update will call LoadListStartup, but if the list was refreshed just now, it does not do anything.
+										});
 									}
 
 									if (!(localLatitude is null) && !(localLongitude is null) && !(localLocationTime is null)) //this has to be more recent than the loaded data
@@ -296,15 +301,18 @@ namespace LocationConnection
 										snack = c.SnackIndef(Resource.String.LocationDisabledButUsingLocation);
 									});
 
-									recenterMap = true;
-									if (Session.LastSearchType == Constants.SearchType_Filter)
+									RunOnUiThread(() => //have to run after SetViews() in case user turned off location in settings while distancesource current was on. Distance filtering will be for address now.  
 									{
-										LoadList();
-									}
-									else
-									{
-										LoadListSearch();
-									}
+										recenterMap = true;
+										if (Session.LastSearchType == Constants.SearchType_Filter)
+										{
+											LoadList();
+										}
+										else
+										{
+											LoadListSearch();
+										}
+									});
 								}
 							}
 							else
@@ -576,7 +584,7 @@ namespace LocationConnection
 
 				//c.IsLoggedIn() true does not mean, all session variables are set. Nullable object must have a value error can occur if autologin response is at the same time as ONResume.
 				bool isLoggedIn = c.IsLoggedIn();
-				c.LogActivity("Logged in: " + isLoggedIn);
+				c.Log("OnResume logged in " + isLoggedIn + " locationUpdating " + locationUpdating);
 
 				if (isLoggedIn)
 				{
@@ -667,18 +675,15 @@ namespace LocationConnection
 					}
 
 					Session.ResultsFrom = absoluteStartIndex + 1;
-					c.CW("Session.ResultsFrom " + Session.ResultsFrom + " listProfiles.Count " + listProfiles.Count + " newListProfiles.Count " + newListProfiles.Count);
-				}
-				newListProfiles = null;
+					c.Log("NewListProfiles Session.ResultsFrom " + Session.ResultsFrom + " listProfiles.Count " + listProfiles.Count + " newListProfiles.Count " + newListProfiles.Count);
 
-				if (!(listProfiles is null)) //adapter gets null on resuming Activity, list is not shown, even though profiles still exists.
-				{
 					adapter = new UserSearchListAdapter(this, listProfiles);
 					ImageCache.imagesInProgress = new List<string>();
 					ImageCache.imageViewToLoadLater = new Dictionary<ImageView, string>();
 					UserSearchList.Adapter = adapter;
 					usersLoaded = true;
 				}
+				newListProfiles = null;
 
 				if (isLoggedIn)
 				{
@@ -706,31 +711,38 @@ namespace LocationConnection
 				
 				SetViews();
 
-				c.CW("OnResume Session.UseLocation " + Session.UseLocation + " loc enabled " + c.IsLocationEnabled());
-				c.LogActivity("OnResume Session.UseLocation " + Session.UseLocation + " loc enabled " + c.IsLocationEnabled());
 				if ((bool)Session.UseLocation && c.IsLocationEnabled())
 				{
 					if (!locationUpdating)
 					{
-						c.CW("Location not yet updating");
-						c.LogActivity("Location not yet updating");
+						c.Log("Location not yet updating");
 						StartLocationUpdates();
 						ResultSet.Visibility = ViewStates.Visible;
 						ResultSet.Text = res.GetString(Resource.String.GettingLocation);
 						StartLocationTimer();
 					}
+					else if (isLoggedIn && Session.InAppLocationRate != currentLocationRate)
+					{
+						c.Log("Location updating at different frequency: Session.InAppLocationRate " + Session.InAppLocationRate + " currentLocationRate " + currentLocationRate);
+						
+						RestartLocationUpdates();
+						if (!firstLocationAcquired) //most likely location was already acquired
+						{
+							ResultSet.Visibility = ViewStates.Visible;
+							ResultSet.Text = res.GetString(Resource.String.GettingLocation);
+							StartLocationTimer();
+						}
+					}
 					else if (!firstLocationAcquired)
 					{
-						c.CW("Location updating, awaiting location");
-						c.LogActivity("Location updating, awaiting location");
+						c.Log("Location updating, awaiting location");
 						ResultSet.Visibility = ViewStates.Visible;
 						ResultSet.Text = res.GetString(Resource.String.GettingLocation);
 						StartLocationTimer();
 					}
 					else
 					{
-						c.CW("Location exists");
-						c.LogActivity("Location exists");
+						c.Log("Location exists");
 						LoadListStartup();
 					}
 				}
@@ -741,8 +753,7 @@ namespace LocationConnection
 						StopLocationUpdates();
 					}
 
-					c.CW("OnResume no location");
-					c.LogActivity("OnResume no location");
+					c.Log("OnResume no location");
 					LoadListStartup();
 				}
 
@@ -782,6 +793,7 @@ namespace LocationConnection
 
 		public void StartLocationTimer()
 		{
+			c.CW("Starting location timer");
 			locationTimer = new Timer();
 			locationTimer.Interval = Constants.LocationTimeout;
 			locationTimer.Elapsed += LocationTimer_Elapsed;
@@ -802,8 +814,7 @@ namespace LocationConnection
 
 			if (autoLogin)
 			{
-				c.CW("LoadListStartup autologin, locationUpdating " + locationUpdating + ", locationtime: " + Session.LocationTime);
-				c.LogActivity("LoadListStartup autologin, locationUpdating " + locationUpdating + ", locationtime: " + Session.LocationTime);
+				c.Log("LoadListStartup autologin, locationUpdating " + locationUpdating + ", locationtime: " + Session.LocationTime);
 
 				localLatitude = Session.Latitude;
 				localLongitude = Session.Longitude;
@@ -811,8 +822,7 @@ namespace LocationConnection
 			}
 			else
 			{
-				c.CW("LoadListStartup not autologin, logged in: " + c.IsLoggedIn() + ", locationtime: " + Session.LocationTime + " Settings.IsMapView " + Settings.IsMapView + " mapToSet " + mapToSet + " Session.LastDataRefresh " + Session.LastDataRefresh + " unixTimestamp " + unixTimestamp);
-				c.LogActivity("LoadListStartup not autologin, logged in: " + c.IsLoggedIn() + ", locationtime: " + Session.LocationTime + " Settings.IsMapView " + Settings.IsMapView + " mapToSet " + mapToSet);
+				c.Log("LoadListStartup not autologin, logged in: " + c.IsLoggedIn() + ", locationtime: " + Session.LocationTime + " Settings.IsMapView " + Settings.IsMapView + " mapToSet " + mapToSet);
 
 				//reloading list if it expired
 				if (Session.LastDataRefresh is null || Session.LastDataRefresh < unixTimestamp - Constants.DataRefreshInterval)
@@ -832,10 +842,10 @@ namespace LocationConnection
 				}
 				else //show no result label only if list is not being reloaded, and set map with the results loaded while being in ProfileView
 				{
-					c.LogActivity("Setting map only mapLoaded " + mapLoaded + " mapToSet " + mapToSet);
-					c.CW("Setting map only mapLoaded " + mapLoaded + " mapToSet " + mapToSet);
+					c.Log("Setting map only mapLoaded " + mapLoaded + " mapToSet " + mapToSet);
 
-					if (mapLoaded && mapToSet) //map is not loaded.
+					if (mapLoaded && mapToSet) //map is not loaded on startup. 
+																	   //Settings.IsMapView is needed in the case that user filtered by current location, and now turns off uselocation in profile edit, and returns.
 					{
 						StartLoaderAnim();
 						mapSet = false;
@@ -1154,6 +1164,7 @@ namespace LocationConnection
 			distanceSourceAddressTextChanging = false;
 
 			distanceLimitChangedByCode = true;
+			c.Log("SetViews DistanceLimit");
 			DistanceLimit.Progress = DistanceLimitValToProgress((int)Session.DistanceLimit);
 			DistanceLimitInput.Text = Session.DistanceLimit.ToString();
 			distanceLimitChangedByCode = false;
@@ -1303,7 +1314,11 @@ namespace LocationConnection
 								ResultSet.Visibility = ViewStates.Visible;
 								ResultSet.Text = res.GetString(Resource.String.GettingLocation);
 
-								StartLocationUpdates();
+								this.RunOnUiThread(() =>
+								{
+									StartLocationUpdates();
+								});
+								
 							}
 						}
 						else
@@ -1340,6 +1355,7 @@ namespace LocationConnection
 							//it resets to address by itself
 							DistanceSourceCurrent.Checked = true;
 							Session.GeoSourceOther = false;
+							Session.LastDataRefresh = null;
 							distanceSourceCurrentClicked = false;
 						}
 						else
@@ -1375,6 +1391,7 @@ namespace LocationConnection
 				else
 				{
 					mapToSet = false;
+					distanceSourceCurrentClicked = false;
 					SetDistanceSourceAddress();
 					c.Snack(Resource.String.LocationNotGranted); //in the dialog the user choose to turn on location, but now denied it. Message needs to be shown.
 					if (c.IsLoggedIn())
@@ -1382,8 +1399,7 @@ namespace LocationConnection
 						UpdateLocationSetting(false);
 					}
 				}
-				//activity will resume, we need to refresh the list.
-				Session.LastDataRefresh = null;
+				//activity will resume, Session.UseLocation will be set there
 			}
 			else
 			{
@@ -1682,7 +1698,7 @@ namespace LocationConnection
 				imm.HideSoftInputFromWindow(DistanceSourceAddressText.WindowToken, 0);
 				UseGeoContainer.Visibility = ViewStates.Gone;
 				Session.GeoFilter = false;
-				if ((bool)Settings.IsMapView && !(bool)Session.UseLocation)
+				if ((bool)Settings.IsMapView && (!(bool)Session.UseLocation || !c.IsLocationEnabled()))
 				{
 					ListView_Click(null, null);
 				}
@@ -1712,6 +1728,8 @@ namespace LocationConnection
 		{
 			if (DistanceSourceCurrent.Checked)
 			{
+				c.Log("DistanceSource_Click current IsLocationEnabled " + c.IsLocationEnabled() + " UseLocation " + Session.UseLocation);
+
 				imm.HideSoftInputFromWindow(DistanceSourceAddressText.WindowToken, 0);
 				DistanceSourceAddressText.Visibility = ViewStates.Gone;
 				AddressOK.Visibility = ViewStates.Gone;
@@ -1730,6 +1748,8 @@ namespace LocationConnection
 					{
 						if (UpdateLocationSetting(true))
 						{
+							Session.GeoSourceOther = false;
+							Session.LastDataRefresh = null;
 							firstLocationAcquired = false; // it should be false to start with
 
 							ResultSet.Visibility = ViewStates.Visible;
@@ -1968,9 +1988,10 @@ namespace LocationConnection
 			}
 		}
 
-		private void DistanceLimit_ProgressChanged(object sender, SeekBar.ProgressChangedEventArgs e)
+		private void DistanceLimit_ProgressChanged(object sender, SeekBar.ProgressChangedEventArgs e) //when autologin (after turning off location in Settings), this is called after OnCreate ends, but before OnResume
 		{
-			if (!distanceLimitChangedByCode)
+			c.Log("DistanceLimit_ProgressChanged distanceLimitChangedByCode " + distanceLimitChangedByCode + " isappvisible " + isAppVisible);
+			if (!distanceLimitChangedByCode && isAppVisible)
 			{
 				DistanceLimitInput.Text = DistanceLimitProgressToVal(DistanceLimit.Progress).ToString();
 				DistanceLimitInput.ClearFocus();
@@ -1997,6 +2018,7 @@ namespace LocationConnection
 
 		private void ProgressTimer_Elapsed(object sender, ElapsedEventArgs e)
 		{
+			c.Log("ProgressTimer_Elapsed");
 			ProgressTimer.Stop();
 			if ((bool)Session.GeoFilter && (!(bool)Session.GeoSourceOther && !c.IsOwnLocationAvailable() || (bool)Session.GeoSourceOther && !c.IsOtherLocationAvailable()))
 			{
@@ -2364,8 +2386,7 @@ namespace LocationConnection
 		{
 			try
 			{
-				c.CW("LoadList listLoading " + listLoading); 
-				c.LogActivity("LoadList listLoading " + listLoading);
+				c.Log("LoadList listLoading " + listLoading + " caller " + new StackFrame(1, true).GetMethod().Name);
 				
 				if (listLoading)
 				{

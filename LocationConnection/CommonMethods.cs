@@ -888,10 +888,16 @@ namespace LocationConnection
 			return Build.VERSION.SdkInt + " - " + Build.VERSION.Sdk + " - "+ Build.Manufacturer + " - " + Build.Model + " - " + Build.Product;
 		}
 
-		public void CW(object message)
+		public void CW(string message)
 		{
-			//StackTrace stackTrace = new StackTrace();
-			Console.WriteLine(System.Environment.NewLine + "----------" + message + "----------" + System.Environment.NewLine);
+			//Console.WriteLine writes duplicate lines
+			System.Diagnostics.Debug.WriteLine(DateTime.UtcNow.ToString(@"yyyy-MM-dd HH\:mm\:ss.fff") + " ----------" + message + "----------" + System.Environment.NewLine);
+		}
+
+		public void Log(string message)
+		{
+			LogActivity(message);
+			CW(message);
 		}
 
 		public string ShowClass<T>()

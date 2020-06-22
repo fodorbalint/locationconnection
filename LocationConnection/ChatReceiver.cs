@@ -39,8 +39,7 @@ namespace LocationConnection
 			string meta = intent.GetStringExtra("meta");
 			bool inApp = intent.GetBooleanExtra("inapp", false);
 
-			Console.WriteLine("ChatReceiver senderID " + senderID + " type " + type + " meta " +  meta + " inApp " + inApp);
-			((BaseActivity)context).c.LogActivity("ChatReceiver senderID " + senderID + " type " + type + " meta " + meta + " inApp " + inApp);
+			((BaseActivity)context).c.Log("ChatReceiver senderID " + senderID + " type " + type + " meta " + meta + " inApp " + inApp);
 
 			if (targetID != Session.ID)
 			{

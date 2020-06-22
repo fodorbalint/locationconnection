@@ -1,4 +1,25 @@
-﻿using System;
+﻿/*
+ 
+ Location updates should stop when
+- disabling on Profile Edit page
+- entering registration/login page
+- entering background
+- user logs in with location off, but device location is enabled
+Start when
+- autologin
+- not logged in, but location is enabled
+- enabling location by clicking on map view, or current location filter
+- entering foreground
+Restart when
+- Changing rate in Settings
+- Logging in, if rate is different
+Location sending to match should stop when
+- Logging out
+- Turning off location in Profile Edit page
+- Entering background
+
+ */
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -68,9 +89,9 @@ namespace LocationConnection
 					context.c.CW("LocationManager_LocationUpdated first location");
 					context.c.LogActivity("LocationManager_LocationUpdated first location");
 
-					if (context is ListActivity)
+					if (BaseActivity.visibleContext is ListActivity)
 					{
-						((ListActivity)context).LoadListStartup();
+						((ListActivity)BaseActivity.visibleContext).LoadListStartup();
 					}
 				}
 			}
