@@ -380,7 +380,7 @@ namespace LocationConnection
 		public async Task<bool> UpdateLocationSync()
 		{
 			string url = "action=updatelocation&ID=" + Session.ID + "&SessionID=" + Session.SessionID
-						+ "&Latitude=" + ((double)Session.Latitude).ToString(CultureInfo.InvariantCulture) + "&Longitude=" + ((double)Session.Longitude).ToString(CultureInfo.InvariantCulture) + "&LocationTime=" + Session.LocationTime + "&Background=" + !BaseActivity.isAppForeground;
+						+ "&Latitude=" + ((double)Session.Latitude).ToString(CultureInfo.InvariantCulture) + "&Longitude=" + ((double)Session.Longitude).ToString(CultureInfo.InvariantCulture) + "&LocationTime=" + Session.LocationTime + "&Background=" + !BaseActivity.isAppVisible;
 			if (!string.IsNullOrEmpty(BaseActivity.locationUpdatesTo))
 			{
 				url += "&LocationUpdates=" + BaseActivity.locationUpdatesTo + "&Frequency=" + Session.InAppLocationRate;
@@ -397,7 +397,7 @@ namespace LocationConnection
 			}
 			else
 			{
-				if (BaseActivity.isAppForeground)
+				if (BaseActivity.isAppVisible)
 				{
 					//When logging in from another device, program crashes:
 					// 'Attempt to invoke virtual method 'android.content.res.Resources android.view.View.getResources()' on a null object reference'

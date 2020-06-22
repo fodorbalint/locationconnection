@@ -116,7 +116,7 @@
     <string name="Description">Introduction:</string>	
 	
 	<string name="Location">Use location</string>
-	<string name="LocationExplanation">Used for showing a map region, determining the distance between you and the search results, or narrowing the search results by distance.\nThese settings can be changed later on your profile edit page.</string>
+	<string name="LocationExplanation">Used for showing a map region, determining the distance between you and the search results, or narrowing the search results by distance.\nYour location is only updated while you are using the app.\nThese settings can be changed later on your profile edit page.\n</string>
 	<string name="LocationRationale">Location enables you to find people in your area.</string>
 	<string name="LocationNotGranted">Location permission was not granted.</string>
 	<string name="LocationEnable">Enable location access or change your settings.</string>

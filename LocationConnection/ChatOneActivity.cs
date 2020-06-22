@@ -676,8 +676,8 @@ namespace LocationConnection
 			AddUpdatesTo((int)Session.CurrentMatch.TargetID);
 			MenuLocationUpdates.SetTitle(Resource.String.MenuStopLocationUpdates);
 
-			StopLocationUpdates();
-			StartLocationUpdates((int)Session.InAppLocationRate * 1000);
+			RestartLocationUpdates(); //we need to get an update now
+
 			c.Snack(Resource.String.LocationUpdatesToStart);
 		}
 

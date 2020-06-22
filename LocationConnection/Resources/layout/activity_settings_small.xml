@@ -358,7 +358,7 @@
     			android:text="@string/LocationAccuracyBalanced"
     			android:id="@+id/LocationAccuracyBalanced" />
     	</RadioGroup>        
-    	<TextView
+    	<!--<TextView
     		android:layout_width="wrap_content"
     		android:layout_height="wrap_content"
     		app:layout_constraintTop_toTopOf="@+id/BackgroundLocation"
@@ -377,11 +377,11 @@
     		android:layout_marginLeft="8.57dp"
     		android:layout_marginRight="8.57dp"
             android:theme="@style/EditSmall"
-    		android:id="@+id/BackgroundLocation" />            
+    		android:id="@+id/BackgroundLocation" />-->            
         <TextView
     		android:layout_width="match_parent"
     		android:layout_height="wrap_content"
-    		app:layout_constraintTop_toBottomOf="@+id/BackgroundLocation"
+    		app:layout_constraintTop_toBottomOf="@+id/LocationAccuracySelector"
     		android:layout_marginTop="8.57dp"
     		android:layout_marginLeft="8.57dp"
             android:layout_marginRight="8.57dp"
@@ -408,7 +408,7 @@
             android:gravity="right"
     		android:theme="@style/BlackTextSmallSmall"
     		android:id="@+id/InAppLocationRateValue" />            
-        <TextView
+        <!--<TextView
     		android:layout_width="match_parent"
     		android:layout_height="wrap_content"
     		app:layout_constraintTop_toBottomOf="@+id/InAppLocationRateValue"
@@ -437,12 +437,12 @@
     		android:layout_marginRight="8.57dp"        
             android:gravity="right"
     		android:theme="@style/BlackTextSmallSmall"
-    		android:id="@+id/BackgroundLocationRateValue" /> 
+    		android:id="@+id/BackgroundLocationRateValue" />--> 
                        
     	<Button
     		android:layout_width="match_parent"
     		android:layout_height="38.57dp"
-    		app:layout_constraintTop_toBottomOf="@+id/BackgroundLocationRateValue"
+    		app:layout_constraintTop_toBottomOf="@+id/InAppLocationRateValue"
     		app:layout_constraintLeft_toLeftOf="parent"
     		app:layout_constraintRight_toRightOf="parent"
     		android:layout_marginTop="8.57dp"

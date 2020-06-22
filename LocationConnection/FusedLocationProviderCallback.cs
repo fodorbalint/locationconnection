@@ -16,14 +16,11 @@ namespace LocationConnection
 {
 	public class FusedLocationProviderCallback : LocationCallback
 	{
-		readonly BaseActivity activity;
-		CommonMethods c;
+		readonly BaseActivity context;
 
-		public FusedLocationProviderCallback(BaseActivity activity)
+		public FusedLocationProviderCallback(BaseActivity context)
 		{
-			this.activity = activity;
-			c = new CommonMethods(activity);
-			c.view = activity.MainLayout;
+			this.context = context;
 		}
 
 		public override void OnLocationAvailability(LocationAvailability locationAvailability)
@@ -37,7 +34,7 @@ namespace LocationConnection
 			{
 				var location = result.Locations.First();				
 
-				long unixTimestamp = c.Now();			
+				long unixTimestamp = context.c.Now();			
 
 				if (unixTimestamp != Session.LocationTime) //sometimes we get several location updates at the same time.
 				{
@@ -45,24 +42,41 @@ namespace LocationConnection
 					Session.Longitude = location.Longitude;
 					Session.LocationTime = unixTimestamp;
 
-					c.LogLocation(unixTimestamp + "|" + ((double)Session.Latitude).ToString(CultureInfo.InvariantCulture) + "|" + ((double)Session.Longitude).ToString(CultureInfo.InvariantCulture) + "|" + (BaseActivity.isAppForeground ? 1 : 0));
+					context.c.LogLocation(unixTimestamp + "|" + ((double)Session.Latitude).ToString(CultureInfo.InvariantCulture) + "|" + ((double)Session.Longitude).ToString(CultureInfo.InvariantCulture) + "|1");
 
 					Intent intent = new Intent("balintfodor.locationconnection.LocationReceiver");
 					intent.PutExtra("time", unixTimestamp);
 					intent.PutExtra("latitude", (double)Session.Latitude);
 					intent.PutExtra("longitude", (double)Session.Longitude);
-					activity.SendBroadcast(intent);
+					context.SendBroadcast(intent);
 
-					if (c.IsLoggedIn())
+					if (context.c.IsLoggedIn())
 					{
-						Session.LastActiveDate = unixTimestamp;
-						await c.UpdateLocationSync();
+						await context.c.UpdateLocationSync();
 					}
-				}				
+				}
+
+				if (!BaseActivity.firstLocationAcquired)
+				{
+					if (ListActivity.locationTimer != null && ListActivity.locationTimer.Enabled)
+					{
+						ListActivity.locationTimer.Stop();
+					}
+
+					BaseActivity.firstLocationAcquired = true;
+
+					context.c.CW("LocationManager_LocationUpdated first location");
+					context.c.LogActivity("LocationManager_LocationUpdated first location");
+
+					if (context is ListActivity)
+					{
+						((ListActivity)context).LoadListStartup();
+					}
+				}
 			}
 			else
 			{
-				c.LogActivity("No location received.");
+				context.c.LogActivity("No location received.");
 			}
 		}
 	}

@@ -39,12 +39,13 @@ namespace LocationConnection
 		public CommonMethods c;
 		public Snackbar snack;
 
-		private static LocationCallback locationCallback;
+		public static LocationCallback locationCallback;
 		private static FusedLocationProviderClient fusedLocationProviderClient;
-		private static bool isAppVisible;
-		public static bool isAppForeground;
+		public static bool isAppVisible;
 		private static Timer t;
-		private static int currentLocationRate;
+		public static bool locationUpdating;
+		public static int currentLocationRate;
+		public static bool firstLocationAcquired;
 		public static string locationUpdatesTo;
 		public static string locationUpdatesFrom;
 		public static List<UserLocationData> locationUpdatesFromData;
@@ -83,9 +84,16 @@ namespace LocationConnection
 			RegisterReceiver(chatReceiver, new IntentFilter("balintfodor.locationconnection.ChatReceiver"));
 			
 			isAppVisible = true;
-			if (!(this is ListActivity) && !(this is RegisterActivity) && !(this is MainActivity))
+			if (!(this is RegisterActivity) && !(this is MainActivity) && !(this is ListActivity)) //we need to exclude ListActivity, because we need to show the GettingLocation label
 			{
-				InitLocationUpdates();
+				if (!locationUpdating && Session.UseLocation == true && c.IsLocationEnabled()) //the last condition is for handling changing the rate in Settings
+				{
+					StartLocationUpdates();
+				}
+			}
+			else if (this is RegisterActivity || this is MainActivity)
+			{
+				StopLocationUpdates();
 			}
 
 			c.LogActivity(LocalClassName.Split(".")[1] + " OnResume");
@@ -134,7 +142,8 @@ namespace LocationConnection
 			UnregisterReceiver(chatReceiver);
 
 			isAppVisible = false;
-			InitLocationUpdates();
+
+			EnterBackgroundCheck();
 
 			c.LogActivity(LocalClassName.Split(".")[1] + " OnPause");
 		}
@@ -199,7 +208,7 @@ namespace LocationConnection
 			}
 		}
 
-		protected void InitLocationUpdates()
+		protected void EnterBackgroundCheck() //time between an activity's OnPause and the next's OnResume?
 		{
 			if (t is null)
 			{
@@ -215,56 +224,58 @@ namespace LocationConnection
 			t.Stop();
 			t = null;
 
-			if (isAppVisible)
-			{
-				isAppForeground = true;
-				if (Session.UseLocation is null || !(bool)Session.UseLocation || !c.IsLocationEnabled()) //location has been turned off
-				{
-					StopLocationUpdates();
-				}
-				else
-				{
-					if (c.IsLoggedIn())
-					{
-						if (currentLocationRate != Session.InAppLocationRate)
-						{
-							StopLocationUpdates();
-							StartLocationUpdates((int)Session.InAppLocationRate * 1000);
-						}
-					}
-					else
-					{
-						if (currentLocationRate != Settings.InAppLocationRate)
-						{
-							StopLocationUpdates();
-							StartLocationUpdates((int)Settings.InAppLocationRate * 1000);
-						}
-					}
-				}
-			}
-			else
+			if (!isAppVisible)
 			{
 				if (!string.IsNullOrEmpty(locationUpdatesTo))
 				{
 					EndLocationShare();
+					locationUpdatesTo = null; //stop real-time location updates when app goes to background
 				}
-
-				locationUpdatesTo = null; //stop real-time location updates when app goes to background
 				locationUpdatesFrom = null;
 				locationUpdatesFromData = null;
-				isAppForeground = false;
-				if (!c.IsLoggedIn() || !(bool)Session.UseLocation || !(bool)Session.BackgroundLocation || !c.IsLocationEnabled())
+
+				StopLocationUpdates();
+			}
+		}
+
+		protected void StartLocationUpdates()
+		{
+			try
+			{
+				int interval;
+				if (!(Session.InAppLocationRate is null))
 				{
-					StopLocationUpdates();
+					interval = (int)Session.InAppLocationRate;
 				}
 				else
 				{
-					if (currentLocationRate != Session.BackgroundLocationRate)
-					{
-						StopLocationUpdates();
-						StartLocationUpdates((int)Session.BackgroundLocationRate * 1000);
-					}
+					interval = (int)Settings.InAppLocationRate;
 				}
+
+				c.CW("Starting location updates with interval " + interval);
+				RunOnUiThread(async () => {
+					LocationRequest locationRequest = new LocationRequest()
+							.SetFastestInterval((long)(interval * 1000 * 0.8))
+							.SetInterval(interval * 1000);
+					if (Session.LocationAccuracy == 0)
+					{
+						locationRequest.SetPriority(LocationRequest.PriorityBalancedPowerAccuracy);
+					}
+					else
+					{
+						locationRequest.SetPriority(LocationRequest.PriorityHighAccuracy);
+					}
+					locationCallback = new FusedLocationProviderCallback(this);
+					await fusedLocationProviderClient.RequestLocationUpdatesAsync(locationRequest, locationCallback);
+					locationUpdating = true;
+					currentLocationRate = interval;
+					c.CW("Location updates started");
+					c.LogActivity("Location updates started");
+				});
+			}
+			catch (Exception ex)
+			{
+				c.LogActivity(ex.Message);
 			}
 		}
 
@@ -276,8 +287,11 @@ namespace LocationConnection
 					if (!(locationCallback is null))
 					{
 						fusedLocationProviderClient.RemoveLocationUpdates(locationCallback);
-						c.LogActivity("Location updates stopped from " + currentLocationRate + ", isAppForeground " + isAppForeground);
+						locationUpdating = false;
 						currentLocationRate = 0;
+						firstLocationAcquired = false;
+						c.CW("Location updates stopped");
+						c.LogActivity("Location updates stopped");
 					}
 				});
 			}
@@ -287,32 +301,12 @@ namespace LocationConnection
 			}
 		}
 
-		protected void StartLocationUpdates(int interval)
+		public void RestartLocationUpdates()
 		{
-			try
-			{
-				RunOnUiThread(async () => {
-					LocationRequest locationRequest = new LocationRequest()
-							.SetFastestInterval((long)(interval * 0.8))
-							.SetInterval(interval);
-					if (Session.LocationAccuracy == 0)
-					{
-						locationRequest.SetPriority(LocationRequest.PriorityBalancedPowerAccuracy);
-					}
-					else
-					{
-						locationRequest.SetPriority(LocationRequest.PriorityHighAccuracy);
-					}
-					locationCallback = new FusedLocationProviderCallback(this);
-					await fusedLocationProviderClient.RequestLocationUpdatesAsync(locationRequest, locationCallback);
-					currentLocationRate = interval / 1000;
-					c.LogActivity("Location updates started at " + currentLocationRate + ", isAppForeground " + isAppForeground);
-				});
-			}
-			catch (Exception ex)
-			{
-				c.LogActivity(ex.Message);
-			}
+			c.LogActivity("Restarting location updates");
+			c.CW("Restarting location updates");
+			StopLocationUpdates();
+			StartLocationUpdates();
 		}
 
 		public void TruncateLocationLog()

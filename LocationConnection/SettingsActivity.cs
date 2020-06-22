@@ -19,9 +19,9 @@ namespace LocationConnection
 		ImageButton SettingsBack;
 		CheckBox CheckMatchInApp, CheckMessageInApp, CheckUnmatchInApp, CheckRematchInApp,
 			CheckMatchBackground, CheckMessageBackground, CheckUnmatchBackground, CheckRematchBackground;
-		SeekBar MapIconSize, MapRatio, InAppLocationRate, BackgroundLocationRate;
-		TextView MapIconSizeValue, MapRatioValue, InAppLocationRateValue, BackgroundLocationRateValue;
-		Switch BackgroundLocation;
+		SeekBar MapIconSize, MapRatio, InAppLocationRate; //, BackgroundLocationRate;
+		TextView MapIconSizeValue, MapRatioValue, InAppLocationRateValue; //, BackgroundLocationRateValue;
+		//Switch BackgroundLocation;
 		RadioButton SmallDisplaySize, NormalDisplaySize, LocationAccuracyPrecise, LocationAccuracyBalanced;
 		Button LocationHistoryButton;
 
@@ -64,11 +64,11 @@ namespace LocationConnection
 				MapRatioValue = FindViewById<TextView>(Resource.Id.MapRatioValue);			
 				LocationAccuracyPrecise = FindViewById<RadioButton>(Resource.Id.LocationAccuracyPrecise);
 				LocationAccuracyBalanced = FindViewById<RadioButton>(Resource.Id.LocationAccuracyBalanced);
-				BackgroundLocation = FindViewById<Switch>(Resource.Id.BackgroundLocation);
+				//BackgroundLocation = FindViewById<Switch>(Resource.Id.BackgroundLocation);
 				InAppLocationRate = FindViewById<SeekBar>(Resource.Id.InAppLocationRate);
 				InAppLocationRateValue = FindViewById<TextView>(Resource.Id.InAppLocationRateValue);
-				BackgroundLocationRate = FindViewById<SeekBar>(Resource.Id.BackgroundLocationRate);
-				BackgroundLocationRateValue = FindViewById<TextView>(Resource.Id.BackgroundLocationRateValue);
+				//BackgroundLocationRate = FindViewById<SeekBar>(Resource.Id.BackgroundLocationRate);
+				//BackgroundLocationRateValue = FindViewById<TextView>(Resource.Id.BackgroundLocationRateValue);
 				LocationHistoryButton = FindViewById<Button>(Resource.Id.LocationHistoryButton);
 
 				SettingsFormCaption = FindViewById<TextView>(Resource.Id.SettingsFormCaption);
@@ -86,14 +86,14 @@ namespace LocationConnection
 				MapIconSize.Max = MapIconSizeValToProgress(Constants.MapIconSizeMax);
 				MapRatio.Max = MapRatioValToProgress(Constants.MapRatioMax);			
 				InAppLocationRate.Max = InAppLocationRateValToProgress(Constants.InAppLocationRateMax);
-				BackgroundLocationRate.Max = BackgroundLocationRateValToProgress(Constants.BackgroundLocationRateMax);
+				//BackgroundLocationRate.Max = BackgroundLocationRateValToProgress(Constants.BackgroundLocationRateMax);
 
 				SettingsBack.Click += SettingsBack_Click;
 				MapIconSize.ProgressChanged += MapIconSize_ProgressChanged;
 				MapRatio.ProgressChanged += MapRatio_ProgressChanged;
-				BackgroundLocation.Click += BackgroundLocation_Click;
+				//BackgroundLocation.Click += BackgroundLocation_Click;
 				InAppLocationRate.ProgressChanged += InAppLocationRate_ProgressChanged;
-				BackgroundLocationRate.ProgressChanged += BackgroundLocationRate_ProgressChanged;
+				//BackgroundLocationRate.ProgressChanged += BackgroundLocationRate_ProgressChanged;
 				LocationHistoryButton.Click += LocationHistoryButton_Click;
 				SettingsFormCaption.Click += SettingsFormCaption_Click;
 				MessageEdit.Click += MessageEdit_Click;
@@ -141,16 +141,16 @@ namespace LocationConnection
 				{
 					LocationAccuracyPrecise.Enabled = false;
 					LocationAccuracyBalanced.Enabled = false;
-					BackgroundLocation.Enabled = false;
+					//BackgroundLocation.Enabled = false;
 					InAppLocationRate.Enabled = false;
-					BackgroundLocationRate.Enabled = false;
+					//BackgroundLocationRate.Enabled = false;
 				}
 				else
 				{
 					LocationAccuracyPrecise.Enabled = true;
 					LocationAccuracyBalanced.Enabled = true;
 					InAppLocationRate.Enabled = true;
-					if (c.IsLoggedIn())
+					/*if (c.IsLoggedIn())
 					{
 						BackgroundLocation.Enabled = true;
 						BackgroundLocationRate.Enabled = true;
@@ -158,8 +158,8 @@ namespace LocationConnection
 					else
 					{
 						BackgroundLocation.Enabled = false;
-						BackgroundLocationRate.Enabled = false;
-					}
+						/BackgroundLocationRate.Enabled = false;
+					}*/
 				}
 
 				if (c.IsLoggedIn())
@@ -182,22 +182,22 @@ namespace LocationConnection
 					CheckUnmatchBackground.Checked = (bool)Session.UnmatchBackground;
 					CheckRematchBackground.Checked = (bool)Session.RematchBackground;
 
-					BackgroundLocation.Checked = (bool)Session.BackgroundLocation;
-					if (BackgroundLocation.Checked)
+					/*BackgroundLocation.Checked = (bool)Session.BackgroundLocation;
+					if (BackgroundLocation.Enabled && BackgroundLocation.Checked)
 					{
 						BackgroundLocationRate.Enabled = true;
 					}
 					else
 					{
 						BackgroundLocationRate.Enabled = false;
-					}
+					}*/
 
 					LocationAccuracyPrecise.Checked = (Session.LocationAccuracy == 0) ? false : true;
 					LocationAccuracyBalanced.Checked = (Session.LocationAccuracy == 0) ? true : false;
 					InAppLocationRate.Progress = InAppLocationRateValToProgress((int)Session.InAppLocationRate);
 					InAppLocationRateValue.Text = GetTimeString((int)Session.InAppLocationRate);
-					BackgroundLocationRate.Progress = BackgroundLocationRateValToProgress((int)Session.BackgroundLocationRate);
-					BackgroundLocationRateValue.Text = GetTimeString((int)Session.BackgroundLocationRate);
+					//BackgroundLocationRate.Progress = BackgroundLocationRateValToProgress((int)Session.BackgroundLocationRate);
+					//BackgroundLocationRateValue.Text = GetTimeString((int)Session.BackgroundLocationRate);
 				}
 				else
 				{
@@ -219,13 +219,13 @@ namespace LocationConnection
 					CheckUnmatchBackground.Checked = false;
 					CheckRematchBackground.Checked = false;
 	
-					BackgroundLocation.Checked = false;
+					//BackgroundLocation.Checked = false;
 					LocationAccuracyPrecise.Checked = (Settings.LocationAccuracy == 0) ? false : true;
 					LocationAccuracyBalanced.Checked = (Settings.LocationAccuracy == 0) ? true : false;
 					InAppLocationRate.Progress = InAppLocationRateValToProgress((int)Settings.InAppLocationRate);
 					InAppLocationRateValue.Text = GetTimeString((int)Settings.InAppLocationRate);
-					BackgroundLocationRate.Progress = 0;
-					BackgroundLocationRateValue.Text = "";
+					//BackgroundLocationRate.Progress = 0;
+					//BackgroundLocationRateValue.Text = "";
 				}
 			}
 			catch (Exception ex)
@@ -265,6 +265,8 @@ namespace LocationConnection
 				changed = true;
 			}
 
+			bool locationSettingsChanged = false;
+
 			if (c.IsLoggedIn())
 			{
 				string requestStringBase = "action=updatesettings&ID=" + Session.ID + "&SessionID=" + Session.SessionID;
@@ -303,28 +305,31 @@ namespace LocationConnection
 					requestStringAdd += "&RematchBackground=" + CheckRematchBackground.Checked;
 				}
 
-				if (BackgroundLocation.Checked != Session.BackgroundLocation)
+				/*if (BackgroundLocation.Checked != Session.BackgroundLocation)
 				{
 					requestStringAdd += "&BackgroundLocation=" + BackgroundLocation.Checked;
-				}
+				}*/
 
 				if (LocationAccuracyPrecise.Checked && Session.LocationAccuracy == 0)
 				{
 					requestStringAdd += "&LocationAccuracy=1";
+					locationSettingsChanged = true;
 				}
 				else if (LocationAccuracyBalanced.Checked && Session.LocationAccuracy == 1)
 				{
 					requestStringAdd += "&LocationAccuracy=0";
+					locationSettingsChanged = true;
 				}
 
 				if (InAppLocationRateProgressToVal(InAppLocationRate.Progress) != Session.InAppLocationRate)
 				{
 					requestStringAdd += "&InAppLocationRate=" + InAppLocationRateProgressToVal(InAppLocationRate.Progress);
+					locationSettingsChanged = true;
 				}
-				if (BackgroundLocationRateProgressToVal(BackgroundLocationRate.Progress) != Session.BackgroundLocationRate)
+				/*if (BackgroundLocationRateProgressToVal(BackgroundLocationRate.Progress) != Session.BackgroundLocationRate)
 				{
 					requestStringAdd += "&BackgroundLocationRate=" + BackgroundLocationRateProgressToVal(BackgroundLocationRate.Progress);
-				}
+				}*/
 
 				if (requestStringAdd != "") //if the form was changed
 				{
@@ -350,17 +355,20 @@ namespace LocationConnection
 				{
 					Settings.LocationAccuracy = 1;
 					changed = true;
+					locationSettingsChanged = true;
 				}
 				else if (LocationAccuracyBalanced.Checked && Settings.LocationAccuracy == 1)
 				{
 					Settings.LocationAccuracy = 0;
 					changed = true;
+					locationSettingsChanged = true;
 				}
 
 				if (InAppLocationRateProgressToVal(InAppLocationRate.Progress) != Settings.InAppLocationRate)
 				{
 					Settings.InAppLocationRate = InAppLocationRateProgressToVal(InAppLocationRate.Progress);
 					changed = true;
+					locationSettingsChanged = true;
 				}
 				//location updates will restart by the changed value
 			}
@@ -368,6 +376,11 @@ namespace LocationConnection
 			if (changed)
 			{
 				c.SaveSettings();
+			}
+
+			if (locationSettingsChanged && locationUpdating)
+			{
+				RestartLocationUpdates();
 			}
 		}
 
@@ -427,7 +440,7 @@ namespace LocationConnection
 			return progress * 5 + 15;
 		}
 
-		private int BackgroundLocationRateValToProgress(int value) // 300 - 3600, slider 0 - 55
+		/*private int BackgroundLocationRateValToProgress(int value) // 300 - 3600, slider 0 - 55
 		{
 			return (value - 300) / 60;
 		}
@@ -435,7 +448,7 @@ namespace LocationConnection
 		private int BackgroundLocationRateProgressToVal(int progress)
 		{
 			return progress * 60 + 300;
-		}
+		}*/
 
 		private void MapIconSize_ProgressChanged(object sender, SeekBar.ProgressChangedEventArgs e)
 		{
@@ -447,7 +460,7 @@ namespace LocationConnection
 			MapRatioValue.Text = MapRatioProgressToVal(MapRatio.Progress).ToString();
 		}
 
-		private void BackgroundLocation_Click(object sender, EventArgs e)
+		/*private void BackgroundLocation_Click(object sender, EventArgs e)
 		{
 			if (BackgroundLocation.Checked)
 			{
@@ -457,17 +470,17 @@ namespace LocationConnection
 			{
 				BackgroundLocationRate.Enabled = false;
 			}
-		}
+		}*/
 
 		private void InAppLocationRate_ProgressChanged(object sender, SeekBar.ProgressChangedEventArgs e)
 		{
 			InAppLocationRateValue.Text = GetTimeString(InAppLocationRateProgressToVal(InAppLocationRate.Progress));
 		}
 
-		private void BackgroundLocationRate_ProgressChanged(object sender, SeekBar.ProgressChangedEventArgs e)
+		/*private void BackgroundLocationRate_ProgressChanged(object sender, SeekBar.ProgressChangedEventArgs e)
 		{
 			BackgroundLocationRateValue.Text = GetTimeString(BackgroundLocationRateProgressToVal(BackgroundLocationRate.Progress));
-		}
+		}*/
 
 		private void LocationHistoryButton_Click(object sender, EventArgs e)
 		{

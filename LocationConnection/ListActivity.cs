@@ -1,23 +1,3 @@
-/*
- * Fixed:
- * Chat gets updated from other person's conversation
- * Circle on map does not fit in visible area
- * 
- *
- * test app on LGG3
- * small layout before release
- * disable all clicked buttons
- * new logo, for start icon too
- * 
- * 
- * 
- * One time MainActivity opened twice
-Location service restart on reboot
-Upload Loadlist, if location permission needs to be requested, the map does not update afterwards. Database OK. List loads while the dialog is shown.
-
-Can't solve: after Logging in.... text, Getting loca shown for a moment, since textbox is not resizing. Manual resize using Paint did not help.
-
-*/
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -154,6 +134,7 @@ namespace LocationConnection
 		private int statusRoundBackground;
 
 		private Timer firstRunTimer;
+		public static Timer locationTimer;
 
 
 		protected override void OnCreate(Bundle savedInstanceState)
@@ -273,33 +254,69 @@ namespace LocationConnection
 							{
 								if (c.IsLocationEnabled())
 								{
+									if (Session.InAppLocationRate != currentLocationRate) //only restart if the logged-out rate is different than the logged-in one.
+									{
+										RestartLocationUpdates();
+									}
+
 									if (!(localLatitude is null) && !(localLongitude is null) && !(localLocationTime is null)) //this has to be more recent than the loaded data
 									{
 										Session.Latitude = localLatitude;
 										Session.Longitude = localLongitude;
 										Session.LocationTime = localLocationTime;
 										await c.UpdateLocationSync();
+
+										RunOnUiThread(() => //have to run after SetViews() in order for the values not to revert to the not-logged-in value. 
+										{
+											recenterMap = true;
+											if (Session.LastSearchType == Constants.SearchType_Filter)
+											{
+												LoadList();
+											}
+											else
+											{
+												LoadListSearch();
+											}
+											//ListType_itemselected gets called here
+										});
 									}
-									else if (Session.LocationTime is null || c.Now() - Session.LocationTime > Session.InAppLocationRate)
+									else
 									{
-										c.CW("Logged in getting last location");
-										c.LogActivity("Logged in getting last location");
-										
-										await GetLastLocation();
+										//first location update will load the list, otherwise the Getting location... message will remain in the status bar until timeout
+										c.CW("Autologin location unavailable");
+										c.LogActivity("Autologin location unavailable");
 									}
 								}
 								else
 								{
+									c.CW("Autologin LocationDisabledButUsingLocation");
+									c.LogActivity("Autologin LocationDisabledButUsingLocation");
+
 									RunOnUiThread(() => {
 										snack = c.SnackIndef(Resource.String.LocationDisabledButUsingLocation);
-									});									
+									});
+
+									recenterMap = true;
+									if (Session.LastSearchType == Constants.SearchType_Filter)
+									{
+										LoadList();
+									}
+									else
+									{
+										LoadListSearch();
+									}
 								}
 							}
-
-							CheckIntent();
-
-							RunOnUiThread(() => //have to run after SetViews() in order for the values not to revert to the not-logged-in value. 
+							else
 							{
+								c.CW("Autologin logged in, not using location");
+								c.LogActivity("Autologin logged in, not using location");
+
+								if (locationUpdating)
+								{
+									StopLocationUpdates();
+								}
+
 								recenterMap = true;
 								if (Session.LastSearchType == Constants.SearchType_Filter)
 								{
@@ -309,9 +326,9 @@ namespace LocationConnection
 								{
 									LoadListSearch();
 								}
-								//ListType_itemselected gets called here
-							});
+							}
 
+							CheckIntent();
 						}
 						else if (responseString.Substring(0, 6) == "ERROR_")
 						{
@@ -379,7 +396,6 @@ namespace LocationConnection
 							});
 						}
 						autoLogin = false;
-						InitLocationUpdates();
 					});
 				}
 
@@ -546,7 +562,7 @@ namespace LocationConnection
 			}
         }
 
-		protected async override void OnResume()
+		protected override void OnResume()
 		{
 			try {
 				base.OnResume();
@@ -664,14 +680,12 @@ namespace LocationConnection
 					usersLoaded = true;
 				}
 
-				int inAppLocationRate;
 				if (isLoggedIn)
 				{
 					if ((bool)Session.UseLocation && !c.IsLocationEnabled())
 					{
 						snack = c.SnackIndef(Resource.String.LocationDisabledButUsingLocation);
 					}
-					inAppLocationRate = (int)Session.InAppLocationRate;
 				}
 				else
 				{
@@ -683,7 +697,6 @@ namespace LocationConnection
 					{
 						Session.UseLocation = true;
 					}
-					inAppLocationRate = (int)Settings.InAppLocationRate;
 				}
 
 				if (!(bool)Session.UseLocation || !c.IsLocationEnabled()) //the user might have turned off location while having current location checked
@@ -692,60 +705,53 @@ namespace LocationConnection
 				}
 				
 				SetViews();
-				
-				long unixTimestamp = c.Now();
 
-				//getting location if expired
-				if ((bool)Session.UseLocation && c.IsLocationEnabled() && (Session.LocationTime is null || unixTimestamp - Session.LocationTime > inAppLocationRate))
+				c.CW("OnResume Session.UseLocation " + Session.UseLocation + " loc enabled " + c.IsLocationEnabled());
+				c.LogActivity("OnResume Session.UseLocation " + Session.UseLocation + " loc enabled " + c.IsLocationEnabled());
+				if ((bool)Session.UseLocation && c.IsLocationEnabled())
 				{
-					//usually 70 - 800 ms, but sometimes exceeds the 5 seconds.
-					c.CW("OnResume getting last location");
-					c.LogActivity("OnResume getting last location");
-
-					await GetLastLocation();
-
-					c.LogActivity("OnResume got location, LocationTime " + Session.LocationTime);
-				}
-
-				if (autoLogin)
-				{
-					localLatitude = Session.Latitude;
-					localLongitude = Session.Longitude;
-					localLocationTime = Session.LocationTime;
-				}
-				else {
-					InitLocationUpdates(); //since autologin takes time, location update timer starts after it is finished.
-
-					//reloading list if it expired
-					if (Session.LastDataRefresh is null || Session.LastDataRefresh < unixTimestamp - Constants.DataRefreshInterval)
+					if (!locationUpdating)
 					{
-						c.LogActivity("OnResume loading list");
-						recenterMap = true;
-						if (Session.LastSearchType == Constants.SearchType_Filter)
-						{
-							await Task.Run(() => LoadList());
-						}
-						else
-						{
-							await Task.Run(() => LoadListSearch());
-						}
+						c.CW("Location not yet updating");
+						c.LogActivity("Location not yet updating");
+						StartLocationUpdates();
+						ResultSet.Visibility = ViewStates.Visible;
+						ResultSet.Text = res.GetString(Resource.String.GettingLocation);
+						StartLocationTimer();
 					}
-					else //show no result label only if list is not being reloaded, and set map with the results loaded while being in ProfileView
+					else if (!firstLocationAcquired)
 					{
-						c.LogActivity("Setting map only mapLoaded " + mapLoaded + " mapToSet " + mapToSet);
-						if (mapLoaded && mapToSet) //map is not loaded.
-						{
-							StartLoaderAnim();
-							mapSet = false;
-							recenterMap = true;
-							SetMap();
-						}
-						SetResultStatus();
+						c.CW("Location updating, awaiting location");
+						c.LogActivity("Location updating, awaiting location");
+						ResultSet.Visibility = ViewStates.Visible;
+						ResultSet.Text = res.GetString(Resource.String.GettingLocation);
+						StartLocationTimer();
+					}
+					else
+					{
+						c.CW("Location exists");
+						c.LogActivity("Location exists");
+						LoadListStartup();
 					}
 				}
-				if ((bool)Settings.IsMapView && !(bool)Session.UseLocation && !((bool)Session.GeoFilter && (bool)Session.GeoSourceOther))
+				else
 				{
-					ListView_Click(null, null);
+					if (locationUpdating) //not logged in user didn't enable PM, or logged-in user does not use location
+					{
+						StopLocationUpdates();
+					}
+
+					c.CW("OnResume no location");
+					c.LogActivity("OnResume no location");
+					LoadListStartup();
+				}
+
+				if ((!(bool)Session.UseLocation || !c.IsLocationEnabled()) && !((bool)Session.GeoFilter && (bool)Session.GeoSourceOther))
+				{
+					if ((bool)Settings.IsMapView)
+					{
+						ListView_Click(null, null);
+					}
 				}
 
 				if (firstRun) //if alert is not shown, will be changed next time ListActivity is recreated.
@@ -757,7 +763,7 @@ namespace LocationConnection
 				}
 
 				c.CW("Onresume end");
-				c.LogActivity("ListActivity OnResume end");
+				c.LogActivity("OnResume end");
 
 				//ListType_ItemSelected get called here if container is visible
 			}
@@ -772,6 +778,74 @@ namespace LocationConnection
 					StartActivity(i);
 				}
 			}
+		}
+
+		public void StartLocationTimer()
+		{
+			locationTimer = new Timer();
+			locationTimer.Interval = Constants.LocationTimeout;
+			locationTimer.Elapsed += LocationTimer_Elapsed;
+			locationTimer.Start();
+		}
+
+		private void LocationTimer_Elapsed(object sender, ElapsedEventArgs e)
+		{
+			((Timer)sender).Stop();
+			c.CW("Location timeout");
+			c.LogActivity("LocationTimeout");
+			LoadListStartup();
+		}
+
+		public void LoadListStartup()
+		{
+			long unixTimestamp = c.Now();
+
+			if (autoLogin)
+			{
+				c.CW("LoadListStartup autologin, locationUpdating " + locationUpdating + ", locationtime: " + Session.LocationTime);
+				c.LogActivity("LoadListStartup autologin, locationUpdating " + locationUpdating + ", locationtime: " + Session.LocationTime);
+
+				localLatitude = Session.Latitude;
+				localLongitude = Session.Longitude;
+				localLocationTime = Session.LocationTime;
+			}
+			else
+			{
+				c.CW("LoadListStartup not autologin, logged in: " + c.IsLoggedIn() + ", locationtime: " + Session.LocationTime + " Settings.IsMapView " + Settings.IsMapView + " mapToSet " + mapToSet + " Session.LastDataRefresh " + Session.LastDataRefresh + " unixTimestamp " + unixTimestamp);
+				c.LogActivity("LoadListStartup not autologin, logged in: " + c.IsLoggedIn() + ", locationtime: " + Session.LocationTime + " Settings.IsMapView " + Settings.IsMapView + " mapToSet " + mapToSet);
+
+				//reloading list if it expired
+				if (Session.LastDataRefresh is null || Session.LastDataRefresh < unixTimestamp - Constants.DataRefreshInterval)
+				{
+					c.LogActivity("LoadListStartup will load");
+					c.CW("LoadListStartup will load");
+
+					recenterMap = true;
+					if (Session.LastSearchType == Constants.SearchType_Filter)
+					{
+						Task.Run(() => LoadList());
+					}
+					else
+					{
+						Task.Run(() => LoadListSearch());
+					}
+				}
+				else //show no result label only if list is not being reloaded, and set map with the results loaded while being in ProfileView
+				{
+					c.LogActivity("Setting map only mapLoaded " + mapLoaded + " mapToSet " + mapToSet);
+					c.CW("Setting map only mapLoaded " + mapLoaded + " mapToSet " + mapToSet);
+
+					if (mapLoaded && mapToSet) //map is not loaded.
+					{
+						StartLoaderAnim();
+						mapSet = false;
+						recenterMap = true;
+						SetMap();
+					}
+					SetResultStatus();
+				}
+			}
+
 		}
 
 		protected override void OnPause()
@@ -1224,9 +1298,12 @@ namespace LocationConnection
 						if (dialogResponse == res.GetString(Resource.String.DialogYes))
 						{
 							if (UpdateLocationSetting(true)) {
-								InitLocationUpdates();
-								await GetLastLocation();
-								MapViewSecond(); //location was not set or acquired message.
+								firstLocationAcquired = false; // it should be false to start with
+
+								ResultSet.Visibility = ViewStates.Visible;
+								ResultSet.Text = res.GetString(Resource.String.GettingLocation);
+
+								StartLocationUpdates();
 							}
 						}
 						else
@@ -1335,62 +1412,7 @@ namespace LocationConnection
 				c.ReportError(responseString);
 				return false;
 			}
-		}
-
-		public async Task UpdateLocationLast()
-		{
-			RunOnUiThread(() => {
-				ResultSet.Visibility = ViewStates.Visible;
-				ResultSet.Text = res.GetString(Resource.String.GettingLocation);
-			});
-
-			Android.Locations.Location location = await fusedLocationProviderClient.GetLastLocationAsync();
-
-			if (!(location is null) && (bool)Session.UseLocation) //user with location setting off could have logged in by the time we got the not-logged-in location.
-			{
-				long unixTimestamp = c.Now();
-				Session.Latitude = location.Latitude;
-				Session.Longitude = location.Longitude;
-				Session.LocationTime = unixTimestamp;
-
-				c.LogLocation(unixTimestamp + "|" + ((double)Session.Latitude).ToString(CultureInfo.InvariantCulture) + "|" + ((double)Session.Longitude).ToString(CultureInfo.InvariantCulture) + "|1");
-
-				if (c.IsLoggedIn())
-				{
-					Session.LastActiveDate = unixTimestamp;
-					await c.UpdateLocationSync();
-				}
-			}
-			else
-			{
-				//could not get last known location
-			}
-		}
-
-		public Task GetLastLocation()
-		{
-			return Task.Run(async () =>
-			{
-				var task = UpdateLocationLast();
-				Stopwatch stw = new Stopwatch();
-				stw.Start();
-				if (await Task.WhenAny(task, Task.Delay(Constants.LocationTimeout)) != task)
-				{
-					stw.Stop();
-					RunOnUiThread(() =>
-					{
-						if (c.snackPermanentText != Resource.String.LocationTimeout) //prevents duplicate apperance
-						{
-							c.SnackIndef(Resource.String.LocationTimeout);
-						}
-					});
-				}
-				else
-				{
-					stw.Stop();
-				}
-			});
-		}
+		}		
 
 		private void StatusImage_Click(object sender, EventArgs e)
 		{
@@ -1708,18 +1730,19 @@ namespace LocationConnection
 					{
 						if (UpdateLocationSetting(true))
 						{
-							InitLocationUpdates();
-							await GetLastLocation();
+							firstLocationAcquired = false; // it should be false to start with
 
-							Session.ResultsFrom = 1;
-							recenterMap = true;
-							await Task.Run(() => LoadList());
+							ResultSet.Visibility = ViewStates.Visible;
+							ResultSet.Text = res.GetString(Resource.String.GettingLocation);
+
+							StartLocationUpdates(); //first location update will load the list
 						}
 					}
 					else
 					{
 						SetDistanceSourceAddress();
 					}
+					return;
 				}
 			}
 			else
@@ -2213,8 +2236,11 @@ namespace LocationConnection
 
 				//without setting map again, map would reset on OnResume.
 				thisMap = map;
-				if (usersLoaded && (bool)Settings.IsMapView)
+				if (usersLoaded && mapToSet && !listLoading)
 				{
+					c.LogActivity("ViewDidLayoutSubviews setting map");
+					c.CW("OnMapReady setting map");
+
 					StartLoaderAnim();
 					mapSet = false;
 					recenterMap = true;

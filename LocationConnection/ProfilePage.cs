@@ -82,6 +82,7 @@ namespace LocationConnection
 						return;
 					}
 					selectedFile = data.Data;
+					c.CW("OnActivityResult selectedFile " + selectedFile);
 				}
 			}
 			catch (Exception ex)
@@ -93,8 +94,20 @@ namespace LocationConnection
 		public async void OnResumeEnd()
 		{
 			ExifInterface exif = null;
-			exif = new ExifInterface(ContentResolver.OpenInputStream(selectedFile));
-			
+
+			c.CW("OnResumeEnd exif1 " + exif + " " + selectedFile);
+			try
+			{
+				exif = new ExifInterface(ContentResolver.OpenInputStream(selectedFile));
+			}
+			catch (Exception ex)
+			{
+				await c.ErrorAlert(res.GetString(Resource.String.ImageLoadingError) + " " + ex.Message);
+				c.ReportErrorSilent(res.GetString(Resource.String.ImageLoadingError) + " " + ex.Message);
+				return;
+			}
+				
+			c.CW("OnResumeEnd exif2 " + exif);
 			c.LogActivity("OnResumeEnd exif " + exif);
 
 			int orientation = 0;
@@ -109,6 +122,7 @@ namespace LocationConnection
 			}
 			catch (Exception ex)
 			{
+				c.CW("bm exception");
 				if (ex is OutOfMemoryException) //does not seem to be an happen now that bm is recycled after closing the editor
 				{
 					await c.ErrorAlert(res.GetString(Resource.String.OutOfMemoryError));
@@ -125,6 +139,7 @@ namespace LocationConnection
 			}
 
 			c.LogActivity("bm " + bm);
+
 			c.LogActivity("Image width " + bm.Width + " height " + bm.Height + " orientation " + orientation);
 
 			switch (orientation)
@@ -157,11 +172,11 @@ namespace LocationConnection
 				{
 					await c.ErrorAlert(res.GetString(Resource.String.CopyImageError) + " " + ex.Message);
 					c.ReportErrorSilent(res.GetString(Resource.String.CopyImageError) + " " + ex.Message);
-					selectedFile = null;
 					return;
 				}
 
-				rc.UploadFile(fileName, RegisterActivity.regsessionid); //works for profile edit too*/
+				selectedFile = null;
+				rc.UploadFile(fileName, RegisterActivity.regsessionid); //works for profile edit too
 			}
 			else
 			{

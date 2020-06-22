@@ -511,10 +511,18 @@ namespace LocationConnection
 					{
 						if (responseString.Length > 2) //a change happened
 						{
-							if (!(bool)Session.UseLocation && UseLocationSwitch.Checked)
+							bool locationEnabled = false;
+							bool locationDisabled = false;
+
+							if (!(bool)Session.UseLocation && UseLocationSwitch.Checked) //location got turned on
 							{
-								InitLocationUpdates();
+								locationEnabled = true;
 							}
+							else if ((bool)Session.UseLocation && !UseLocationSwitch.Checked)
+							{
+								locationDisabled = true;
+							}
+
 							if (GetSexChoice() != Session.SexChoice)
 							{
 								ListActivity.listProfiles.Clear();
@@ -522,8 +530,18 @@ namespace LocationConnection
 							}
 							c.LoadCurrentUser(responseString);
 
-							if (!(bool)Session.UseLocation)
+							if (locationEnabled)
 							{
+								StartLocationUpdates();
+							}
+							else if (locationDisabled)
+							{
+								StopLocationUpdates();
+								if (!string.IsNullOrEmpty(locationUpdatesTo))
+								{
+									EndLocationShare();
+									locationUpdatesTo = null;
+								}
 								Session.Latitude = null;
 								Session.Longitude = null;
 								Session.LocationTime = null;

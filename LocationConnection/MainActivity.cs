@@ -107,11 +107,17 @@ namespace LocationConnection
 				if (IntentData.logout)
 				{
 					IntentData.logout = false;
-					c.ClearCurrentUser();
+
 					if (!string.IsNullOrEmpty(locationUpdatesTo))
 					{
+						EndLocationShare();
 						locationUpdatesTo = null;
 					}
+					locationUpdatesFrom = null;
+					locationUpdatesFromData = null;
+
+					c.ClearCurrentUser();
+
 					if (IntentData.authError)
 					{
 						IntentData.authError = false;
