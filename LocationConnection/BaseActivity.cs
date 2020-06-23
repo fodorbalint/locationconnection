@@ -42,7 +42,6 @@ namespace LocationConnection
 		public static LocationCallback locationCallback;
 		private static FusedLocationProviderClient fusedLocationProviderClient;
 		public static bool isAppVisible;
-		private static Timer t;
 		public static bool locationUpdating;
 		public static int currentLocationRate;
 		public static bool firstLocationAcquired;
@@ -143,8 +142,6 @@ namespace LocationConnection
 
 			isAppVisible = false;
 
-			EnterBackgroundCheck();
-
 			c.LogActivity(LocalClassName.Split(".")[1] + " OnPause");
 		}
 
@@ -208,36 +205,6 @@ namespace LocationConnection
 			}
 		}
 
-		protected void EnterBackgroundCheck() //time between an activity's OnPause and the next's OnResume?
-		{
-			if (t is null)
-			{
-				t = new Timer();
-				t.Elapsed += Timer_Elapsed;
-				t.Interval = Constants.ActivityChangeInterval;
-				t.Start();
-			}
-		}
-		
-		private void Timer_Elapsed(object sender, ElapsedEventArgs e)
-		{
-			t.Stop();
-			t = null;
-
-			if (!isAppVisible)
-			{
-				if (!string.IsNullOrEmpty(locationUpdatesTo))
-				{
-					EndLocationShare();
-					locationUpdatesTo = null; //stop real-time location updates when app goes to background
-				}
-				locationUpdatesFrom = null;
-				locationUpdatesFromData = null;
-
-				StopLocationUpdates();
-			}
-		}
-
 		protected void StartLocationUpdates() //must run on UI thread
 		{
 			try
@@ -268,16 +235,15 @@ namespace LocationConnection
 				locationUpdating = true;
 				currentLocationRate = interval;
 
-				c.CW("Location updates started with interval " + interval);
-				c.LogActivity("Location updates started with interval " + interval);
+				CommonMethods.LogStatic("Location updates started with interval " + interval);
 			}
 			catch (Exception ex)
 			{
-				c.LogActivity(ex.Message);
+				CommonMethods.LogActivityStatic(ex.Message);
 			}
 		}
 
-		public void StopLocationUpdates() //must run on UI thread
+		public static void StopLocationUpdates() //must run on UI thread
 		{
 			try
 			{
@@ -287,20 +253,18 @@ namespace LocationConnection
 					locationUpdating = false;
 					currentLocationRate = 0;
 					firstLocationAcquired = false;
-					c.CW("Location updates stopped");
-					c.LogActivity("Location updates stopped");
+					CommonMethods.LogStatic("Location updates stopped");
 				}
 			}
 			catch (Exception ex)
 			{
-				c.LogActivity(ex.Message);
+				CommonMethods.LogActivityStatic(ex.Message);
 			}
 		}
 
 		public void RestartLocationUpdates()
 		{
-			c.LogActivity("Restarting location updates");
-			c.CW("Restarting location updates");
+			CommonMethods.LogStatic("Restarting location updates");
 			bool _firstLocationAcquired = firstLocationAcquired;
 			StopLocationUpdates();
 			StartLocationUpdates();
@@ -406,7 +370,7 @@ namespace LocationConnection
 			}			
 		}
 
-		protected void EndLocationShare(int? targetID = null)
+		public static void EndLocationShare(int? targetID = null)
 		{
 			string url = "action=updatelocationend&ID=" + Session.ID + "&SessionID=" + Session.SessionID + "&LocationUpdates=";
 			if (targetID is null) //stop all
@@ -417,6 +381,8 @@ namespace LocationConnection
 			{
 				url += targetID;
 			}
+
+			CommonMethods c = new CommonMethods(null);
 			string responseString = c.MakeRequestSync(url);
 			if (responseString == "OK")
 			{

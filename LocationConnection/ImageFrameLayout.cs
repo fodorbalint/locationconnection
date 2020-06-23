@@ -18,6 +18,7 @@ using Android.Util;
 using Android.Views;
 using Android.Views.Animations;
 using Android.Widget;
+using AndroidX.Core.Content;
 
 namespace LocationConnection
 {
@@ -39,6 +40,7 @@ namespace LocationConnection
 		float? touchStartY;
 		Stopwatch stw;
 		View currentImage;
+		View imageShadow;
 		Timer timer;
 		float scaleRatio = 1.1F;
 		bool imageSelected; 
@@ -88,13 +90,37 @@ namespace LocationConnection
 
 		public void Reposition()
 		{
-			for (int i=0; i < ChildCount; i++)
+			context.c.CW("Reposition tileSize: " + tileSize);
+			LayoutParams p0 = new LayoutParams((int)tileSize, (int)tileSize);
+			imageShadow.LayoutParameters = p0;
+			imageShadow.SetX(0);
+			imageShadow.SetY(0);
+			imageShadow.Visibility = ViewStates.Invisible;
+
+			for (int i = 0; i < ChildCount - 1; i++)
 			{
-				LayoutParams p0 = new LayoutParams((int)tileSize, (int)tileSize);
+				p0 = new LayoutParams((int)tileSize, (int)tileSize);
 				GetChildFromDrawOrder(i).LayoutParameters = p0;
 				GetChildFromDrawOrder(i).SetX(GetPosX(i));
 				GetChildFromDrawOrder(i).SetY(GetPosY(i));
 			}
+		}
+
+		public void AddShadow()
+		{
+			imageShadow = new View(context);
+			imageShadow.SetBackgroundColor(new Color(ContextCompat.GetColor(context, Resource.Color.ButtonOnWhite)));
+
+			LayoutParams p0 = new LayoutParams((int)tileSize, (int)tileSize);
+			imageShadow.LayoutParameters = p0;
+			imageShadow.SetX(GetPosX(0));
+			imageShadow.SetY(GetPosY(0));
+			imageShadow.SetZ(0.5f);
+			imageShadow.Alpha = 0.5f;
+
+			AddView(imageShadow);
+
+			imageShadow.Visibility = ViewStates.Invisible; //if Gone was used, it could not be set visible afterwards.
 		}
 
 		public void AddPicture(string picture, int pos)
@@ -125,7 +151,7 @@ namespace LocationConnection
 				{
 					await im.LoadImage(UploadedImage, RegisterActivity.regsessionid, picture, false, true);
 				}
-			});					
+			});
 
 			LayoutParams p0 = new LayoutParams((int)tileSize, (int)tileSize);
 			UploadedImageContainer.LayoutParameters = p0;
@@ -301,9 +327,9 @@ namespace LocationConnection
 
 		public void RefitImagesContainer()
 		{
-			if (ChildCount > 0)
+			if (ChildCount - 1 > 0)
 			{
-				int indexCount = ChildCount - 1;
+				int indexCount = ChildCount - 2;
 				context.RunOnUiThread(() => {
 					LayoutParameters.Width = (int)(BaseActivity.screenWidth - 20 * BaseActivity.pixelDensity);
 					LayoutParameters.Height = (int)((indexCount - indexCount % numColumns) / numColumns * (tileSize + tileSpacing * BaseActivity.pixelDensity) + tileSize);
@@ -395,7 +421,7 @@ namespace LocationConnection
 
 				startIndexPos = GetIndexFromPos(touchCurrentX - relativeLeft, touchCurrentY + context.MainScroll.ScrollY - relativeTop);
 
-				if (startIndexPos < ChildCount)
+				if (startIndexPos < ChildCount - 1)
 				{
 					imageSelected = true;
 
@@ -412,7 +438,7 @@ namespace LocationConnection
 					picStartY = GetPosY(startIndexPos);
 				}
 			}
-			else if (stw.ElapsedMilliseconds <= pressTime && (Math.Abs(touchCurrentX - (float)touchStartX) >= pressDistance * BaseActivity.pixelDensity ||  Math.Abs(touchCurrentY - (float)touchStartY) >= pressDistance * BaseActivity.pixelDensity))
+			else if (stw.ElapsedMilliseconds <= pressTime && (Math.Abs(touchCurrentX - (float)touchStartX) >= pressDistance * BaseActivity.pixelDensity || Math.Abs(touchCurrentY - (float)touchStartY) >= pressDistance * BaseActivity.pixelDensity))
 			{
 				touchStarted = false;
 			}
@@ -422,6 +448,23 @@ namespace LocationConnection
 				float distY = touchCurrentY - dragStartY;
 				currentImage.SetX(picStartX + distX);
 				currentImage.SetY(picStartY + distY);
+
+				float centerX = currentImage.GetX() + tileSize / 2;
+				float centerY = currentImage.GetY() + tileSize / 2;
+
+				int i = GetIndexFromPos(centerX, centerY);
+
+				if (i < ChildCount - 1 && i >= 0)
+				{
+					imageShadow.Visibility = ViewStates.Visible;
+					imageShadow.SetX(GetPosX(i));
+					imageShadow.SetY(GetPosY(i));
+				}
+				else //out of range
+				{
+					imageShadow.Visibility = ViewStates.Invisible;
+				}
+
 			}
 		}
 
@@ -430,13 +473,14 @@ namespace LocationConnection
 			if (imageMovable)
 			{
 				imageMovable = false;
+				imageShadow.Visibility = ViewStates.Invisible;
 
 				float centerX = currentImage.GetX() + tileSize / 2;
 				float centerY = currentImage.GetY() + tileSize / 2;
 				
 				int endIndexPos = GetIndexFromPos(centerX, centerY);
 				
-				if (endIndexPos < ChildCount && endIndexPos >= 0)
+				if (endIndexPos < ChildCount - 1 && endIndexPos >= 0)
 				{
 					int endX = GetPosX(endIndexPos);
 					int endY = GetPosY(endIndexPos);
@@ -555,24 +599,24 @@ namespace LocationConnection
 		private void Timer_Elapsed2(object sender, ElapsedEventArgs e)
 		{
 			timer.Stop();
-			currentImage.SetZ(0);
 			touchStarted = false;
+			currentImage.SetZ(0);
 		}
 
 		private View GetChildFromDrawOrder(int i)
 		{
-			return GetChildAt(drawOrder[i]);
+			return GetChildAt(drawOrder[i] + 1);
 		}
 
 		private int GetDrawPosFromChildIndex(int i)
 		{
-			return drawOrder.IndexOf(i);
+			return drawOrder.IndexOf(i - 1);
 		}
 
 		private void RemoveViewFromDrawOrder(int i)
 		{
 			int removeIndex = drawOrder[i];
-			RemoveViewAt(drawOrder[i]);
+			RemoveViewAt(drawOrder[i] + 1);
 			drawOrder.RemoveAt(i);	
 			
 			for (int j = 0; j < drawOrder.Count; j++)

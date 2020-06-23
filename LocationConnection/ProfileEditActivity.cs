@@ -41,9 +41,7 @@ namespace LocationConnection
 			try { 
 				base.OnCreate(savedInstanceState);
 
-				c.CW("OnCreate savedInstanceState " + (savedInstanceState is null));
-
-
+				c.CW("OnCreate savedInstanceState is null " + (savedInstanceState is null));
 
 				//Test reset
 				/*
@@ -59,8 +57,6 @@ namespace LocationConnection
 					field.SetValue(null, null);
 				}
 				*/
-
-
 
 				if (!ListActivity.initialized && !(savedInstanceState is null))
 				{
@@ -210,6 +206,7 @@ namespace LocationConnection
 				ImageCache.imagesInProgress = new List<string>();
 				ImageCache.imageViewToLoadLater = new Dictionary<ImageView, string>();
 
+				ImagesUploaded.AddShadow();
 				int i = 0;
 				foreach (string image in uploadedImages)
 				{

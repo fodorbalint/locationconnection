@@ -10,9 +10,9 @@ using Android.Content;
 using Android.Graphics;
 using Android.OS;
 using Android.Runtime;
-using Android.Support.V4.Content;
 using Android.Views;
 using Android.Widget;
+using AndroidX.Core.Content;
 using Java.Lang;
 
 namespace LocationConnection

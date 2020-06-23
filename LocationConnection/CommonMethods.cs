@@ -16,7 +16,6 @@ using Android.Graphics;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.Design.Widget;
-using Android.Support.V4.Content;
 using Android.Text;
 using Android.Text.Style;
 using Android.Views;
@@ -30,6 +29,7 @@ using Android.Text.Util;
 using System.Net.Http;
 using System.Globalization;
 using Java.Net;
+using AndroidX.Core.Content;
 
 namespace LocationConnection
 {
@@ -419,7 +419,7 @@ namespace LocationConnection
 				}
 				else if (responseString == "AUTHORIZATION_ERROR")
 				{
-					((BaseActivity)context).StopLocationUpdates();	
+					BaseActivity.StopLocationUpdates();	
 				}
 				return false;
 			}
@@ -427,7 +427,7 @@ namespace LocationConnection
 
 		public string GetTimeDiffStr(long? pastTime, bool isShort)
 		{
-			Android.Content.Res.Resources res = context.Resources;
+			Resources res = context.Resources;
 			long unixTimestamp = Now();
 			if (pastTime == unixTimestamp)
 			{
@@ -440,7 +440,6 @@ namespace LocationConnection
 					return res.GetString(Resource.String.NowSmall);
 				}
 			}
-			StackTrace stackTrace = new StackTrace();
 			TimeSpan ts = TimeSpan.FromSeconds((long)(unixTimestamp - pastTime));
 
 			string day = res.GetString(Resource.String.Day);
@@ -894,10 +893,21 @@ namespace LocationConnection
 			System.Diagnostics.Debug.WriteLine(DateTime.UtcNow.ToString(@"yyyy-MM-dd HH\:mm\:ss.fff") + " ----------" + message + "----------" + System.Environment.NewLine);
 		}
 
+		public static void CWStatic(string message)
+		{
+			System.Diagnostics.Debug.WriteLine(DateTime.UtcNow.ToString(@"yyyy-MM-dd HH\:mm\:ss.fff") + " ----------" + message + "----------" + System.Environment.NewLine);
+		}
+
 		public void Log(string message)
 		{
 			LogActivity(message);
 			CW(message);
+		}
+
+		public static void LogStatic(string message)
+		{
+			LogActivityStatic(message);
+			CWStatic(message);
 		}
 
 		public string ShowClass<T>()

@@ -24,7 +24,6 @@ using Android.Runtime;
 using Android.Support.Constraints;
 using Android.Support.Design.Widget;
 using Android.Support.V4.App;
-using Android.Support.V4.Content;
 using Android.Support.V7.App;
 using Android.Support.V7.Widget;
 using Android.Text;
@@ -34,8 +33,12 @@ using Android.Views.Animations;
 using Android.Views.InputMethods;
 using Android.Widget;
 using AndroidX.Core.Graphics;
+//using AndroidX.Lifecycle; //I don't know how to add observer using this package.
+using Android.Arch.Lifecycle;
+using Java.Interop;
 using Xamarin.Essentials;
 using static Android.Gms.Maps.GoogleMap;
+using AndroidX.Core.Content;
 
 namespace LocationConnection
 {
@@ -135,7 +138,6 @@ namespace LocationConnection
 
 		private Timer firstRunTimer;
 		public static Timer locationTimer;
-
 
 		protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -513,6 +515,7 @@ namespace LocationConnection
 				ReloadPulldown.SetY(-ReloadPulldown.Height);
 				SetSupportActionBar(MainPageToolbar);
 
+				Session.LastDataRefresh = null; //when backgrounding app and foregrounding, ListActivity is recreated on Android 8 (LG G5), and the list adapter is emptied
 				mapLoaded = false;
 				usersLoaded = false;
                 mapToSet = false;
@@ -584,7 +587,7 @@ namespace LocationConnection
 
 				//c.IsLoggedIn() true does not mean, all session variables are set. Nullable object must have a value error can occur if autologin response is at the same time as ONResume.
 				bool isLoggedIn = c.IsLoggedIn();
-				c.Log("OnResume logged in " + isLoggedIn + " locationUpdating " + locationUpdating);
+				c.Log("OnResume logged in " + isLoggedIn + " locationUpdating " + locationUpdating + " Session.LastDataRefresh " + Session.LastDataRefresh);
 
 				if (isLoggedIn)
 				{
@@ -685,6 +688,8 @@ namespace LocationConnection
 				}
 				newListProfiles = null;
 
+				//On LG G5, clicking the home button and opening the app again will clear the list. Not on M5.
+
 				if (isLoggedIn)
 				{
 					if ((bool)Session.UseLocation && !c.IsLocationEnabled())
@@ -731,6 +736,10 @@ namespace LocationConnection
 							ResultSet.Visibility = ViewStates.Visible;
 							ResultSet.Text = res.GetString(Resource.String.GettingLocation);
 							StartLocationTimer();
+						}
+						else
+						{
+							LoadListStartup();
 						}
 					}
 					else if (!firstLocationAcquired)
@@ -842,7 +851,7 @@ namespace LocationConnection
 				}
 				else //show no result label only if list is not being reloaded, and set map with the results loaded while being in ProfileView
 				{
-					c.Log("Setting map only mapLoaded " + mapLoaded + " mapToSet " + mapToSet);
+					c.Log("Setting map only if mapLoaded " + mapLoaded + " mapToSet " + mapToSet);
 
 					if (mapLoaded && mapToSet) //map is not loaded on startup. 
 																	   //Settings.IsMapView is needed in the case that user filtered by current location, and now turns off uselocation in profile edit, and returns.

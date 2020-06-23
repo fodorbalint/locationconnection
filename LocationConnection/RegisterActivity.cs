@@ -245,6 +245,7 @@ namespace LocationConnection
 					ImageCache.imagesInProgress = new List<string>();
 					ImageCache.imageViewToLoadLater = new Dictionary<ImageView, string>();
 
+					ImagesUploaded.AddShadow();
 					int i = 0;
 					foreach (string image in uploadedImages)
 					{
