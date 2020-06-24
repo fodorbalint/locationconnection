@@ -107,6 +107,7 @@
 	<string name="ImageLoadingError">The image could not be loaded. Please try again.\nMessage:</string>
 	<string name="CopyImageError">Image processing failed:</string>
 	<string name="TooLargeBitmap">The image is too large to display: [width] x [height] px.\nReduce the resolution, or crop the image to square to upload it directly.</string>
+	<string name="TooLargeBitmapNoBm">The image is too large to display.\nReduce the resolution, or crop the image to square to upload it directly.</string>
 	<string name="OtherBitmapError">The image cannot be displayed: [error]\nCrop the image to sqare to upload it directly.</string>
 	<string name="ImageMoveError">Moving the image failed: [error]\nTry again, or crop the image to sqare to upload it directly.</string>
 	<string name="CropImageError">Image cropping failed:</string>

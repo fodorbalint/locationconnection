@@ -100,12 +100,11 @@ namespace LocationConnection
                         return;
                     }
 
-                    //context.c.CW("Exists " + userID + " at " + imgID);
-                    //context.c.LogActivity("Exists " + userID + " at " + imgID);
+                    //context.c.Log("Exists " + userID + " at " + imgID);
 
                     lock (lockObj)
                     {
-                        //context.c.LogActivity("locking existing at " + userID);
+                        //context.c.Log("locking existing at " + userID);
 
                         if (imageViewToLoadLater.ContainsKey(imageView))
                         {
@@ -163,12 +162,11 @@ namespace LocationConnection
 
                     lock (lockObj)
                     {
-                        //context.c.LogActivity("locking new at " + userID);
+                        //context.c.Log("locking new at " + userID);
 
                         if (imagesInProgress.IndexOf(saveName) != -1) //saveName must be used, not userID, because on the profile edit page there are multiple pictures from the same user.
                         {
-                            //context.c.CW("Cancelled loading " + userID + " at " + imgID); 
-                            //context.c.LogActivity("Cancelled loading " + userID + " at " + imgID);
+                            //context.c.Log("Cancelled loading " + userID + " at " + imgID); 
 
                             //For a chatlist with 3 items, 4 imageViews are used. The first is called 13 times (with all 3 IDs), the second called once, the third once, and the fourth 24 times (with all 3 IDs).
                             try
@@ -186,8 +184,7 @@ namespace LocationConnection
                         imagesInProgress.Add(saveName);
                     }
 
-                    //context.c.CW("Requesting " + userID + " at " + imgID); //+ " arr " + string.Join('|', imagesInProgress) if used at Completed, "Collection was modified; enumeration operation may not execute" error may occur.
-                    //context.c.LogActivity("Requesting " + userID + " at " + imgID);
+                    //context.c.Log("Requesting " + userID + " at " + imgID); //+ " arr " + string.Join('|', imagesInProgress) if used at Completed, "Collection was modified; enumeration operation may not execute" error may occur.
 
                     byte[] bytes = null;
 
@@ -216,8 +213,7 @@ namespace LocationConnection
                         }
                     }
 
-                    //context.c.CW("Completed " + userID + " at " + imgID);
-                    //context.c.LogActivity("Completed " + userID + " at " + imgID);
+                    //context.c.Log("Completed " + userID + " at " + imgID);
 
                     if (bytes != null)
                     {
@@ -248,10 +244,7 @@ namespace LocationConnection
                             {
                                 imageView.SetImageBitmap(bmp);
                             }
-
-                            //context.c.CW(str);
-                            //context.c.LogActivity(str);
-
+                            //context.c.Log(str);
                         });
                     }
                     else
@@ -288,15 +281,13 @@ namespace LocationConnection
             {
                 using FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate);
                 fs.Write(data, 0, data.Length);
-                //context.c.CW("Cache saving " + fileName);
-                //context.c.LogActivity("Cache saving " + fileName);
+                //context.c.Log("Cache saving " + fileName);
             }
             catch (Exception ex)
             {
                 try
                 {
-                    context.c.LogActivity(" Error saving image: " + ex.Message);
-                    context.c.CW("Error saving image: " + ex.Message);
+                    context.c.Log(" Error saving image: " + ex.Message);
                 }
                 catch
                 {
@@ -307,16 +298,14 @@ namespace LocationConnection
         private Bitmap Load(string imageName)
         {
             string fileName = System.IO.Path.Combine(CommonMethods.cacheFolder, imageName);
-            //context.c.CW("Cache loading " + fileName);
-            //context.c.LogActivity("Cache loading " + fileName);
+            //context.c.Log("Cache loading " + fileName);
             return BitmapFactory.DecodeFile(fileName);
         }
 
         public bool Exists(string imageName)
         {
             string fileName = System.IO.Path.Combine(CommonMethods.cacheFolder, imageName);
-            //context.c.CW("Cache exists? " + fileName + " " + File.Exists(fileName));
-            //context.c.LogActivity("Cache exists? " + fileName + " " + File.Exists(fileName));
+            //context.c.Log("Cache exists? " + fileName + " " + File.Exists(fileName));
             return File.Exists(fileName);
         }
     }

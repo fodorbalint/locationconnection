@@ -39,7 +39,6 @@ namespace LocationConnection
 		public EditText ChatEditMessage;
 		IMenuItem MenuFriend, MenuLocationUpdates, MenuUnmatch, MenuReport, MenuBlock;
 
-		public Resources res;
 		InputMethodManager imm;
 		ChatMessageWindowAdapter adapter;
 		List<MessageItem> messageItems;
@@ -85,7 +84,6 @@ namespace LocationConnection
 
 				imm = (InputMethodManager)GetSystemService(Context.InputMethodService);
 				c.view = MainLayout;
-				res = Resources;
 				menuCreated = false;
 
 				SetSupportActionBar(PageToolbar);
@@ -642,7 +640,7 @@ namespace LocationConnection
 				{
 					if (responseString.Length > 2) //a change happened
 					{
-						c.LogActivity("ChatOne changed settings: " + responseString);
+						c.Log("ChatOne changed settings: " + responseString);
 						c.LoadCurrentUser(responseString);
 						StartRealTimeLocation();
 					}
@@ -776,6 +774,7 @@ namespace LocationConnection
 							}
 						}
 					}
+					IntentData.targetID = Session.CurrentMatch.TargetID; //if in standalone we click on a chat notification, and unmatch the user, when going back, the profile needs to be refreshed
 					Session.CurrentMatch = null;
 					OnBackPressed();
 				}
@@ -832,6 +831,7 @@ namespace LocationConnection
 							if (ListActivity.listProfiles[i].ID == Session.CurrentMatch.TargetID)
 							{
 								ListActivity.listProfiles.RemoveAt(i);
+								ListActivity.adapterToSet = true;
 								break;
 							}
 						}
@@ -847,6 +847,7 @@ namespace LocationConnection
 							}
 						}
 					}
+					IntentData.targetID = Session.CurrentMatch.TargetID; //if in standalone we click on a chat notification, and block the user, the profile needs to vanish
 					OnBackPressed();
 				}
 				else
@@ -860,13 +861,14 @@ namespace LocationConnection
 		{
 			Intent i = new Intent(this, typeof(ProfileViewActivity));
 			i.SetFlags(ActivityFlags.ReorderToFront);
-			IntentData.targetID = (int)Session.CurrentMatch.TargetID;
-			IntentData.profileViewPageType = Constants.ProfileViewType_Standalone;		
+			IntentData.profileViewPageType = Constants.ProfileViewType_Standalone;
+			IntentData.targetID = (int)Session.CurrentMatch.TargetID; 
 			StartActivity(i);
 		}		
 
 		private void ChatOneBack_Click(object sender, EventArgs e)
 		{
+			IntentData.targetID = Session.CurrentMatch.TargetID; //if in standalone we click on a chat notification, but we get unmatched, when going back, the profile needs to be refreshed
 			OnBackPressed();
 		}
 

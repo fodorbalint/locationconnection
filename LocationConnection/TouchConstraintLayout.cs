@@ -37,16 +37,6 @@ namespace LocationConnection
 			this.context = (TouchActivity)context;
 		}
 
-		/*protected override void OnDraw(Canvas canvas)
-		{
-			context.c.CW("OnDraw " + context.currentScrollX);
-			if (!(context.stw is null) && context.stw.IsRunning)
-			{
-				ScrollX = context.currentScrollX;
-			}
-			base.OnDraw(canvas);
-		}*/
-
 		public override bool OnTouchEvent(MotionEvent e)
 		{
 			switch (e.Action)

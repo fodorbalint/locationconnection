@@ -90,7 +90,7 @@ namespace LocationConnection
 
 		public void Reposition()
 		{
-			context.c.CW("Reposition tileSize: " + tileSize);
+			context.c.Log("Reposition tileSize: " + tileSize);
 			LayoutParams p0 = new LayoutParams((int)tileSize, (int)tileSize);
 			imageShadow.LayoutParameters = p0;
 			imageShadow.SetX(0);
@@ -109,14 +109,14 @@ namespace LocationConnection
 		public void AddShadow()
 		{
 			imageShadow = new View(context);
-			imageShadow.SetBackgroundColor(new Color(ContextCompat.GetColor(context, Resource.Color.ButtonOnWhite)));
+			imageShadow.SetBackgroundColor(new Color(ContextCompat.GetColor(context, Resource.Color.ContentDarkBackground)));
 
 			LayoutParams p0 = new LayoutParams((int)tileSize, (int)tileSize);
 			imageShadow.LayoutParameters = p0;
 			imageShadow.SetX(GetPosX(0));
 			imageShadow.SetY(GetPosY(0));
 			imageShadow.SetZ(0.5f);
-			imageShadow.Alpha = 0.5f;
+			imageShadow.Alpha = 0.75f;
 
 			AddView(imageShadow);
 

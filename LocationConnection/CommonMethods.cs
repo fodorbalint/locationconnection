@@ -82,7 +82,6 @@ namespace LocationConnection
 							string value = line.Substring(pos + 1).Trim();
 							if (value != "")
 							{
-								//CW("LoadSettings from file " + key + " --- " + value);
 								FieldInfo fieldInfo = type.GetField(key);
 								if (!(fieldInfo is null)) //if that setting still exists in this version of the app
 								{
@@ -111,7 +110,6 @@ namespace LocationConnection
 						FieldInfo defField = typeSDef.GetField(field.Name);
 						if (!(defField is null)) //other address data has no default.
 						{
-							//CW("LoadSettings got from default " + field.Name + " --- " + defField.GetValue(null));
 							field.SetValue(null, defField.GetValue(null));
 						}
 					}
@@ -384,9 +382,9 @@ namespace LocationConnection
 			if (!string.IsNullOrEmpty(BaseActivity.locationUpdatesTo))
 			{
 				url += "&LocationUpdates=" + BaseActivity.locationUpdatesTo + "&Frequency=" + Session.InAppLocationRate;
-				if (Session.InAppLocationRate == 0)
+				if (Session.InAppLocationRate == 0) //once I got a notification that the other user is updating location every 0 seconds.
 				{
-					LogActivity("Error: location update rate is 0.");
+					Log("Error: location update rate is 0.");
 				}
 			}
 			
@@ -411,7 +409,6 @@ namespace LocationConnection
 					}
 					else
 					{
-						Console.WriteLine("-----------location could not be updated, responsestring-----------" + responseString);
 						/*context.RunOnUiThread(() => { //When updating from the location provider, only the caller activity can display a snack until it is paused.
 							Snack(Resource.String.LocationNoUpdate, null);
 						});*/
@@ -1041,7 +1038,7 @@ namespace LocationConnection
 				Bitmap bmp = BitmapFactory.DecodeByteArray(data, 0, data.Length);
 
 				stw.Stop();
-				Console.WriteLine("------------- Decoded in " + stw.ElapsedMilliseconds + " ------------");
+				CWStatic("------------- Decoded in " + stw.ElapsedMilliseconds + " ------------");
 				LogActivityStatic("Decoded in " + stw.ElapsedMilliseconds);
 
 				return bmp;
@@ -1063,20 +1060,20 @@ namespace LocationConnection
 				var response = request.GetResponse();
 
 				stw.Stop();
-				Console.WriteLine("------------ Load in " + stw.ElapsedMilliseconds);
+				CWStatic("------------ Load in " + stw.ElapsedMilliseconds);
 				LogActivityStatic("Request in " + stw.ElapsedMilliseconds);
 				stw.Restart();
 
 				byte[] data = ReadToEnd(response.GetResponseStream());
 
 				stw.Stop();
-				Console.WriteLine("------------- Read in " + stw.ElapsedMilliseconds + " -------------- ");
+				CWStatic("------------- Read in " + stw.ElapsedMilliseconds + " -------------- ");
 				LogActivityStatic("Read in " + stw.ElapsedMilliseconds);
 				return data;
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine("-------- Error loading image at " + url + ": " + ex.Message);
+				CWStatic("-------- Error loading image at " + url + ": " + ex.Message);
 				LogActivityStatic("Error loading image at " + url + ": " + ex.Message);
 
 				return null;
@@ -1178,7 +1175,7 @@ namespace LocationConnection
 			catch (Exception ex)
 			{
 				LogActivityStatic(" Error loading image: " + url + " " + ex.Message);
-				Console.WriteLine("Error loading image: " + url + " " + ex.Message);
+				CWStatic("Error loading image: " + url + " " + ex.Message);
 			}
 			return null;
 		}*/
@@ -1195,7 +1192,7 @@ namespace LocationConnection
 					byte[] imageBytes = webClient.DownloadData(url);
 
 					stw.Stop();
-					Console.WriteLine("------------- Load/Read in " + stw.ElapsedMilliseconds + " -------------- ");
+					CWStatic("------------- Load/Read in " + stw.ElapsedMilliseconds + " -------------- ");
 					LogActivityStatic("Load/Read in " + stw.ElapsedMilliseconds);
 
 					webClient.Dispose();
@@ -1205,7 +1202,7 @@ namespace LocationConnection
 			catch (Exception ex)
 			{
 				LogActivityStatic(" Error loading image: " + url + " " + ex.Message);
-				Console.WriteLine("Error loading image: " + url + " " + ex.Message);
+				CWStatic("Error loading image: " + url + " " + ex.Message);
 			}
 			return null;
 		}*/
@@ -1220,7 +1217,7 @@ namespace LocationConnection
 				using var httpResponse = await client.GetAsync(url);
 
 				/*stw.Stop();
-				Console.WriteLine("------------- Load in " + stw.ElapsedMilliseconds + " " + url + " -------------- " + System.Environment.NewLine);
+				CWStatic("------------- Load in " + stw.ElapsedMilliseconds + " " + url + " -------------- " + System.Environment.NewLine);
 				LogActivityStatic("Load in " + stw.ElapsedMilliseconds + " " + url);
 				stw.Restart();*/
 
@@ -1230,7 +1227,7 @@ namespace LocationConnection
 					byte[] result = await httpResponse.Content.ReadAsByteArrayAsync();
 
 					/*stw.Stop();
-					Console.WriteLine("------------- Read in " + stw.ElapsedMilliseconds + " -------------- " + System.Environment.NewLine);
+					CWStatic("------------- Read in " + stw.ElapsedMilliseconds + " -------------- " + System.Environment.NewLine);
 					LogActivityStatic("Read in " + stw.ElapsedMilliseconds);*/
 
 					httpResponse.Dispose();
@@ -1240,7 +1237,7 @@ namespace LocationConnection
 			catch (Exception ex)
 			{
 				LogActivityStatic(" Error loading image: " + url + " " + ex.Message);
-				Console.WriteLine("Error loading image: " + url + " " + ex.Message);
+				CWStatic("Error loading image: " + url + " " + ex.Message);
 			}
 			return null;
 		}
@@ -1256,7 +1253,7 @@ namespace LocationConnection
 
 				/*stw.Stop();
 				LogActivityStatic("Load in " + stw.ElapsedMilliseconds + " " + url);
-				Console.WriteLine("------------- Load in " + stw.ElapsedMilliseconds + " " + url + "-------------- " + System.Environment.NewLine);
+				CWStatic("------------- Load in " + stw.ElapsedMilliseconds + " " + url + "-------------- " + System.Environment.NewLine);
 				stw.Restart();*/
 
 				if (httpResponse.StatusCode == HttpStatusCode.OK)
@@ -1265,7 +1262,7 @@ namespace LocationConnection
 
 					/*stw.Stop();
 					LogActivityStatic("Read in " + stw.ElapsedMilliseconds);
-					Console.WriteLine("------------- Read in " + stw.ElapsedMilliseconds + " -------------- "); //most often it takes 0 ms, or just a few.*/
+					CWStatic("------------- Read in " + stw.ElapsedMilliseconds + " -------------- "); //most often it takes 0 ms, or just a few.*/
 
 					httpResponse.Dispose();
 					return imageBytes;
@@ -1273,8 +1270,7 @@ namespace LocationConnection
 			}
 			catch (Exception ex)
 			{
-				LogActivityStatic(" Error loading image: " + url + " " + ex.Message);
-				Console.WriteLine("Error loading image: " + url + " " + ex.Message);
+				LogStatic(" Error loading image: " + url + " " + ex.Message);
 			}
 			return null;
 		}
@@ -1291,7 +1287,6 @@ namespace LocationConnection
 				{
 					string file = list[i];
 					DateTime modificationTime = File.GetLastWriteTime(file); //local time
-					//Console.WriteLine("-------------- Checking file: " + file + " " + modificationTime.ToString() + " " + dt.ToString() + " seconds: " + dt.Subtract(modificationTime).TotalSeconds);
 					if (dt.Subtract(modificationTime).TotalSeconds > Constants.CacheKeepTime)
 					{
 						File.Delete(file);
@@ -1300,11 +1295,11 @@ namespace LocationConnection
 				}
 				if (j == 0)
 				{
-					LogActivityStatic("Image cache up to date");
+					LogStatic("Image cache up to date");
 				}
 				else
 				{
-					LogActivityStatic("Deleted " + j + " images from cache");
+					LogStatic("Deleted " + j + " images from cache");
 				}
 			}
 		}
@@ -1319,7 +1314,6 @@ namespace LocationConnection
 			int screenHeight = metrics.HeightPixels;
 			int keyboardHeight = screenHeight - r.Bottom;
 
-			//LogActivity("IsKeyboardOpen screenHeight " + screenHeight + " r.Bottom " + r.Bottom + " keyboardHeight " + keyboardHeight);
 			if (keyboardHeight > screenHeight * 0.2)
 			{
 				return true;

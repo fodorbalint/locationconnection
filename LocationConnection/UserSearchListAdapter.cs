@@ -42,8 +42,7 @@ namespace LocationConnection
             ImageView ListImage = view.FindViewById<ImageView>(Resource.Id.ListImage);
             ImageCache im = new ImageCache(context);
             Task.Run(async () => {
-                //context.c.CW("Starting task ID " + profiles[position].ID);
-                //context.c.LogActivity("Starting task ID " + profiles[position].ID);
+                //context.c.Log("Starting task ID " + profiles[position].ID);
                 await im.LoadImage(ListImage, profiles[position].ID.ToString(), profiles[position].Pictures[0]);
             });
 

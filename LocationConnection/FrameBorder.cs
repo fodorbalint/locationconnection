@@ -44,15 +44,10 @@ namespace LocationConnection
 			
 			if (!context.c.IsKeyboardOpen(context.MainLayout))
 			{
-				context.c.LogActivity("OnMeasure setting var, Width " + Width + " MeasuredWidth " + MeasuredWidth);
 				if (MeasuredWidth != 0)
 				{
 					ProfilePage.imageEditorFrameBorderWidth = MeasuredWidth;
 				}
-			}
-			else
-			{
-				context.c.LogActivity("OnMeasure not setting var, Width " + Width + " MeasuredWidth " + MeasuredWidth);
 			}
 		}
 			   
@@ -60,7 +55,7 @@ namespace LocationConnection
 		{
 			base.OnConfigurationChanged(newConfig);
 
-			context.c.LogActivity("OnConfigurationChanged newW " + newConfig.ScreenWidthDp * BaseActivity.pixelDensity + " newH " + newConfig.ScreenHeightDp * BaseActivity.pixelDensity + " border width " + context.ImageEditorFrameBorder.Width + " variable " + ProfilePage.imageEditorFrameBorderWidth);
+			context.c.Log("OnConfigurationChanged newW " + newConfig.ScreenWidthDp * BaseActivity.pixelDensity + " newH " + newConfig.ScreenHeightDp * BaseActivity.pixelDensity + " border width " + context.ImageEditorFrameBorder.Width + " variable " + ProfilePage.imageEditorFrameBorderWidth);
 		}
 	}
 }

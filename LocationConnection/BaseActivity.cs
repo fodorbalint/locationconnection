@@ -37,6 +37,7 @@ namespace LocationConnection
 		public View MainLayout;
 		private ChatReceiver chatReceiver;
 		public CommonMethods c;
+		public Android.Content.Res.Resources res;
 		public Snackbar snack;
 
 		public static LocationCallback locationCallback;
@@ -64,7 +65,7 @@ namespace LocationConnection
 			base.OnCreate(savedInstanceState);
 
 			c = new CommonMethods(this);
-			c.CW("Created " + LocalClassName.Split(".")[1]);
+			res = Resources;
 			if (c.IsLoggedIn())
 			{
 				CheckIntent();
@@ -75,13 +76,12 @@ namespace LocationConnection
 			{
 				fusedLocationProviderClient = LocationServices.GetFusedLocationProviderClient(this);
 			}
-			c.LogActivity(LocalClassName.Split(".")[1] + " OnCreate");
+			c.Log(LocalClassName.Split(".")[1] + " OnCreate");
 		}
 
 		protected override void OnResume()
 		{
 			base.OnResume();
-			c.CW("Resumed " + LocalClassName.Split(".")[1]);
 			visibleContext = this;
 			RegisterReceiver(chatReceiver, new IntentFilter("balintfodor.locationconnection.ChatReceiver"));
 			
@@ -94,11 +94,11 @@ namespace LocationConnection
 				}
 			}
 
-			c.LogActivity(LocalClassName.Split(".")[1] + " OnResume");
+			c.Log(LocalClassName.Split(".")[1] + " OnResume");
 
 			if (!ListActivity.initialized) //When opening app, Android sometimes resumes an Activity while the static variables are cleared out, resulting in error
 			{
-				c.LogActivity(LocalClassName.Split(".")[1] + " Not initialized");
+				c.Log(LocalClassName.Split(".")[1] + " Not initialized");
 				
 				c.ReportErrorSilent("Initialization error");
 
@@ -136,13 +136,12 @@ namespace LocationConnection
 		protected override void OnPause()
 		{
 			base.OnPause();
-			c.CW("Paused " + LocalClassName.Split(".")[1]);
 			visibleContext = null;
 			UnregisterReceiver(chatReceiver);
 
 			isAppVisible = false;
 
-			c.LogActivity(LocalClassName.Split(".")[1] + " OnPause");
+			c.Log(LocalClassName.Split(".")[1] + " OnPause");
 		}
 
 		public void GetScreenMetrics(bool setDisplaySize)
@@ -169,7 +168,7 @@ namespace LocationConnection
 				}
 			}
 
-			c.LogActivity("ScreenWidth " + screenWidth + " ScreenHeight " + screenHeight + " PixelDensity " + pixelDensity
+			c.Log("ScreenWidth " + screenWidth + " ScreenHeight " + screenHeight + " PixelDensity " + pixelDensity
 				+ " XPxPerIn " + xPxPerIn + " XDpPerIn " + xDpPerIn + " DpWidth " + dpWidth);
 		}
 
@@ -191,7 +190,7 @@ namespace LocationConnection
 				int senderID = int.Parse(Intent.Extras.GetString("fromuser"));
 				int targetID = int.Parse(Intent.Extras.GetString("touser"));
 
-				c.LogActivity("Intent received from " + senderID);
+				c.Log("Intent received from " + senderID);
 
 				if (targetID != Session.ID)
 				{
@@ -239,7 +238,7 @@ namespace LocationConnection
 			}
 			catch (Exception ex)
 			{
-				CommonMethods.LogActivityStatic(ex.Message);
+				CommonMethods.LogStatic(ex.Message);
 			}
 		}
 
@@ -258,7 +257,7 @@ namespace LocationConnection
 			}
 			catch (Exception ex)
 			{
-				CommonMethods.LogActivityStatic(ex.Message);
+				CommonMethods.LogStatic(ex.Message);
 			}
 		}
 
@@ -309,11 +308,11 @@ namespace LocationConnection
 			}
 			if (j == 0)
 			{
-				c.LogActivity("Location log up to date");
+				c.Log("Location log up to date");
 			}
 			else
 			{
-				c.LogActivity("Removed " + j + " items from location log");
+				c.Log("Removed " + j + " items from location log");
 			}
 		}
 
@@ -356,16 +355,15 @@ namespace LocationConnection
 				}
 				if (j == 0)
 				{
-					c.LogActivity("System log up to date");
+					c.Log("System log up to date");
 				}
 				else
 				{
-					c.LogActivity("Removed " + j + " items from system log");
+					c.Log("Removed " + j + " items from system log");
 				}
 			}
 			catch
 			{
-				c.CW("Resetting log File");
 				File.WriteAllText(CommonMethods.logFile, "");
 			}			
 		}
@@ -412,7 +410,7 @@ namespace LocationConnection
 
 		protected void AddUpdatesTo(int targetID)
 		{
-			c.LogActivity("AddUpdatesTo locationUpdatesTo:" + locationUpdatesTo);
+			c.Log("AddUpdatesTo locationUpdatesTo:" + locationUpdatesTo);
 			if (string.IsNullOrEmpty(locationUpdatesTo))
 			{
 				locationUpdatesTo = targetID.ToString();
@@ -443,7 +441,7 @@ namespace LocationConnection
 
 		public bool IsUpdatingFrom(int targetID)
 		{
-			c.LogActivity("Location update from " + targetID + ", existing: " + locationUpdatesFrom);
+			c.Log("IsUpdatingFrom " + targetID + ", existing: " + locationUpdatesFrom);
 			if (string.IsNullOrEmpty(locationUpdatesFrom))
 			{
 				return false;

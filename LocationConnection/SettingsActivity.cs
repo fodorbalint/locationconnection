@@ -398,7 +398,7 @@ namespace LocationConnection
 			}
 			else //create all new activities
 			{
-				c.LogActivity("Changing display size to " + Settings.DisplaySize);
+				c.Log("Changing display size to " + Settings.DisplaySize);
 				Intent i = new Intent(this, typeof(ListActivity));
 				i.SetFlags(ActivityFlags.NewTask | ActivityFlags.ClearTask);
 				StartActivity(i);

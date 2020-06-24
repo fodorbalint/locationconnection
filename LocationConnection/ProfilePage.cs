@@ -44,9 +44,10 @@ namespace LocationConnection
 		public List<string> uploadedImages;		
 		public bool imagesUploading;
 		public bool imagesDeleting;
-		public Resources res;
 		static float sizeRatio;
-		static Bitmap bm;
+		public static Bitmap bm;
+		public static int bmWidth;
+		public static int bmHeight;
 
 		public static Android.Net.Uri selectedFile;
 		public static string selectedFileStr, selectedImageName;
@@ -63,7 +64,7 @@ namespace LocationConnection
 
 			if (!(ImageEditorFrameBorder is null))
 			{
-				CommonMethods.LogActivityStatic("OnResume border width " + ImageEditorFrameBorder.Width + " variable " + imageEditorFrameBorderWidth);
+				CommonMethods.LogStatic("OnResume border width " + ImageEditorFrameBorder.Width + " variable " + imageEditorFrameBorderWidth);
 			}	
 		}
 
@@ -71,7 +72,6 @@ namespace LocationConnection
 		{
 			base.OnActivityResult(requestCode, resultCode, data);
 
-			c.CW("OnActivityResult " + resultCode);
 			Images.Enabled = true;
 			try
 			{
@@ -82,7 +82,6 @@ namespace LocationConnection
 						return;
 					}
 					selectedFile = data.Data;
-					c.CW("OnActivityResult selectedFile " + selectedFile);
 				}
 			}
 			catch (Exception ex)
@@ -93,71 +92,18 @@ namespace LocationConnection
 
 		public async void OnResumeEnd()
 		{
-			ExifInterface exif = null;
-
-			c.CW("OnResumeEnd exif1 " + exif + " " + selectedFile);
-			try
+			bm = await GetBitmap(this);
+			if (bm is null)
 			{
-				exif = new ExifInterface(ContentResolver.OpenInputStream(selectedFile));
-			}
-			catch (Exception ex)
-			{
-				await c.ErrorAlert(res.GetString(Resource.String.ImageLoadingError) + " " + ex.Message);
-				c.ReportErrorSilent(res.GetString(Resource.String.ImageLoadingError) + " " + ex.Message);
 				return;
 			}
-				
-			c.CW("OnResumeEnd exif2 " + exif);
-			c.LogActivity("OnResumeEnd exif " + exif);
+					   
+			bmWidth = bm.Width; //will be used later in OnDraw, should image be too large.
+			bmHeight = bm.Height;
 
-			int orientation = 0;
-			if (!(exif is null))
-			{
-				orientation = exif.GetAttributeInt(ExifInterface.TagOrientation, (int)Android.Media.Orientation.Undefined);
-			}
+			sizeRatio = (float)bmWidth / bmHeight;
 
-			try //Original issue: On Android 7.1.1 (Asus ZenFone Zoom S), image loading fails for the 4th time
-			{
-				bm = BitmapFactory.DecodeStream(ContentResolver.OpenInputStream(selectedFile));
-			}
-			catch (Exception ex)
-			{
-				c.CW("bm exception");
-				if (ex is OutOfMemoryException) //does not seem to be an happen now that bm is recycled after closing the editor
-				{
-					await c.ErrorAlert(res.GetString(Resource.String.OutOfMemoryError));
-					c.ReportErrorSilent(res.GetString(Resource.String.OutOfMemoryError) + " " + ex.Message);
-					throw ex; //OnResume is now finished, exception will not be caught
-				}
-				else
-				{
-					await c.ErrorAlert(res.GetString(Resource.String.ImageLoadingError) + " " + ex.Message);
-					c.ReportErrorSilent(res.GetString(Resource.String.ImageLoadingError) + " " + ex.Message);
-				}
-				selectedFile = null;
-				return;
-			}
-
-			c.LogActivity("bm " + bm);
-
-			c.LogActivity("Image width " + bm.Width + " height " + bm.Height + " orientation " + orientation);
-
-			switch (orientation)
-			{
-				case (int)Android.Media.Orientation.Rotate90:
-					bm = RotateImage(bm, 90);
-					break;
-				case (int)Android.Media.Orientation.Rotate180:
-					bm = RotateImage(bm, 180);
-					break;
-				case (int)Android.Media.Orientation.Rotate270:
-					bm = RotateImage(bm, 270);
-					break;
-			}
-
-			sizeRatio = (float)bm.Width / bm.Height;
-
-			c.LogActivity("Image rotated if needed, sizeRatio: " + sizeRatio);
+			c.Log("Image rotated if needed, sizeRatio: " + sizeRatio);
 
 			if (sizeRatio == 1)
 			{
@@ -184,9 +130,77 @@ namespace LocationConnection
 			}
 		}
 
+		public async static Task<Bitmap> GetBitmap(BaseActivity context)
+		{
+			CommonMethods c = context.c;
+			Resources res = context.Resources;
+			ContentResolver contentResolver = context.ContentResolver;
+
+			ExifInterface exif;
+			try
+			{
+				exif = new ExifInterface(contentResolver.OpenInputStream(selectedFile));
+			}
+			catch (Exception ex)
+			{
+				await c.ErrorAlert(res.GetString(Resource.String.ImageLoadingError) + " " + ex.Message);
+				c.ReportErrorSilent(res.GetString(Resource.String.ImageLoadingError) + " " + ex.Message);
+				selectedFile = null;
+				return null;
+			}
+
+			c.Log("GetBitmap exif " + exif);
+
+			int orientation = 0;
+			if (!(exif is null))
+			{
+				orientation = exif.GetAttributeInt(ExifInterface.TagOrientation, (int)Android.Media.Orientation.Undefined);
+			}
+
+			try //Original issue: On Android 7.1.1 (Asus ZenFone Zoom S), image loading fails for the 4th time
+			{
+				bm = BitmapFactory.DecodeStream(contentResolver.OpenInputStream(selectedFile));
+			}
+			catch (Exception ex)
+			{
+				if (ex is OutOfMemoryException) //does not seem to be an happen now that bm is recycled after closing the editor
+				{
+					await c.ErrorAlert(res.GetString(Resource.String.OutOfMemoryError));
+					c.ReportErrorSilent(res.GetString(Resource.String.OutOfMemoryError) + " " + ex.Message);
+					throw ex; //OnResume is now finished, exception will not be caught
+				}
+				else
+				{
+					await c.ErrorAlert(res.GetString(Resource.String.ImageLoadingError) + " " + ex.Message);
+					c.ReportErrorSilent(res.GetString(Resource.String.ImageLoadingError) + " " + ex.Message);
+				}
+				selectedFile = null;
+				return null;
+			}
+
+			c.Log("bm " + bm);
+
+			c.Log("Image width " + bm.Width + " height " + bm.Height + " orientation " + orientation);
+
+			switch (orientation)
+			{
+				case (int)Android.Media.Orientation.Rotate90:
+					bm = RotateImage(bm, 90);
+					break;
+				case (int)Android.Media.Orientation.Rotate180:
+					bm = RotateImage(bm, 180);
+					break;
+				case (int)Android.Media.Orientation.Rotate270:
+					bm = RotateImage(bm, 270);
+					break;
+			}
+
+			return bm;
+		}
+
 		public void AdjustImage()
 		{
-			c.LogActivity("AdjustImage border width " + ImageEditorFrameBorder.Width + " variable " + imageEditorFrameBorderWidth);
+			c.Log("AdjustImage border width " + ImageEditorFrameBorder.Width + " variable " + imageEditorFrameBorderWidth);
 
 			ImageEditorControls.Visibility = ViewStates.Visible;
 			TopSeparator.Visibility = ViewStates.Visible;
@@ -210,7 +224,7 @@ namespace LocationConnection
 			ImageEditor.SetContent(bm);
 		}
 
-		public Bitmap RotateImage (Bitmap source, float angle)
+		public static Bitmap RotateImage (Bitmap source, float angle)
 		{
 			Matrix matrix = new Matrix();
 			matrix.PostRotate(angle);
@@ -226,7 +240,7 @@ namespace LocationConnection
 				((Timer)sender).Stop();
 			}
 
-			c.LogActivity("Timer_Elapsed " + timerCounter + " border width " + ImageEditorFrameBorder.Width);
+			c.Log("Timer_Elapsed " + timerCounter + " border width " + ImageEditorFrameBorder.Width);
 			//imageEditorFrameBorderWidth = ImageEditorFrameBorder.Width;
 		}*/
 	}

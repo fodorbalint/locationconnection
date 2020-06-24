@@ -26,8 +26,6 @@ namespace LocationConnection
 		public ListView ChatUserList;
 		View RippleMain, MenuListBg;
 
-		Android.Content.Res.Resources res;
-
 		public List<MatchItem> matchList;
 		ChatUserListAdapter adapter;
 
@@ -69,7 +67,6 @@ namespace LocationConnection
 				}
 
 				c.view = MainLayout;
-				res = Resources;
 
 				ChatUserList.ItemClick += ChatUserList_ItemClick;
 				MenuList.Click += MenuList_Click;

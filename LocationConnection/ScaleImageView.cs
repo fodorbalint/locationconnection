@@ -50,6 +50,7 @@ namespace LocationConnection
 		public void SetContent(Bitmap bm)
 		{
 			this.bm = bm;
+			context.c.Log("SetContent bm " + bm + " this.bm " + this.bm);
 			Invalidate();
 		}
 
@@ -187,22 +188,25 @@ namespace LocationConnection
 			}
 			catch (Exception ex) //Cannot access a disposed object error once on LG G5
 			{
-				context.rc.ImageEditorCancel_Click(null, null);
+				if (ProfilePage.selectedFile != null) //to make sure, it is only called once
+				{
+					context.rc.CloseEditor();
 
-				context.c.ErrorAlert(context.res.GetString(Resource.String.ImageMoveError).Replace("[error]", ex.Message));
-				context.c.ReportErrorSilent("OnTouchEvent error  action " + e.Action + " x " + e.GetX() + " y " + e.GetY() + " count " + e.PointerCount + " --- " + ex.Message + " " + ex.StackTrace);
+					context.c.ErrorAlert(context.res.GetString(Resource.String.ImageMoveError).Replace("[error]", ex.Message));
+					context.c.ReportErrorSilent("OnTouchEvent error  action " + e.Action + " x " + e.GetX() + " y " + e.GetY() + " count " + e.PointerCount + " --- " + ex.Message + " " + ex.StackTrace);
+				}
 			}
 			
 			return true;
 		}
 		
-		protected override void OnDraw(Canvas canvas)
+		protected override async void OnDraw(Canvas canvas)
 		{
 			base.OnDraw(canvas); 
 			
 			try
 			{
-				//context.c.LogActivity("OnDraw canvas + " + canvas + "scaleFactor " + scaleFactor + " Width " + Width + " Height " + Height + " bmWidth " + bm.Width + " bmHeight " + bm.Height + " intrinsicWidth " + intrinsicWidth + " intrinsicHeight " + intrinsicHeight);
+				//context.c.CW("OnDraw canvas + " + canvas + "scaleFactor " + scaleFactor + " Width " + Width + " Height " + Height + " bmWidth " + bm.Width + " bmHeight " + bm.Height + " intrinsicWidth " + intrinsicWidth + " intrinsicHeight " + intrinsicHeight);
 
 				canvas.Save();
 				canvas.Translate(-(scaleFactor - 1) * canvas.Width / 2, -(scaleFactor - 1) * canvas.Height / 2);
@@ -218,26 +222,50 @@ namespace LocationConnection
 					AntiAlias = true
 				};
 				canvas.DrawBitmap(bm, frameToDraw, whereToDraw, paint);
-
 				canvas.Restore();
 
 				//context.c.CW("OnDraw scaleFactor " + scaleFactor + " Width " + Width + " Height " + Height + " bmWidth " + bm.Width + " bmHeight " + bm.Height + " intrinsicWidth " + intrinsicWidth + " intrinsicHeight " + intrinsicHeight);
 			}
 			catch (Exception ex)
 			{
-				context.rc.ImageEditorCancel_Click(null, null);
-
-				// Canvas: trying to draw too large(127844352bytes) bitmap.
-				if (ex.Message.IndexOf("trying to draw too large") != -1)
+				//Java.Lang.RuntimeException: Canvas: trying to draw too large(127844352bytes) bitmap.
+				if (ex is Java.Lang.RuntimeException)
 				{
-					context.c.ErrorAlert(context.res.GetString(Resource.String.TooLargeBitmap).Replace("[width]", bm.Width.ToString()).Replace("[height]", bm.Height.ToString()));
+					context.c.Log("OnDraw bitmap too large");
+					if (bm is null) //bm may be null now, but it was okay up until canvas.DrawBitmap();
+					{
+						context.c.Log("Bitmap is null, ProfilePage.bm: " + ProfilePage.bm);
+						bm = await ProfilePage.GetBitmap(context);
+						if (bm is null) //should not happen, because the file was loaded successfully before
+						{
+							context.rc.CloseEditor(); //error is displayed in the function
+							return;
+						}
+					}
+
+					//will be halved at each error until the image is of manageable size. Hope that there are no other RuntimeException types here, but just in that case, we will exit if width falls below 1000; 
+
+					ProfilePage.bmWidth /= 2;
+					ProfilePage.bmHeight /= 2;
+
+					if (ProfilePage.bmWidth < 1000 && ProfilePage.bmHeight < 1000)
+					{
+						context.c.Log("New dimensions under threshold: " + ProfilePage.bmWidth + " x " + ProfilePage.bmHeight);
+						context.rc.CloseEditor();
+						await context.c.ErrorAlert(context.res.GetString(Resource.String.OtherBitmapError).Replace("[error]", ex.Message));
+						context.c.ReportErrorSilent("OnDraw error " + ex.Message + " " + ex.StackTrace);
+						return;
+					}
+
+					context.c.Log("Scaling bitmap to half: " + ProfilePage.bmWidth + " x " + ProfilePage.bmHeight);
+					SetContent(Bitmap.CreateScaledBitmap(bm, ProfilePage.bmWidth, ProfilePage.bmHeight, false));
 				}
 				else
 				{
-					context.c.ErrorAlert(context.res.GetString(Resource.String.OtherBitmapError).Replace("[error]", ex.Message));
+					context.rc.CloseEditor();
+					await context.c.ErrorAlert(context.res.GetString(Resource.String.OtherBitmapError).Replace("[error]", ex.Message));
+					context.c.ReportErrorSilent("OnDraw error " + ex.Message + " " + ex.StackTrace);
 				}
-
-				context.c.ReportErrorSilent("OnDraw error " + ex.Message + " " + ex.StackTrace);
 			}
 		}
 
@@ -245,11 +273,11 @@ namespace LocationConnection
 		{
 			if (yDist <= 0)
 			{
-				context.c.CW("IsOutofFrameY " + (-yDist + context.ImageEditorFrameBorder.Height / scaleFactor / 2) + " " + intrinsicHeight / 2);
+				//context.c.CW("IsOutofFrameY " + (-yDist + context.ImageEditorFrameBorder.Height / scaleFactor / 2) + " " + intrinsicHeight / 2);
 			}
 			else
 			{
-				context.c.CW("IsOutofFrameY " + (yDist + context.ImageEditorFrameBorder.Height / scaleFactor / 2) + " " + intrinsicHeight / 2);
+				//context.c.CW("IsOutofFrameY " + (yDist + context.ImageEditorFrameBorder.Height / scaleFactor / 2) + " " + intrinsicHeight / 2);
 			}
 			
 			if (yDist <= 0 && (-yDist + context.ImageEditorFrameBorder.Height / scaleFactor / 2) > intrinsicHeight / 2 + 0.001 || yDist > 0 && (yDist + context.ImageEditorFrameBorder.Height / scaleFactor / 2) > intrinsicHeight / 2 + 0.001)
@@ -266,11 +294,11 @@ namespace LocationConnection
 		{
 			if (xDist <= 0)
 			{
-				context.c.CW("IsOutofFrameX " + (-xDist + context.ImageEditorFrameBorder.Width / scaleFactor / 2) + " " + intrinsicWidth / 2);
+				//context.c.CW("IsOutofFrameX " + (-xDist + context.ImageEditorFrameBorder.Width / scaleFactor / 2) + " " + intrinsicWidth / 2);
 			}
 			else
 			{
-				context.c.CW("IsOutofFrameX " + (xDist + context.ImageEditorFrameBorder.Width / scaleFactor / 2) + " " + intrinsicWidth / 2);
+				//context.c.CW("IsOutofFrameX " + (xDist + context.ImageEditorFrameBorder.Width / scaleFactor / 2) + " " + intrinsicWidth / 2);
 			}
 
 			if (xDist <= 0 && (-xDist + context.ImageEditorFrameBorder.Width / scaleFactor / 2) > intrinsicWidth / 2 + 0.001 || xDist > 0 && (xDist + context.ImageEditorFrameBorder.Width / scaleFactor / 2) > intrinsicWidth / 2 + 0.001)
@@ -293,7 +321,6 @@ namespace LocationConnection
 			}
 			public override bool OnScale(ScaleGestureDetector detector)
 			{
-				//Console.WriteLine("---------------- scaled to " + view.scaleFactor + "---------------");
 				view.scaleFactor *= detector.ScaleFactor;
 				view.scaleFactor = Math.Max(1f, Math.Min(view.scaleFactor, 3f));
 				view.Invalidate();

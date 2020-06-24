@@ -85,7 +85,7 @@ namespace LocationConnection
 		{
 			try {
 				base.OnResume();
-				c.LogActivity("LocationActivity resuming, ListActivity.initialized " + ListActivity.initialized);
+				c.Log("LocationActivity resuming, ListActivity.initialized " + ListActivity.initialized);
 				if (!ListActivity.initialized) { return; }
 
 				RegisterReceiver(locationReceiver, new IntentFilter("balintfodor.locationconnection.LocationReceiver"));

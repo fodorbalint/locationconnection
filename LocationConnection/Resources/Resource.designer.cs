@@ -6348,86 +6348,86 @@ namespace LocationConnection
 		public partial class String
 		{
 			
-			// aapt resource value: 0x7F0F011E
-			public const int abc_action_bar_home_description = 2131689758;
-			
 			// aapt resource value: 0x7F0F011F
-			public const int abc_action_bar_up_description = 2131689759;
+			public const int abc_action_bar_home_description = 2131689759;
 			
 			// aapt resource value: 0x7F0F0120
-			public const int abc_action_menu_overflow_description = 2131689760;
+			public const int abc_action_bar_up_description = 2131689760;
 			
 			// aapt resource value: 0x7F0F0121
-			public const int abc_action_mode_done = 2131689761;
-			
-			// aapt resource value: 0x7F0F0123
-			public const int abc_activitychooserview_choose_application = 2131689763;
+			public const int abc_action_menu_overflow_description = 2131689761;
 			
 			// aapt resource value: 0x7F0F0122
-			public const int abc_activity_chooser_view_see_all = 2131689762;
+			public const int abc_action_mode_done = 2131689762;
 			
 			// aapt resource value: 0x7F0F0124
-			public const int abc_capital_off = 2131689764;
+			public const int abc_activitychooserview_choose_application = 2131689764;
+			
+			// aapt resource value: 0x7F0F0123
+			public const int abc_activity_chooser_view_see_all = 2131689763;
 			
 			// aapt resource value: 0x7F0F0125
-			public const int abc_capital_on = 2131689765;
+			public const int abc_capital_off = 2131689765;
 			
 			// aapt resource value: 0x7F0F0126
-			public const int abc_menu_alt_shortcut_label = 2131689766;
+			public const int abc_capital_on = 2131689766;
 			
 			// aapt resource value: 0x7F0F0127
-			public const int abc_menu_ctrl_shortcut_label = 2131689767;
+			public const int abc_menu_alt_shortcut_label = 2131689767;
 			
 			// aapt resource value: 0x7F0F0128
-			public const int abc_menu_delete_shortcut_label = 2131689768;
+			public const int abc_menu_ctrl_shortcut_label = 2131689768;
 			
 			// aapt resource value: 0x7F0F0129
-			public const int abc_menu_enter_shortcut_label = 2131689769;
+			public const int abc_menu_delete_shortcut_label = 2131689769;
 			
 			// aapt resource value: 0x7F0F012A
-			public const int abc_menu_function_shortcut_label = 2131689770;
+			public const int abc_menu_enter_shortcut_label = 2131689770;
 			
 			// aapt resource value: 0x7F0F012B
-			public const int abc_menu_meta_shortcut_label = 2131689771;
+			public const int abc_menu_function_shortcut_label = 2131689771;
 			
 			// aapt resource value: 0x7F0F012C
-			public const int abc_menu_shift_shortcut_label = 2131689772;
+			public const int abc_menu_meta_shortcut_label = 2131689772;
 			
 			// aapt resource value: 0x7F0F012D
-			public const int abc_menu_space_shortcut_label = 2131689773;
+			public const int abc_menu_shift_shortcut_label = 2131689773;
 			
 			// aapt resource value: 0x7F0F012E
-			public const int abc_menu_sym_shortcut_label = 2131689774;
+			public const int abc_menu_space_shortcut_label = 2131689774;
 			
 			// aapt resource value: 0x7F0F012F
-			public const int abc_prepend_shortcut_label = 2131689775;
-			
-			// aapt resource value: 0x7F0F0131
-			public const int abc_searchview_description_clear = 2131689777;
-			
-			// aapt resource value: 0x7F0F0132
-			public const int abc_searchview_description_query = 2131689778;
-			
-			// aapt resource value: 0x7F0F0133
-			public const int abc_searchview_description_search = 2131689779;
-			
-			// aapt resource value: 0x7F0F0134
-			public const int abc_searchview_description_submit = 2131689780;
-			
-			// aapt resource value: 0x7F0F0135
-			public const int abc_searchview_description_voice = 2131689781;
+			public const int abc_menu_sym_shortcut_label = 2131689775;
 			
 			// aapt resource value: 0x7F0F0130
-			public const int abc_search_hint = 2131689776;
+			public const int abc_prepend_shortcut_label = 2131689776;
+			
+			// aapt resource value: 0x7F0F0132
+			public const int abc_searchview_description_clear = 2131689778;
+			
+			// aapt resource value: 0x7F0F0133
+			public const int abc_searchview_description_query = 2131689779;
+			
+			// aapt resource value: 0x7F0F0134
+			public const int abc_searchview_description_search = 2131689780;
+			
+			// aapt resource value: 0x7F0F0135
+			public const int abc_searchview_description_submit = 2131689781;
 			
 			// aapt resource value: 0x7F0F0136
-			public const int abc_shareactionprovider_share_with = 2131689782;
+			public const int abc_searchview_description_voice = 2131689782;
+			
+			// aapt resource value: 0x7F0F0131
+			public const int abc_search_hint = 2131689777;
 			
 			// aapt resource value: 0x7F0F0137
-			public const int abc_shareactionprovider_share_with_application = 2131689783;
+			public const int abc_shareactionprovider_share_with = 2131689783;
 			
 			// aapt resource value: 0x7F0F0138
-			public const int abc_toolbar_collapse_description = 2131689784;
+			public const int abc_shareactionprovider_share_with_application = 2131689784;
+			
+			// aapt resource value: 0x7F0F0139
+			public const int abc_toolbar_collapse_description = 2131689785;
 			
 			// aapt resource value: 0x7F0F0000
 			public const int ActivateAccount = 2131689472;
@@ -6444,26 +6444,26 @@ namespace LocationConnection
 			// aapt resource value: 0x7F0F0004
 			public const int Ago = 2131689476;
 			
-			// aapt resource value: 0x7F0F0139
-			public const int alertPaddingNormal = 2131689785;
-			
 			// aapt resource value: 0x7F0F013A
-			public const int alertPaddingSmall = 2131689786;
+			public const int alertPaddingNormal = 2131689786;
 			
 			// aapt resource value: 0x7F0F013B
-			public const int alertTextSizeNormal = 2131689787;
+			public const int alertPaddingSmall = 2131689787;
 			
 			// aapt resource value: 0x7F0F013C
-			public const int alertTextSizeSmall = 2131689788;
-			
-			// aapt resource value: 0x7F0F013F
-			public const int appbar_scrolling_view_behavior = 2131689791;
+			public const int alertTextSizeNormal = 2131689788;
 			
 			// aapt resource value: 0x7F0F013D
-			public const int app_name = 2131689789;
+			public const int alertTextSizeSmall = 2131689789;
+			
+			// aapt resource value: 0x7F0F0140
+			public const int appbar_scrolling_view_behavior = 2131689792;
 			
 			// aapt resource value: 0x7F0F013E
-			public const int app_name_short = 2131689790;
+			public const int app_name = 2131689790;
+			
+			// aapt resource value: 0x7F0F013F
+			public const int app_name_short = 2131689791;
 			
 			// aapt resource value: 0x7F0F0005
 			public const int Ascending = 2131689477;
@@ -6483,20 +6483,20 @@ namespace LocationConnection
 			// aapt resource value: 0x7F0F000A
 			public const int BlockDialogText = 2131689482;
 			
-			// aapt resource value: 0x7F0F0140
-			public const int bottomSeparatorMarginNormal = 2131689792;
-			
 			// aapt resource value: 0x7F0F0141
-			public const int bottomSeparatorMarginSmall = 2131689793;
+			public const int bottomSeparatorMarginNormal = 2131689793;
 			
 			// aapt resource value: 0x7F0F0142
-			public const int bottom_sheet_behavior = 2131689794;
+			public const int bottomSeparatorMarginSmall = 2131689794;
 			
 			// aapt resource value: 0x7F0F0143
-			public const int buttonElevationNormal = 2131689795;
+			public const int bottom_sheet_behavior = 2131689795;
 			
 			// aapt resource value: 0x7F0F0144
-			public const int buttonElevationSmall = 2131689796;
+			public const int buttonElevationNormal = 2131689796;
+			
+			// aapt resource value: 0x7F0F0145
+			public const int buttonElevationSmall = 2131689797;
 			
 			// aapt resource value: 0x7F0F000B
 			public const int Cancel = 2131689483;
@@ -6504,11 +6504,11 @@ namespace LocationConnection
 			// aapt resource value: 0x7F0F000C
 			public const int ChangeUpdateCriteria = 2131689484;
 			
-			// aapt resource value: 0x7F0F0145
-			public const int character_counter_content_description = 2131689797;
-			
 			// aapt resource value: 0x7F0F0146
-			public const int character_counter_pattern = 2131689798;
+			public const int character_counter_content_description = 2131689798;
+			
+			// aapt resource value: 0x7F0F0147
+			public const int character_counter_pattern = 2131689799;
 			
 			// aapt resource value: 0x7F0F000D
 			public const int ChatListBack = 2131689485;
@@ -6525,59 +6525,59 @@ namespace LocationConnection
 			// aapt resource value: 0x7F0F0011
 			public const int CheckAvailability = 2131689489;
 			
-			// aapt resource value: 0x7F0F0147
-			public const int common_google_play_services_enable_button = 2131689799;
-			
 			// aapt resource value: 0x7F0F0148
-			public const int common_google_play_services_enable_text = 2131689800;
+			public const int common_google_play_services_enable_button = 2131689800;
 			
 			// aapt resource value: 0x7F0F0149
-			public const int common_google_play_services_enable_title = 2131689801;
+			public const int common_google_play_services_enable_text = 2131689801;
 			
 			// aapt resource value: 0x7F0F014A
-			public const int common_google_play_services_install_button = 2131689802;
+			public const int common_google_play_services_enable_title = 2131689802;
 			
 			// aapt resource value: 0x7F0F014B
-			public const int common_google_play_services_install_text = 2131689803;
+			public const int common_google_play_services_install_button = 2131689803;
 			
 			// aapt resource value: 0x7F0F014C
-			public const int common_google_play_services_install_title = 2131689804;
+			public const int common_google_play_services_install_text = 2131689804;
 			
 			// aapt resource value: 0x7F0F014D
-			public const int common_google_play_services_notification_channel_name = 2131689805;
+			public const int common_google_play_services_install_title = 2131689805;
 			
 			// aapt resource value: 0x7F0F014E
-			public const int common_google_play_services_notification_ticker = 2131689806;
+			public const int common_google_play_services_notification_channel_name = 2131689806;
 			
 			// aapt resource value: 0x7F0F014F
-			public const int common_google_play_services_unknown_issue = 2131689807;
+			public const int common_google_play_services_notification_ticker = 2131689807;
 			
 			// aapt resource value: 0x7F0F0150
-			public const int common_google_play_services_unsupported_text = 2131689808;
+			public const int common_google_play_services_unknown_issue = 2131689808;
 			
 			// aapt resource value: 0x7F0F0151
-			public const int common_google_play_services_update_button = 2131689809;
+			public const int common_google_play_services_unsupported_text = 2131689809;
 			
 			// aapt resource value: 0x7F0F0152
-			public const int common_google_play_services_update_text = 2131689810;
+			public const int common_google_play_services_update_button = 2131689810;
 			
 			// aapt resource value: 0x7F0F0153
-			public const int common_google_play_services_update_title = 2131689811;
+			public const int common_google_play_services_update_text = 2131689811;
 			
 			// aapt resource value: 0x7F0F0154
-			public const int common_google_play_services_updating_text = 2131689812;
+			public const int common_google_play_services_update_title = 2131689812;
 			
 			// aapt resource value: 0x7F0F0155
-			public const int common_google_play_services_wear_update_text = 2131689813;
+			public const int common_google_play_services_updating_text = 2131689813;
 			
 			// aapt resource value: 0x7F0F0156
-			public const int common_open_on_phone = 2131689814;
+			public const int common_google_play_services_wear_update_text = 2131689814;
 			
 			// aapt resource value: 0x7F0F0157
-			public const int common_signin_button_text = 2131689815;
+			public const int common_open_on_phone = 2131689815;
 			
 			// aapt resource value: 0x7F0F0158
-			public const int common_signin_button_text_long = 2131689816;
+			public const int common_signin_button_text = 2131689816;
+			
+			// aapt resource value: 0x7F0F0159
+			public const int common_signin_button_text_long = 2131689817;
 			
 			// aapt resource value: 0x7F0F0012
 			public const int ConfirmAction = 2131689490;
@@ -6597,11 +6597,11 @@ namespace LocationConnection
 			// aapt resource value: 0x7F0F0017
 			public const int CouldNotGetLocation = 2131689495;
 			
-			// aapt resource value: 0x7F0F0159
-			public const int counterCircleSizeNormal = 2131689817;
-			
 			// aapt resource value: 0x7F0F015A
-			public const int counterCircleSizeSmall = 2131689818;
+			public const int counterCircleSizeNormal = 2131689818;
+			
+			// aapt resource value: 0x7F0F015B
+			public const int counterCircleSizeSmall = 2131689819;
 			
 			// aapt resource value: 0x7F0F0018
 			public const int CropImageError = 2131689496;
@@ -6618,8 +6618,8 @@ namespace LocationConnection
 			// aapt resource value: 0x7F0F001C
 			public const int Deactivated = 2131689500;
 			
-			// aapt resource value: 0x7F0F015B
-			public const int default_web_client_id = 2131689819;
+			// aapt resource value: 0x7F0F015C
+			public const int default_web_client_id = 2131689820;
 			
 			// aapt resource value: 0x7F0F001D
 			public const int DeleteAccount = 2131689501;
@@ -6774,17 +6774,17 @@ namespace LocationConnection
 			// aapt resource value: 0x7F0F004F
 			public const int EulaText = 2131689551;
 			
-			// aapt resource value: 0x7F0F015C
-			public const int fab_transformation_scrim_behavior = 2131689820;
-			
 			// aapt resource value: 0x7F0F015D
-			public const int fab_transformation_sheet_behavior = 2131689821;
+			public const int fab_transformation_scrim_behavior = 2131689821;
 			
 			// aapt resource value: 0x7F0F015E
-			public const int fcm_fallback_notification_channel_label = 2131689822;
+			public const int fab_transformation_sheet_behavior = 2131689822;
 			
 			// aapt resource value: 0x7F0F015F
-			public const int firebase_database_url = 2131689823;
+			public const int fcm_fallback_notification_channel_label = 2131689823;
+			
+			// aapt resource value: 0x7F0F0160
+			public const int firebase_database_url = 2131689824;
 			
 			// aapt resource value: 0x7F0F0050
 			public const int FirstRunMessage = 2131689552;
@@ -6795,8 +6795,8 @@ namespace LocationConnection
 			// aapt resource value: 0x7F0F0052
 			public const int FriendRemoved = 2131689554;
 			
-			// aapt resource value: 0x7F0F0160
-			public const int gcm_defaultSenderId = 2131689824;
+			// aapt resource value: 0x7F0F0161
+			public const int gcm_defaultSenderId = 2131689825;
 			
 			// aapt resource value: 0x7F0F0053
 			public const int GeoFilterNoLocation = 2131689555;
@@ -6813,17 +6813,17 @@ namespace LocationConnection
 			// aapt resource value: 0x7F0F0057
 			public const int GooglePlayNotAvailableWithError = 2131689559;
 			
-			// aapt resource value: 0x7F0F0161
-			public const int google_api_key = 2131689825;
-			
 			// aapt resource value: 0x7F0F0162
-			public const int google_app_id = 2131689826;
+			public const int google_api_key = 2131689826;
 			
 			// aapt resource value: 0x7F0F0163
-			public const int google_crash_reporting_api_key = 2131689827;
+			public const int google_app_id = 2131689827;
 			
 			// aapt resource value: 0x7F0F0164
-			public const int google_storage_bucket = 2131689828;
+			public const int google_crash_reporting_api_key = 2131689828;
+			
+			// aapt resource value: 0x7F0F0165
+			public const int google_storage_bucket = 2131689829;
 			
 			// aapt resource value: 0x7F0F0058
 			public const int HelpCenterBack = 2131689560;
@@ -6843,8 +6843,8 @@ namespace LocationConnection
 			// aapt resource value: 0x7F0F005D
 			public const int Hide = 2131689565;
 			
-			// aapt resource value: 0x7F0F0165
-			public const int hide_bottom_view_on_scroll_behavior = 2131689829;
+			// aapt resource value: 0x7F0F0166
+			public const int hide_bottom_view_on_scroll_behavior = 2131689830;
 			
 			// aapt resource value: 0x7F0F005E
 			public const int Hour = 2131689566;
@@ -6918,11 +6918,11 @@ namespace LocationConnection
 			// aapt resource value: 0x7F0F0075
 			public const int ListView = 2131689589;
 			
-			// aapt resource value: 0x7F0F0166
-			public const int loaderHeightNormal = 2131689830;
-			
 			// aapt resource value: 0x7F0F0167
-			public const int loaderHeightSmall = 2131689831;
+			public const int loaderHeightNormal = 2131689831;
+			
+			// aapt resource value: 0x7F0F0168
+			public const int loaderHeightSmall = 2131689832;
 			
 			// aapt resource value: 0x7F0F0078
 			public const int LoadingList = 2131689592;
@@ -7008,17 +7008,17 @@ namespace LocationConnection
 			// aapt resource value: 0x7F0F0091
 			public const int LocationUpdatesToStart = 2131689617;
 			
-			// aapt resource value: 0x7F0F0168
-			public const int logAlertPaddingNormal = 2131689832;
-			
 			// aapt resource value: 0x7F0F0169
-			public const int logAlertPaddingSmall = 2131689833;
+			public const int logAlertPaddingNormal = 2131689833;
 			
 			// aapt resource value: 0x7F0F016A
-			public const int logAlertTextSizeNormal = 2131689834;
+			public const int logAlertPaddingSmall = 2131689834;
 			
 			// aapt resource value: 0x7F0F016B
-			public const int logAlertTextSizeSmall = 2131689835;
+			public const int logAlertTextSizeNormal = 2131689835;
+			
+			// aapt resource value: 0x7F0F016C
+			public const int logAlertTextSizeSmall = 2131689836;
 			
 			// aapt resource value: 0x7F0F0092
 			public const int LoggedOut = 2131689618;
@@ -7080,11 +7080,11 @@ namespace LocationConnection
 			// aapt resource value: 0x7F0F00A5
 			public const int MaxNumImages = 2131689637;
 			
-			// aapt resource value: 0x7F0F016C
-			public const int maxYNormal = 2131689836;
-			
 			// aapt resource value: 0x7F0F016D
-			public const int maxYSmall = 2131689837;
+			public const int maxYNormal = 2131689837;
+			
+			// aapt resource value: 0x7F0F016E
+			public const int maxYSmall = 2131689838;
 			
 			// aapt resource value: 0x7F0F00A6
 			public const int Men = 2131689638;
@@ -7155,8 +7155,8 @@ namespace LocationConnection
 			// aapt resource value: 0x7F0F00BC
 			public const int Minutes = 2131689660;
 			
-			// aapt resource value: 0x7F0F016E
-			public const int mtrl_chip_close_icon_content_description = 2131689838;
+			// aapt resource value: 0x7F0F016F
+			public const int mtrl_chip_close_icon_content_description = 2131689839;
 			
 			// aapt resource value: 0x7F0F00BD
 			public const int Name = 2131689661;
@@ -7167,11 +7167,11 @@ namespace LocationConnection
 			// aapt resource value: 0x7F0F00BF
 			public const int NameEmpty = 2131689663;
 			
-			// aapt resource value: 0x7F0F016F
-			public const int navigationSpacerHeightNormal = 2131689839;
-			
 			// aapt resource value: 0x7F0F0170
-			public const int navigationSpacerHeightSmall = 2131689840;
+			public const int navigationSpacerHeightNormal = 2131689840;
+			
+			// aapt resource value: 0x7F0F0171
+			public const int navigationSpacerHeightSmall = 2131689841;
 			
 			// aapt resource value: 0x7F0F00C0
 			public const int NetworkTimeout = 2131689664;
@@ -7254,17 +7254,17 @@ namespace LocationConnection
 			// aapt resource value: 0x7F0F00DA
 			public const int OverQueryLimit = 2131689690;
 			
-			// aapt resource value: 0x7F0F0171
-			public const int paddingProfilePageNormal = 2131689841;
-			
 			// aapt resource value: 0x7F0F0172
-			public const int paddingProfilePageSmall = 2131689842;
+			public const int paddingProfilePageNormal = 2131689842;
 			
 			// aapt resource value: 0x7F0F0173
-			public const int paddingSelfPageNormal = 2131689843;
+			public const int paddingProfilePageSmall = 2131689843;
 			
 			// aapt resource value: 0x7F0F0174
-			public const int paddingSelfPageSmall = 2131689844;
+			public const int paddingSelfPageNormal = 2131689844;
+			
+			// aapt resource value: 0x7F0F0175
+			public const int paddingSelfPageSmall = 2131689845;
 			
 			// aapt resource value: 0x7F0F00DB
 			public const int Password = 2131689691;
@@ -7278,26 +7278,26 @@ namespace LocationConnection
 			// aapt resource value: 0x7F0F00DE
 			public const int PasswordShort = 2131689694;
 			
-			// aapt resource value: 0x7F0F0175
-			public const int password_toggle_content_description = 2131689845;
-			
 			// aapt resource value: 0x7F0F0176
-			public const int path_password_eye = 2131689846;
+			public const int password_toggle_content_description = 2131689846;
 			
 			// aapt resource value: 0x7F0F0177
-			public const int path_password_eye_mask_strike_through = 2131689847;
+			public const int path_password_eye = 2131689847;
 			
 			// aapt resource value: 0x7F0F0178
-			public const int path_password_eye_mask_visible = 2131689848;
+			public const int path_password_eye_mask_strike_through = 2131689848;
 			
 			// aapt resource value: 0x7F0F0179
-			public const int path_password_strike_through = 2131689849;
+			public const int path_password_eye_mask_visible = 2131689849;
 			
 			// aapt resource value: 0x7F0F017A
-			public const int percentProgressWidthNormal = 2131689850;
+			public const int path_password_strike_through = 2131689850;
 			
 			// aapt resource value: 0x7F0F017B
-			public const int percentProgressWidthSmall = 2131689851;
+			public const int percentProgressWidthNormal = 2131689851;
+			
+			// aapt resource value: 0x7F0F017C
+			public const int percentProgressWidthSmall = 2131689852;
 			
 			// aapt resource value: 0x7F0F00DF
 			public const int PictureSizeTooLarge = 2131689695;
@@ -7320,8 +7320,8 @@ namespace LocationConnection
 			// aapt resource value: 0x7F0F00E5
 			public const int ProgramLogIncluded = 2131689701;
 			
-			// aapt resource value: 0x7F0F017C
-			public const int project_id = 2131689852;
+			// aapt resource value: 0x7F0F017D
+			public const int project_id = 2131689853;
 			
 			// aapt resource value: 0x7F0F00E6
 			public const int RefreshDistance = 2131689702;
@@ -7374,8 +7374,8 @@ namespace LocationConnection
 			// aapt resource value: 0x7F0F00F6
 			public const int SearchOK = 2131689718;
 			
-			// aapt resource value: 0x7F0F017D
-			public const int search_menu_title = 2131689853;
+			// aapt resource value: 0x7F0F017E
+			public const int search_menu_title = 2131689854;
 			
 			// aapt resource value: 0x7F0F00F7
 			public const int Second = 2131689719;
@@ -7440,8 +7440,8 @@ namespace LocationConnection
 			// aapt resource value: 0x7F0F010B
 			public const int SortBy = 2131689739;
 			
-			// aapt resource value: 0x7F0F017E
-			public const int status_bar_notification_info_overflow = 2131689854;
+			// aapt resource value: 0x7F0F017F
+			public const int status_bar_notification_info_overflow = 2131689855;
 			
 			// aapt resource value: 0x7F0F010C
 			public const int StorageNotGranted = 2131689740;
@@ -7453,52 +7453,55 @@ namespace LocationConnection
 			public const int TooLargeBitmap = 2131689742;
 			
 			// aapt resource value: 0x7F0F010F
-			public const int Unmatched = 2131689743;
+			public const int TooLargeBitmapNoBm = 2131689743;
 			
 			// aapt resource value: 0x7F0F0110
-			public const int UseGeoNo = 2131689744;
+			public const int Unmatched = 2131689744;
 			
 			// aapt resource value: 0x7F0F0111
-			public const int UseGeoYes = 2131689745;
-			
-			// aapt resource value: 0x7F0F0115
-			public const int Username = 2131689749;
-			
-			// aapt resource value: 0x7F0F0116
-			public const int UsernameAvailable = 2131689750;
-			
-			// aapt resource value: 0x7F0F0117
-			public const int UsernameBackslash = 2131689751;
-			
-			// aapt resource value: 0x7F0F0118
-			public const int UsernameEmpty = 2131689752;
-			
-			// aapt resource value: 0x7F0F0119
-			public const int UsernameExists = 2131689753;
-			
-			// aapt resource value: 0x7F0F011A
-			public const int UsernameSame = 2131689754;
+			public const int UseGeoNo = 2131689745;
 			
 			// aapt resource value: 0x7F0F0112
-			public const int UserNotAvailable = 2131689746;
+			public const int UseGeoYes = 2131689746;
 			
-			// aapt resource value: 0x7F0F0113
-			public const int UserPassive = 2131689747;
+			// aapt resource value: 0x7F0F0116
+			public const int Username = 2131689750;
 			
-			// aapt resource value: 0x7F0F0114
-			public const int UserReported = 2131689748;
+			// aapt resource value: 0x7F0F0117
+			public const int UsernameAvailable = 2131689751;
 			
-			// aapt resource value: 0x7F0F017F
-			public const int versionInfo = 2131689855;
+			// aapt resource value: 0x7F0F0118
+			public const int UsernameBackslash = 2131689752;
+			
+			// aapt resource value: 0x7F0F0119
+			public const int UsernameEmpty = 2131689753;
+			
+			// aapt resource value: 0x7F0F011A
+			public const int UsernameExists = 2131689754;
 			
 			// aapt resource value: 0x7F0F011B
-			public const int Women = 2131689755;
+			public const int UsernameSame = 2131689755;
+			
+			// aapt resource value: 0x7F0F0113
+			public const int UserNotAvailable = 2131689747;
+			
+			// aapt resource value: 0x7F0F0114
+			public const int UserPassive = 2131689748;
+			
+			// aapt resource value: 0x7F0F0115
+			public const int UserReported = 2131689749;
+			
+			// aapt resource value: 0x7F0F0180
+			public const int versionInfo = 2131689856;
 			
 			// aapt resource value: 0x7F0F011C
-			public const int WrongImageExtension = 2131689756;
+			public const int Women = 2131689756;
 			
 			// aapt resource value: 0x7F0F011D
-			public const int YourLocation = 2131689757;
+			public const int WrongImageExtension = 2131689757;
+			
+			// aapt resource value: 0x7F0F011E
+			public const int YourLocation = 2131689758;
 			
 			static String()
 			{

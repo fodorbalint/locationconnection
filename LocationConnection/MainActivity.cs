@@ -36,7 +36,6 @@ namespace LocationConnection
 		Button LoginDone, ResetPassword, ResetSendButton, RegisterButton, ListButton;
 		TextView ResetEmailText;
 
-		Android.Content.Res.Resources res;
 		InputMethodManager imm;
 		int checkFormMessage;
 
@@ -67,7 +66,6 @@ namespace LocationConnection
 				ListButton = FindViewById<Button>(Resource.Id.ListButton);
 
 				c.view = MainLayout;
-				res = Resources;
 				imm = (InputMethodManager)GetSystemService(Context.InputMethodService);
 				Window.SetSoftInputMode(SoftInput.AdjustPan);
 
@@ -106,6 +104,7 @@ namespace LocationConnection
 				}
 				if (IntentData.logout)
 				{
+					c.Log("Logout");
 					IntentData.logout = false;
 
 					if (!string.IsNullOrEmpty(locationUpdatesTo))

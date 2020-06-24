@@ -46,7 +46,6 @@ namespace LocationConnection
 		public bool cancelImageLoading;
 
 		InputMethodManager imm;
-		Android.Content.Res.Resources res;
 		private int blackTextSmall;
 
 		protected override void OnCreate(Bundle savedInstanceState)
@@ -102,7 +101,6 @@ namespace LocationConnection
 				imm = (InputMethodManager)GetSystemService(Context.InputMethodService);
 				Window.SetSoftInputMode(SoftInput.AdjustResize);
 				c.view = MainLayout;
-				res = Resources;
 
 				firstRun = false;
 			}
@@ -259,7 +257,6 @@ namespace LocationConnection
 					{
 						if (cancelImageLoading)
 						{
-							c.CW("Cancelling task");
 							break;
 						}
 						await LoadPicture(i);
@@ -351,7 +348,6 @@ namespace LocationConnection
 			ImageView image = (ImageView)TutorialFrame.GetChildAt(index);
 			
 			string url = Constants.HostName + Constants.TutorialFolder + "/" + tutorialPictures[index];
-			c.CW("LoadPicture " + index + " " + url);
 
 			Bitmap im = null;
 

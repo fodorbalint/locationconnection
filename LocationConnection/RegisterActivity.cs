@@ -80,7 +80,7 @@ namespace LocationConnection
 
 				if (!ListActivity.initialized) { //Huawei Y6 after selecting image. OnCreate is called, with static variables from other activities being cleared out.
 					//Honor 20 Pro does not call OnCreate, but will call ListActvity after onResume ends anyway. ProfileEditActivity will call ProfileViewActivity, which is gets the Not initialized error, and be therefore redirected to ListActivity.
-					c.LogActivity("RegisterActivity not initialized, restoring");
+					c.Log("RegisterActivity not initialized, restoring");
 					ListActivity.initialized = true;
 					GetScreenMetrics(true);
 					c.LoadSettings(false);
@@ -157,7 +157,6 @@ namespace LocationConnection
 				ImagesProgress.Progress = 0;
 				c.view = MainLayout;
 				rc = new RegisterCommonMethods(this);
-				res = Resources;
 				imm = (InputMethodManager)GetSystemService(InputMethodService);
 
 				var adapter = ArrayAdapter.CreateFromResource(this, Resource.Array.SexEntries, spinnerItem);
@@ -289,8 +288,7 @@ namespace LocationConnection
 					OnResumeEnd();
 				}
 
-				c.CW("OnResume end");
-				c.LogActivity("OnResume end");
+				c.Log("OnResume end");
 			}
 			catch (Exception ex)
 			{
@@ -615,6 +613,18 @@ namespace LocationConnection
         {
 			OnBackPressed();
         }
+
+		public override void OnBackPressed() //Permission Denial error would be shown otherwise next time I open this activity
+		{
+			if (ImageEditor.Visibility == ViewStates.Visible)
+			{
+				rc.CloseEditor();
+			}
+			else
+			{
+				base.OnBackPressed();
+			}
+		}
 	}
 }
  

@@ -34,7 +34,6 @@ namespace LocationConnection
 		Button EditSelf, MapStreet, MapSatellite;
 		IMenuItem MenuReport, MenuBlock;
 
-		Android.Content.Res.Resources res;
 		bool menuCreated;
 		bool mapLoaded;
 		bool userLoaded;
@@ -197,7 +196,6 @@ namespace LocationConnection
 				mapLoaded = false;
 				ProfileViewMap.GetMapAsync(this);
 				c.view = MainLayout;
-				res = Resources;
 				locationReceiver = new LocationReceiver();
 				SetSupportActionBar(MenuContainer);
 				SupportActionBar.SetDisplayShowTitleEnabled(false);
@@ -246,7 +244,7 @@ namespace LocationConnection
 				mapHeight = -1;
 				cancelImageLoading = false;
 
-				c.LogActivity("OnResume IntentData.profileViewPageType " + IntentData.profileViewPageType);
+				c.Log("OnResume IntentData.profileViewPageType " + IntentData.profileViewPageType);
 				pageType = IntentData.profileViewPageType;
 
 				switch (pageType)
@@ -310,7 +308,7 @@ namespace LocationConnection
 
 						if (ListActivity.viewProfiles.Count > Constants.MaxResultCount)
 						{
-							c.LogActivity("Error: ListActivity.viewProfiles.Count is greater than " + Constants.MaxResultCount + ": " + ListActivity.viewProfiles.Count);
+							c.Log("Error: ListActivity.viewProfiles.Count is greater than " + Constants.MaxResultCount + ": " + ListActivity.viewProfiles.Count);
 						}
 
 						if (ListActivity.viewIndex >= ListActivity.viewProfiles.Count) //when blocking a user from chat window, but returning to profileview list
@@ -362,8 +360,6 @@ namespace LocationConnection
 		{
 			base.OnPause();
 			if (!ListActivity.initialized) { return; }
-
-			c.Log("ProfileViewActivity OnPause");
 
 			cancelImageLoading = true;
 
@@ -466,12 +462,18 @@ namespace LocationConnection
 				string responseString = await c.MakeRequest("action=blockprofileview&ID=" + Session.ID + "&SessionID=" + Session.SessionID + "&TargetID=" + displayUser.ID + "&time=" + unixTimestamp);
 				if (responseString.Substring(0, 2) == "OK")
 				{
-					if (pageType == Constants.ProfileViewType_List) {
-						ListActivity.viewProfiles.RemoveAt(ListActivity.viewIndex);
-						if (ListActivity.viewIndex >= 0 && ListActivity.viewIndex < ListActivity.listProfiles.Count)
+					if (pageType == Constants.ProfileViewType_List)
+					{
+						int listIndex = ListActivity.viewIndex - (ListActivity.absoluteStartIndex - ListActivity.absoluteFirstIndex); //we subtract from viewIndex the number of items that were loaded to add before listProfiles
 						{
-							ListActivity.listProfiles.RemoveAt(ListActivity.viewIndex);
+							if (listIndex >= 0 && listIndex < ListActivity.listProfiles.Count) // check the cases where an item was removed from the below or above added list
+							{
+								ListActivity.listProfiles.RemoveAt(listIndex);
+								ListActivity.adapterToSet = true;
+							}
 						}
+						
+						ListActivity.viewProfiles.RemoveAt(ListActivity.viewIndex);
 						ListActivity.viewIndex--;
 						ListActivity.absoluteIndex--;
 						ListActivity.totalResultCount--;
@@ -486,6 +488,7 @@ namespace LocationConnection
 								if (ListActivity.listProfiles[i].ID == displayUser.ID)
 								{
 									ListActivity.listProfiles.RemoveAt(i);
+									ListActivity.adapterToSet = true;
 									break;
 								}
 							}
@@ -525,8 +528,6 @@ namespace LocationConnection
 
 			((ConstraintLayout.LayoutParams)Name.LayoutParameters).LeftMargin = (int)(paddingProfilePage * pixelDensity);
 			((ConstraintLayout.LayoutParams)Username.LayoutParameters).LeftMargin = (int)(paddingProfilePage * pixelDensity);
-
-			c.LogActivity("Setting margins on name/username: " + (int)(paddingProfilePage * pixelDensity));
 
 			PreviousButton.Visibility = ViewStates.Gone;
 			NextButton.Visibility = ViewStates.Gone;
@@ -618,7 +619,7 @@ namespace LocationConnection
 		{
 			if (footerHeight != Footer.Height)
 			{
-				//c.LogActivity("Footer_LayoutChange");
+				//c.Log("Footer_LayoutChange");
 				SetHeight();
 				footerHeight = Footer.Height;
 			}
@@ -629,7 +630,7 @@ namespace LocationConnection
 			int newMapHeight = (MapContainer.Visibility == ViewStates.Visible) ? MapContainer.Height : 0;
 			if (mapHeight != newMapHeight)
 			{
-				//c.LogActivity("MapContainer_LayoutChange");
+				//c.Logy("MapContainer_LayoutChange");
 				SetHeight();
 				mapHeight = newMapHeight;
 			}
@@ -640,7 +641,7 @@ namespace LocationConnection
 			int newMapHeight = (MapContainer.Visibility == ViewStates.Visible) ? MapContainer.Height : 0;
 			if (footerHeight != Footer.Height || mapHeight != newMapHeight)
 			{
-				//c.LogActivity("ScrollLayout_LayoutChange");
+				//c.Log("ScrollLayout_LayoutChange");
 				SetHeight();
 				footerHeight = Footer.Height;
 				mapHeight = newMapHeight;
@@ -654,7 +655,7 @@ namespace LocationConnection
 			Rect r = new Rect();
 			MainLayout.GetWindowVisibleDisplayFrame(r);
 			totalScrollHeight = currentScrollHeight - MainLayout.Height;
-			c.LogActivity("SetHeight screenHeight " + screenHeight + " totalScrollHeight " + totalScrollHeight + " currentScrollHeight " + currentScrollHeight + " MainLayout.Height " + MainLayout.Height + " ScrollLayout.Height " + ScrollLayout.Height);
+			c.Log("SetHeight screenHeight " + screenHeight + " totalScrollHeight " + totalScrollHeight + " currentScrollHeight " + currentScrollHeight + " MainLayout.Height " + MainLayout.Height + " ScrollLayout.Height " + ScrollLayout.Height);
 
 			if (totalScrollHeight < 0)
 			{
@@ -688,7 +689,7 @@ namespace LocationConnection
 		}
 
 		private int GetScrollHeight() {
-			//c.LogActivity("GetScrollHeight EditSpacer " + ((EditSpacer.Visibility == ViewStates.Visible) ? EditSpacer.Height : 0) + " HeaderBackground " + HeaderBackground.Height + " screenWidth " + screenWidth + " Footer " + Footer.Height + " MapContainer " + ((MapContainer.Visibility == ViewStates.Visible) ? MapContainer.LayoutParameters.Height : 0) + " NavigationSpacer " + NavigationSpacer.LayoutParameters.Height);
+			//c.Log("GetScrollHeight EditSpacer " + ((EditSpacer.Visibility == ViewStates.Visible) ? EditSpacer.Height : 0) + " HeaderBackground " + HeaderBackground.Height + " screenWidth " + screenWidth + " Footer " + Footer.Height + " MapContainer " + ((MapContainer.Visibility == ViewStates.Visible) ? MapContainer.LayoutParameters.Height : 0) + " NavigationSpacer " + NavigationSpacer.LayoutParameters.Height);
 
 			return ((EditSpacer.Visibility == ViewStates.Visible) ? EditSpacer.Height : 0) + HeaderBackground.Height + screenWidth
 				+ Footer.Height + ((MapContainer.Visibility == ViewStates.Visible) ? MapContainer.LayoutParameters.Height : 0) + NavigationSpacer.LayoutParameters.Height;
@@ -865,7 +866,7 @@ namespace LocationConnection
 				}
 				counterCircles = new List<View>();
 
-				c.LogActivity("LoadSelf " + Session.Username);
+				c.Log("LoadSelf " + Session.Username);
 
 				Username.Text = Session.Username;
 				Name.Text = Session.Name;
@@ -907,7 +908,7 @@ namespace LocationConnection
 					{
 						if (cancelImageLoading)
 						{
-							c.CW("Cancelling task at self currentID " + currentID + " cancelImageLoading " + cancelImageLoading);
+							//c.CW("Cancelling task at self currentID " + currentID + " cancelImageLoading " + cancelImageLoading);
 							break;
 						}
 						await LoadPicture(Session.ID.ToString(), Session.Pictures[i], i, true);
@@ -993,7 +994,7 @@ namespace LocationConnection
 
 				counterCircles = new List<View>();
 
-				c.LogActivity("LoadUser " + displayUser.Username);
+				c.Log("LoadUser " + displayUser.Username);
 
 				Username.Text = displayUser.Username;
 				Name.Text = displayUser.Name;
@@ -1031,7 +1032,7 @@ namespace LocationConnection
 					{
 						if (cancelImageLoading || profile.ID != currentID)
 						{
-							c.CW("Cancelling task at userID " + profile.ID.ToString() + " currentID " + currentID + " cancelImageLoading " + cancelImageLoading);
+							//c.CW("Cancelling task at userID " + profile.ID.ToString() + " currentID " + currentID + " cancelImageLoading " + cancelImageLoading);
 							break;
 						}
 						await LoadPicture(profile.ID.ToString(), profile.Pictures[i], i, false);
@@ -1309,8 +1310,7 @@ namespace LocationConnection
 				}
 				#pragma warning restore CS0162
 
-				//c.LogActivity("LoadPicture start ID " + folder + " index " + index );
-				//c.CW("LoadPicture start index " + index + " ID " + folder);
+				//c.Log("LoadPicture start ID " + folder + " index " + index );
 
 				Bitmap im = null;
 
@@ -1323,8 +1323,7 @@ namespace LocationConnection
 					im = await task;
 				}
 
-				//c.LogActivity("LoadPicture end ID " + folder + " index "+ index + " im null " + (im is null) + " currentID " + currentID + " cancelImageLoading " + cancelImageLoading);
-				//c.CW("LoadPicture end index " + index + " ID " + folder + " im null " + (im is null) + " currentID " + currentID + " cancelImageLoading " + cancelImageLoading);
+				//c.Log("LoadPicture end ID " + folder + " index "+ index + " im null " + (im is null) + " currentID " + currentID + " cancelImageLoading " + cancelImageLoading);
 				
 				if (im is null)
 				{
@@ -1976,7 +1975,7 @@ namespace LocationConnection
 			ListActivity.viewIndex--;
 			ListActivity.absoluteIndex--;
 
-			c.CW("PreviousButton_Click viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " viewProfiles.Count " + ListActivity.viewProfiles.Count + " listProfiles.Count " + ListActivity.listProfiles.Count);
+			//c.CW("PreviousButton_Click viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " viewProfiles.Count " + ListActivity.viewProfiles.Count + " listProfiles.Count " + ListActivity.listProfiles.Count);
 
 			if (ListActivity.viewIndex >= 0)
 			{
@@ -2000,7 +1999,7 @@ namespace LocationConnection
 			ListActivity.viewIndex++;
 			ListActivity.absoluteIndex++;
 
-			c.CW("NextButton_Click viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " viewProfiles.Count " + ListActivity.viewProfiles.Count + " listProfiles.Count " + ListActivity.listProfiles.Count);
+			//c.CW("NextButton_Click viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " viewProfiles.Count " + ListActivity.viewProfiles.Count + " listProfiles.Count " + ListActivity.listProfiles.Count);
 
 			if (ListActivity.viewIndex < ListActivity.viewProfiles.Count)
 			{
@@ -2021,13 +2020,11 @@ namespace LocationConnection
 
 		private void PrevLoadAction()
 		{
-			//c.LogActivity("PrevLoadAction viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " absoluteStartIndex " + ListActivity.absoluteStartIndex + " ResultsFrom " + Session.ResultsFrom + " view count " + ListActivity.viewProfiles.Count);
-			//c.CW("PrevLoadAction viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " absoluteStartIndex " + ListActivity.absoluteStartIndex + " ResultsFrom " + Session.ResultsFrom + " viewProfiles.Count " + ListActivity.viewProfiles.Count + " totalResultCount " + ListActivity.totalResultCount);
+			//c.Log("PrevLoadAction viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " absoluteStartIndex " + ListActivity.absoluteStartIndex + " ResultsFrom " + Session.ResultsFrom + " view count " + ListActivity.viewProfiles.Count);
 			if (ListActivity.viewIndex == 0 && ListActivity.absoluteFirstIndex > 0)
 			{
 				Session.ResultsFrom = ListActivity.absoluteIndex - Constants.MaxResultCount + 1;
-				//c.LogActivity("Prev2 ResultsFrom " + Session.ResultsFrom);
-				//c.CW("Prev2 ResultsFrom " + Session.ResultsFrom);
+				//c.Log("Prev2 ResultsFrom " + Session.ResultsFrom);
 				ListActivity.addResultsBefore = true;
 				if (Session.LastSearchType == Constants.SearchType_Filter)
 				{
@@ -2042,13 +2039,11 @@ namespace LocationConnection
 
 		private void NextLoadAction()
 		{
-			//c.LogActivity("NextLoadAction viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " absoluteStartIndex " + ListActivity.absoluteStartIndex + " ResultsFrom " + Session.ResultsFrom + " view count " + ListActivity.viewProfiles.Count);
-			//c.CW("NextLoadAction viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " absoluteStartIndex " + ListActivity.absoluteStartIndex + " ResultsFrom " + Session.ResultsFrom + " viewProfiles.Count " + ListActivity.viewProfiles.Count + " totalResultCount " + ListActivity.totalResultCount);
+			//c.Log("NextLoadAction viewIndex " + ListActivity.viewIndex + " absoluteIndex " + ListActivity.absoluteIndex + " absoluteStartIndex " + ListActivity.absoluteStartIndex + " ResultsFrom " + Session.ResultsFrom + " view count " + ListActivity.viewProfiles.Count);
 			if (ListActivity.viewIndex == ListActivity.viewProfiles.Count - 1 && ListActivity.totalResultCount > ListActivity.absoluteIndex + 1) //list will be loaded
 			{
 				Session.ResultsFrom = ListActivity.absoluteIndex + 2;
-				//c.LogActivity("Next2 ResultsFrom " + Session.ResultsFrom);
-				//c.CW("Next2 ResultsFrom " + Session.ResultsFrom);
+				//c.Log("Next2 ResultsFrom " + Session.ResultsFrom);
 				ListActivity.addResultsAfter = true;
 				if (Session.LastSearchType == Constants.SearchType_Filter)
 				{
@@ -2168,34 +2163,6 @@ namespace LocationConnection
 				StartActivity(i);
 
 				c.Log("LikeButton_click, opening chat from list");
-				/*
-				LikeButton.Enabled = false;
-					
-				string responseString = await c.MakeRequest("action=requestmatchid&ID=" + Session.ID + "&SessionID=" + Session.SessionID + "&target=" + displayUser.ID);
-				if (responseString.Substring(0, 2) == "OK")
-				{
-					if (responseString.Substring(3) == "") //deleted user
-                    {
-						c.Snack(Resource.String.MatchNotFound);
-						return;
-                    }
-					Session.CurrentMatch = new MatchItem();
-					Session.CurrentMatch.MatchID = int.Parse(responseString.Substring(3));
-					Session.CurrentMatch.TargetID = displayUser.ID;
-					Session.CurrentMatch.TargetUsername = displayUser.Username;
-					Session.CurrentMatch.TargetName = displayUser.Name;
-					Session.CurrentMatch.TargetPicture = displayUser.Pictures[0];
-
-					Intent i = new Intent(this, typeof(ChatOneActivity));
-					i.SetFlags(ActivityFlags.ReorderToFront);
-					StartActivity(i);
-				}
-				else
-				{
-					c.ReportError(responseString);
-				}
-
-				LikeButton.Enabled = true;*/
 			}
 		}
 
@@ -2219,19 +2186,50 @@ namespace LocationConnection
 
 					if (Session.ListType != "hid")
 					{
-						ListActivity.viewProfiles.RemoveAt(ListActivity.viewIndex);
-						int listIndex = ListActivity.viewIndex - (ListActivity.absoluteStartIndex - ListActivity.absoluteFirstIndex); //we subtract from viewIndex the number of items that were loaded to add before listProfiles
+						if (pageType == Constants.ProfileViewType_List)
 						{
-							if (listIndex >= 0 && listIndex < ListActivity.listProfiles.Count) // check the cases where an item was removed from the below or above added list
+							int listIndex = ListActivity.viewIndex - (ListActivity.absoluteStartIndex - ListActivity.absoluteFirstIndex); //we subtract from viewIndex the number of items that were loaded to add before listProfiles
 							{
-								ListActivity.listProfiles.RemoveAt(listIndex);
+								if (listIndex >= 0 && listIndex < ListActivity.listProfiles.Count) // check the cases where an item was removed from the below or above added list
+								{
+									ListActivity.listProfiles.RemoveAt(listIndex);
+									ListActivity.adapterToSet = true;
+								}
 							}
+
+							ListActivity.viewProfiles.RemoveAt(ListActivity.viewIndex);
+							ListActivity.viewIndex--;
+							ListActivity.absoluteIndex--;
+							ListActivity.totalResultCount--;
+							NextButton_Click(null, null);
 						}
-						
-						ListActivity.viewIndex--;
-						ListActivity.absoluteIndex--;
-						ListActivity.totalResultCount--;
-						NextButton_Click(null, null);
+						else
+						{
+							if (!(ListActivity.listProfiles is null))
+							{
+								for (int i = 0; i < ListActivity.listProfiles.Count; i++)
+								{
+									if (ListActivity.listProfiles[i].ID == displayUser.ID)
+									{
+										ListActivity.listProfiles.RemoveAt(i);
+										ListActivity.adapterToSet = true;
+										break;
+									}
+								}
+							}
+							if (!(ListActivity.viewProfiles is null))
+							{
+								for (int i = 0; i < ListActivity.viewProfiles.Count; i++)
+								{
+									if (ListActivity.viewProfiles[i].ID == displayUser.ID)
+									{
+										ListActivity.viewProfiles.RemoveAt(i);
+										break;
+									}
+								}
+							}
+							OnBackPressed();
+						}
 					}
 				}
 				else if (responseString.Substring(0, 6) == "ERROR_") //IsAMatch
@@ -2272,90 +2270,45 @@ namespace LocationConnection
 			}
 		}
 
-		public void AddNewMatch(int senderID, MatchItem item)
+		public void UpdateStatus(int senderID, bool isMatch)
 		{
-			if (pageType != Constants.ProfileViewType_Self && displayUser.ID == senderID)
+			if (displayUser.ID == senderID)
 			{
-				Session.CurrentMatch = item;
-				ListActivity.viewProfiles[ListActivity.viewIndex].UserRelation = 3;
-
-				TooltipCompat.SetTooltipText(LikeButton, res.GetString(Resource.String.Match));
-				//LikeButton.TooltipText = res.GetString(Resource.String.Match);
-				LikeButton.SetImageResource(icChatOne);
-				LikeButton.Enabled = true;
-
-				HideButton.Visibility = ViewStates.Gone;
-			}
-		}
-
-		public void UpdateStatus(int senderID, bool isMatch, int? matchID)
-		{
-			if (pageType == Constants.ProfileViewType_List && displayUser.ID == senderID)
-			{
-				if (isMatch) //start userrelation 2
+				if (pageType != Constants.ProfileViewType_Self) //list or standalone
 				{
-					Session.CurrentMatch = new MatchItem();
-					Session.CurrentMatch.MatchID = matchID;
-					Session.CurrentMatch.TargetID = displayUser.ID;
-					Session.CurrentMatch.TargetUsername = displayUser.Username;
-					Session.CurrentMatch.TargetName = displayUser.Name;
-					Session.CurrentMatch.TargetPicture = displayUser.Pictures[0];
+					if (isMatch) //start userrelation 2
+					{
+						TooltipCompat.SetTooltipText(LikeButton, res.GetString(Resource.String.Match));
+						//LikeButton.TooltipText = res.GetString(Resource.String.Match);
+						LikeButton.SetImageResource(icChatOne);
+						LikeButton.Enabled = true;
 
-					ListActivity.viewProfiles[ListActivity.viewIndex].UserRelation = 3;
+						HideButton.Visibility = ViewStates.Gone;
+					}
+					else //start userrelation 3 or 4.
+					{
+						TooltipCompat.SetTooltipText(LikeButton, res.GetString(Resource.String.Liked));
+						//LikeButton.TooltipText = res.GetString(Resource.String.Liked);
+						LikeButton.SetImageResource(icLiked);
+						LikeButton.Enabled = false;
 
-					TooltipCompat.SetTooltipText(LikeButton, res.GetString(Resource.String.Match));
-					//LikeButton.TooltipText = res.GetString(Resource.String.Match);
-					LikeButton.SetImageResource(icChatOne);
-					LikeButton.Enabled = true;
-
-					HideButton.Visibility = ViewStates.Gone;
+						HideButton.SetImageResource(icHide);
+						TooltipCompat.SetTooltipText(HideButton, res.GetString(Resource.String.Hide));
+						//HideButton.TooltipText = res.GetString(Resource.String.Hide);
+						HideButton.Visibility = ViewStates.Visible;
+					}
 				}
-				else //start userrelation 3 or 4.
+
+				if (pageType == Constants.ProfileViewType_Standalone) //only the lists are updated in ChatReceiver
 				{
-					ListActivity.viewProfiles[ListActivity.viewIndex].UserRelation = 2;
-
-					TooltipCompat.SetTooltipText(LikeButton, res.GetString(Resource.String.Liked));
-					//LikeButton.TooltipText = res.GetString(Resource.String.Liked);
-					LikeButton.SetImageResource(icLiked);
-					LikeButton.Enabled = false;
-
-					HideButton.SetImageResource(icHide);
-					TooltipCompat.SetTooltipText(HideButton, res.GetString(Resource.String.Hide));
-					//HideButton.TooltipText = res.GetString(Resource.String.Hide);
-					HideButton.Visibility = ViewStates.Visible;
-				}
-			}
-			else if (pageType == Constants.ProfileViewType_Standalone)
-			{
-				ChatReceiver.AddUpdateMatch(senderID, isMatch);
-			}
-
-			if (pageType == Constants.ProfileViewType_Standalone && displayUser.ID == senderID)
-			{
-				if (isMatch)
-				{
-					displayUser.UserRelation = 3;
-
-					TooltipCompat.SetTooltipText(LikeButton, res.GetString(Resource.String.Match));
-					//LikeButton.TooltipText = res.GetString(Resource.String.Match);
-					LikeButton.SetImageResource(icChatOne);
-					LikeButton.Enabled = true;
-
-					HideButton.Visibility = ViewStates.Gone;
-				}
-				else
-				{
-					displayUser.UserRelation = 2;
-
-					TooltipCompat.SetTooltipText(LikeButton, res.GetString(Resource.String.Liked));
-					//LikeButton.TooltipText = res.GetString(Resource.String.Liked);
-					LikeButton.SetImageResource(icLiked);
-					LikeButton.Enabled = false;
-
-					HideButton.SetImageResource(icHide);
-					TooltipCompat.SetTooltipText(HideButton, res.GetString(Resource.String.Hide));
-					//HideButton.TooltipText = res.GetString(Resource.String.Hide);
-					HideButton.Visibility = ViewStates.Visible;
+					if (isMatch)
+					{
+						displayUser.UserRelation = 3;
+					}
+					else
+					{
+						displayUser.UserRelation = 2;
+					}
 				}
 			}
 		}

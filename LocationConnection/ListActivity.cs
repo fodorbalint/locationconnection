@@ -47,8 +47,6 @@ namespace LocationConnection
 	{
 		private string googleServiceFile = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "googleservice.txt");
 
-		Android.Content.Res.Resources res;
-
 		IMenu pageMenu;
 
 		ConstraintLayout FilterLayout, DistanceFilters, UseGeoContainer;
@@ -96,11 +94,11 @@ namespace LocationConnection
 		private bool listTypeShown;
 		private bool searchInShown;
 		private bool recenterMap;
-		private Circle circle;
 		private bool mapToSet;
 		private bool distanceSourceCurrentClicked;
 		private byte backCounter;
 		private bool autoLogin;
+		public static bool adapterToSet;
 
 		//if we get location before logging in is completed, we do not need to request it again. 
 		private double? localLatitude;
@@ -164,7 +162,6 @@ namespace LocationConnection
 					}
 				}
 
-				res = Resources;
 				IsPlayServicesAvailable();
 				CreateNotificationChannel();
 
@@ -187,7 +184,7 @@ namespace LocationConnection
 
 				if (autoLogin)
 				{
-					c.LogActivity("Autologin");
+					c.Log("Autologin");
 
 					Task.Run(async () =>
 					{
@@ -241,8 +238,7 @@ namespace LocationConnection
 									}
 									LoggedInLayout();
 									SetViews();
-									//c.CW("Autologin, after setting views: listTypeClicked " + listTypeClicked + " searchInClicked " + searchInClicked);
-									//c.LogActivity("Autologin, after setting views: listTypeClicked " + listTypeClicked + " searchInClicked " + searchInClicked);
+									//c.Log("Autologin, after setting views: listTypeClicked " + listTypeClicked + " searchInClicked " + searchInClicked);
 								}
 								catch (Exception ex)
 								{
@@ -257,8 +253,7 @@ namespace LocationConnection
 							{
 								if (c.IsLocationEnabled())
 								{
-									c.CW("Autologin location enabled Session.InAppLocationRate " + Session.InAppLocationRate + " currentLocationRate " + currentLocationRate);
-									c.LogActivity("Autologin location enabled Session.InAppLocationRate " + Session.InAppLocationRate + " currentLocationRate " + currentLocationRate);
+									c.Log("Autologin location enabled Session.InAppLocationRate " + Session.InAppLocationRate + " currentLocationRate " + currentLocationRate);
 									if (Session.InAppLocationRate != currentLocationRate) //only restart if the logged-out rate is different than the logged-in one.
 									{
 										this.RunOnUiThread(() => {
@@ -290,14 +285,12 @@ namespace LocationConnection
 									else
 									{
 										//first location update will load the list, otherwise the Getting location... message will remain in the status bar until timeout
-										c.CW("Autologin location unavailable");
-										c.LogActivity("Autologin location unavailable");
+										c.Log("Autologin location unavailable");
 									}
 								}
 								else
 								{
-									c.CW("Autologin LocationDisabledButUsingLocation");
-									c.LogActivity("Autologin LocationDisabledButUsingLocation");
+									c.Log("Autologin LocationDisabledButUsingLocation");
 
 									RunOnUiThread(() => {
 										snack = c.SnackIndef(Resource.String.LocationDisabledButUsingLocation);
@@ -319,8 +312,7 @@ namespace LocationConnection
 							}
 							else
 							{
-								c.CW("Autologin logged in, not using location");
-								c.LogActivity("Autologin logged in, not using location");
+								c.Log("Autologin logged in, not using location");
 
 								if (locationUpdating)
 								{
@@ -445,8 +437,7 @@ namespace LocationConnection
 					bottomSeparatorMargin = float.Parse(Resources.GetString(Resource.String.bottomSeparatorMarginSmall), CultureInfo.InvariantCulture);
 				}
 				
-				c.LogActivity("Inflated in " + stw.ElapsedMilliseconds);
-				c.CW("Inflated in " + stw.ElapsedMilliseconds);
+				c.Log("Inflated in " + stw.ElapsedMilliseconds);
 
 				stw.Stop();
 
@@ -520,6 +511,7 @@ namespace LocationConnection
 				usersLoaded = false;
                 mapToSet = false;
                 listLoading = false;
+				adapterToSet = false;
 				distanceSourceCurrentClicked = false;
 				distanceLimitChangedByCode = false;
 
@@ -559,7 +551,7 @@ namespace LocationConnection
 				MenuChatList.Click += MenuChatList_Click;
 				MenuChatList.Touch += MenuChatList_Touch;
 
-				c.LogActivity("ListActivity OnCreate end");
+				c.Log("ListActivity OnCreate end");
 			}
             catch (Exception ex)
             {
@@ -615,14 +607,13 @@ namespace LocationConnection
 				addResultsBefore = false;
 				addResultsAfter = false;
 				
-				//c.CW("Onresume, after setting views: listTypeClicked " + listTypeClicked + " searchInClicked " + searchInClicked);
-				//c.LogActivity("Onresume, after setting views: listTypeClicked " + listTypeClicked + " searchInClicked " + searchInClicked);
+				//c.Log("Onresume, after setting views: listTypeClicked " + listTypeClicked + " searchInClicked " + searchInClicked);
 				MainLayout.RequestFocus();
 
 				if (!(listProfiles is null) && !(newListProfiles is null) && Session.ListType != "hid") { //hid list will reload
 					if (absoluteIndex < absoluteStartIndex)
 					{
-						c.CW("OnResume got low range: absoluteIndex " + absoluteIndex + " absoluteStartIndex " + absoluteStartIndex + " absoluteFirstIndex " + absoluteFirstIndex + " viewIndex: " + (absoluteIndex - absoluteFirstIndex));
+						//c.CW("OnResume got low range: absoluteIndex " + absoluteIndex + " absoluteStartIndex " + absoluteStartIndex + " absoluteFirstIndex " + absoluteFirstIndex + " viewIndex: " + (absoluteIndex - absoluteFirstIndex));
 						do
 						{
 							absoluteStartIndex -= Constants.MaxResultCount;
@@ -639,7 +630,7 @@ namespace LocationConnection
 					}
 					else if (absoluteIndex >= absoluteStartIndex + listProfiles.Count)
 					{
-						c.CW("OnResume got high range: absoluteIndex " + absoluteIndex + " absoluteStartIndex " + absoluteStartIndex + " absoluteFirstIndex " + absoluteFirstIndex + " viewIndex: " + (absoluteIndex - absoluteFirstIndex));
+						//c.CW("OnResume got high range: absoluteIndex " + absoluteIndex + " absoluteStartIndex " + absoluteStartIndex + " absoluteFirstIndex " + absoluteFirstIndex + " viewIndex: " + (absoluteIndex - absoluteFirstIndex));
 						do
 						{
 							absoluteStartIndex += Constants.MaxResultCount;
@@ -657,7 +648,7 @@ namespace LocationConnection
 					}
 					else //we are in the original range, but could have hid profiles, so the section must be recreated.
 					{
-						c.CW("OnResume in normal range: absoluteIndex " + absoluteIndex + " absoluteStartIndex " + absoluteStartIndex + " absoluteFirstIndex " + absoluteFirstIndex + " viewIndex: " + (absoluteIndex - absoluteFirstIndex));
+						//c.CW("OnResume in normal range: absoluteIndex " + absoluteIndex + " absoluteStartIndex " + absoluteStartIndex + " absoluteFirstIndex " + absoluteFirstIndex + " viewIndex: " + (absoluteIndex - absoluteFirstIndex));
 						if (absoluteStartIndex - absoluteFirstIndex + Constants.MaxResultCount > viewProfiles.Count) // this range contains less elements than MaxResultCount 
 						{
 							listProfiles = viewProfiles.GetRange(absoluteStartIndex - absoluteFirstIndex, viewProfiles.Count - (absoluteStartIndex - absoluteFirstIndex));
@@ -680,11 +671,7 @@ namespace LocationConnection
 					Session.ResultsFrom = absoluteStartIndex + 1;
 					c.Log("NewListProfiles Session.ResultsFrom " + Session.ResultsFrom + " listProfiles.Count " + listProfiles.Count + " newListProfiles.Count " + newListProfiles.Count);
 
-					adapter = new UserSearchListAdapter(this, listProfiles);
-					ImageCache.imagesInProgress = new List<string>();
-					ImageCache.imageViewToLoadLater = new Dictionary<ImageView, string>();
-					UserSearchList.Adapter = adapter;
-					usersLoaded = true;
+					adapterToSet = true;
 				}
 				newListProfiles = null;
 
@@ -782,8 +769,7 @@ namespace LocationConnection
 					firstRunTimer.Start();
 				}
 
-				c.CW("Onresume end");
-				c.LogActivity("OnResume end");
+				c.Log("Onresume end");
 
 				//ListType_ItemSelected get called here if container is visible
 			}
@@ -802,7 +788,7 @@ namespace LocationConnection
 
 		public void StartLocationTimer()
 		{
-			c.CW("Starting location timer");
+			c.Log("Starting location timer");
 			locationTimer = new Timer();
 			locationTimer.Interval = Constants.LocationTimeout;
 			locationTimer.Elapsed += LocationTimer_Elapsed;
@@ -812,8 +798,7 @@ namespace LocationConnection
 		private void LocationTimer_Elapsed(object sender, ElapsedEventArgs e)
 		{
 			((Timer)sender).Stop();
-			c.CW("Location timeout");
-			c.LogActivity("LocationTimeout");
+			c.Log("Location timeout");
 			LoadListStartup();
 		}
 
@@ -836,8 +821,7 @@ namespace LocationConnection
 				//reloading list if it expired
 				if (Session.LastDataRefresh is null || Session.LastDataRefresh < unixTimestamp - Constants.DataRefreshInterval)
 				{
-					c.LogActivity("LoadListStartup will load");
-					c.CW("LoadListStartup will load");
+					c.Log("LoadListStartup will load");
 
 					recenterMap = true;
 					if (Session.LastSearchType == Constants.SearchType_Filter)
@@ -851,10 +835,18 @@ namespace LocationConnection
 				}
 				else //show no result label only if list is not being reloaded, and set map with the results loaded while being in ProfileView
 				{
-					c.Log("Setting map only if mapLoaded " + mapLoaded + " mapToSet " + mapToSet);
+					c.Log("List not loading, adapterToSet " + adapterToSet + "  mapLoaded " + mapLoaded + " mapToSet " + mapToSet);
+
+					if (adapterToSet)
+					{
+						adapter = new UserSearchListAdapter(this, listProfiles);
+						ImageCache.imagesInProgress = new List<string>();
+						ImageCache.imageViewToLoadLater = new Dictionary<ImageView, string>();
+						UserSearchList.Adapter = adapter;
+						usersLoaded = true;
+					}
 
 					if (mapLoaded && mapToSet) //map is not loaded on startup. 
-																	   //Settings.IsMapView is needed in the case that user filtered by current location, and now turns off uselocation in profile edit, and returns.
 					{
 						StartLoaderAnim();
 						mapSet = false;
@@ -863,6 +855,7 @@ namespace LocationConnection
 					}
 					SetResultStatus();
 				}
+				adapterToSet = false;
 			}
 
 		}
@@ -926,7 +919,7 @@ namespace LocationConnection
 			((ConstraintLayout.LayoutParams)BottomSeparator.LayoutParameters).RightMargin = (int)(bottomSeparatorMargin * pixelDensity);
 		}
 
-		private void LoggedOutLayout()
+		private void LoggedOutLayout() //other address set will remain after registering, because Session is only cleared when logging out
 		{
 			Session.SearchTerm = Settings.SearchTerm;
 			Session.SearchIn = Settings.SearchIn;
@@ -954,7 +947,7 @@ namespace LocationConnection
 		public bool IsPlayServicesAvailable() //Newer Huawei devices do not support play store.
 		{
 			int resultCode = GoogleApiAvailability.Instance.IsGooglePlayServicesAvailable(this);
-			c.LogActivity("IsPlayServicesAvailable resultCode: " + resultCode);
+			c.Log("IsPlayServicesAvailable resultCode: " + resultCode);
 			if (resultCode != ConnectionResult.Success)
 			{
 				if (GoogleApiAvailability.Instance.IsUserResolvableError(resultCode))
@@ -1134,7 +1127,6 @@ namespace LocationConnection
 			{
 				UseGeoNo.Checked = true;
 				UseGeoContainer.Visibility = ViewStates.Gone;
-				c.LogActivity("SetViews Session.GeoFilter false UseGeoContainer gone");
 			}
 			else
 			{
@@ -1173,7 +1165,6 @@ namespace LocationConnection
 			distanceSourceAddressTextChanging = false;
 
 			distanceLimitChangedByCode = true;
-			c.Log("SetViews DistanceLimit");
 			DistanceLimit.Progress = DistanceLimitValToProgress((int)Session.DistanceLimit);
 			DistanceLimitInput.Text = Session.DistanceLimit.ToString();
 			distanceLimitChangedByCode = false;
@@ -1197,7 +1188,6 @@ namespace LocationConnection
 		private void SetLoggedInMenu ()
 		{
 			IMenuItem item = pageMenu.FindItem(Resource.Id.MenuLogOut);
-			//c.LogActivity((item.ActionView is null).ToString()); true
 			item.SetVisible(true);
 			item = pageMenu.FindItem(Resource.Id.MenuLogIn);
 			item.SetVisible(false);
@@ -1360,7 +1350,7 @@ namespace LocationConnection
 
 						if (distanceSourceCurrentClicked)
 						{
-							c.LogActivity("PM logged in granted distanceSourceCurrentClicked");
+							c.Log("PM logged in granted distanceSourceCurrentClicked");
 							//it resets to address by itself
 							DistanceSourceCurrent.Checked = true;
 							Session.GeoSourceOther = false;
@@ -1369,7 +1359,7 @@ namespace LocationConnection
 						}
 						else
 						{
-							c.LogActivity("PM logged in granted map clicked, mapToSet " + mapToSet);
+							c.Log("PM logged in granted map clicked, mapToSet " + mapToSet);
 						}
 						Session.LocationTime = null;
 						UpdateLocationSetting(true);
@@ -1383,7 +1373,7 @@ namespace LocationConnection
 
 						if (distanceSourceCurrentClicked)
 						{
-							c.LogActivity("PM not logged in granted distanceSourceCurrentClicked");
+							c.Log("PM not logged in granted distanceSourceCurrentClicked");
 							//it resets to address by itself
 							Session.LocationTime = null; //making sure, last location will be requested in OnResume (even if PM was off, a last location value could have existed, if PM was on before.) 
 							DistanceSourceCurrent.Checked = true;
@@ -1393,7 +1383,7 @@ namespace LocationConnection
 						}
 						else
 						{
-							c.LogActivity("PM not logged in granted map clicked, mapToSet " + mapToSet);
+							c.Log("PM not logged in granted map clicked, mapToSet " + mapToSet);
 						}
 					}
 				}
@@ -1545,7 +1535,7 @@ namespace LocationConnection
 
 		private async void MapView_Click(object sender, EventArgs e)
 		{
-			c.LogActivity("MapView_Click");
+			c.Log("MapView_Click");
 			mapToSet = true;
 			if (await CheckLocationSettings())
 			{
@@ -1556,7 +1546,7 @@ namespace LocationConnection
 
 		private void MapViewSecond()
 		{
-			c.LogActivity("MapViewSecond mapSet " + mapSet + " mapToSet " + mapToSet);
+			c.Log("MapViewSecond mapSet " + mapSet + " mapToSet " + mapToSet);
 			if (mapLoaded && usersLoaded && !(bool)Settings.IsMapView)
 			{
 				if (!mapSet)
@@ -1956,7 +1946,7 @@ namespace LocationConnection
 					tryCount++;
 					var locations = await geocoder.GetFromLocationNameAsync(lookup, 10);
 					location = locations?.FirstOrDefault();
-					Console.WriteLine(tryCount + " " + (location is null) + "---" + locations.Count());
+					//c.CW(tryCount + " " + (location is null) + "---" + locations.Count());
 				} while ((location is null) && tryCount < maxTryCount);
 
 				Xamarin.Essentials.Location location;
@@ -1965,7 +1955,7 @@ namespace LocationConnection
 					tryCount++;
 					var locations = await Geocoding.GetLocationsAsync(lookup);
 					location = locations?.FirstOrDefault();
-					Console.WriteLine(tryCount + " " + (location is null) + "---" + locations.Count());
+					//c.CW(tryCount + " " + (location is null) + "---" + locations.Count());
 				} while ((location is null) && tryCount < maxTryCount);
 
 				await c.Alert(tryCount + " " + (location is null));
@@ -2122,8 +2112,6 @@ namespace LocationConnection
 
 		private void UserSearchList_Touch(object sender, View.TouchEventArgs e)
 		{
-			c.CW("UserSearchList_Touch " + e.Event.Action);
-
 			switch (e.Event.Action)
 			{
 				case MotionEventActions.Down:
@@ -2133,13 +2121,16 @@ namespace LocationConnection
 						break;
 					}
 					startY = (int)e.Event.GetY();
+					diff = 0; //without this, it can interfere with a click where only down and up are called, and therefore results in unnecessary refresh
 					break;
 				case MotionEventActions.Move:
 					if (startY is null)
 					{
 						break;
 					}
+					
 					int posY = (int)e.Event.GetY();
+
 					diff = (posY - (int)startY) / pixelDensity;
 					if (diff >= 0 && diff < maxY)
 					{
@@ -2244,8 +2235,7 @@ namespace LocationConnection
 		{
 			try
 			{
-				c.LogActivity("OnMapReady, usersLoaded " + usersLoaded + " IsMapView " + Settings.IsMapView);
-				c.CW("OnMapReady, usersLoaded " + usersLoaded + " IsMapView " + Settings.IsMapView);
+				c.Log("OnMapReady, usersLoaded " + usersLoaded + " IsMapView " + Settings.IsMapView);
 
 				mapLoaded = true;
 				map.UiSettings.ZoomControlsEnabled = false;
@@ -2268,8 +2258,7 @@ namespace LocationConnection
 				thisMap = map;
 				if (usersLoaded && mapToSet && !listLoading)
 				{
-					c.LogActivity("ViewDidLayoutSubviews setting map");
-					c.CW("OnMapReady setting map");
+					c.Log("ViewDidLayoutSubviews setting map");
 
 					StartLoaderAnim();
 					mapSet = false;
@@ -2406,7 +2395,7 @@ namespace LocationConnection
 				{
 					RunOnUiThread(() => {
 						SetResultStatus();
-						c.LogActivity("Exiting loadlist GeoFilter " + Session.GeoFilter + " GeoSourceOther " + Session.GeoSourceOther
+						c.Log("Exiting loadlist GeoFilter " + Session.GeoFilter + " GeoSourceOther " + Session.GeoSourceOther
 							+ " own location " + c.IsOwnLocationAvailable() + " other location " + c.IsOtherLocationAvailable());
 						snack = c.SnackIndef(Resource.String.GeoFilterNoLocation);
 						if (ReloadPulldown.Alpha == 1)
@@ -2467,8 +2456,7 @@ namespace LocationConnection
 		{
 			try
 			{
-				c.CW("LoadListSearch listLoading " + listLoading);
-				c.LogActivity("LoadListSearch listLoading " + listLoading);
+				c.Log("LoadListSearch listLoading " + listLoading + " caller " + new StackFrame(1, true).GetMethod().Name);
 
 				if (listLoading)
 				{
@@ -2510,8 +2498,7 @@ namespace LocationConnection
 
 		private void LoadResults(string url)
 		{
-			c.CW("LoadResults making request");
-			c.LogActivity("LoadResults making request");
+			c.Log("LoadResults making request");
 
 			string responseString = c.MakeRequestSync(url);
 			if (responseString.Substring(0, 2) == "OK")
@@ -2529,21 +2516,21 @@ namespace LocationConnection
 
 					if (addResultsAfter)
 					{
-						c.CW("addResultsAfter viewIndex " + viewIndex + " absoluteFirstIndex " + absoluteFirstIndex);
+						//c.CW("addResultsAfter viewIndex " + viewIndex + " absoluteFirstIndex " + absoluteFirstIndex);
 
 						newListProfiles = parser.returnCollection;
 						viewProfiles = new List<Profile>(viewProfiles.Concat(newListProfiles));
 					}
 					else if (addResultsBefore)
 					{
-						c.CW("addResultsBefore old viewIndex " + viewIndex + " absoluteFirstIndex " + absoluteFirstIndex);
+						//c.CW("addResultsBefore old viewIndex " + viewIndex + " absoluteFirstIndex " + absoluteFirstIndex);
 
 						newListProfiles = parser.returnCollection;						
 						viewProfiles = new List<Profile>(newListProfiles.Concat(viewProfiles));
 						viewIndex += newListProfiles.Count;
 						absoluteFirstIndex -= newListProfiles.Count;
 
-						c.CW("addResultsBefore new viewIndex " + viewIndex + " absoluteFirstIndex " + absoluteFirstIndex);
+						//c.CW("addResultsBefore new viewIndex " + viewIndex + " absoluteFirstIndex " + absoluteFirstIndex);
 					}
 					else
 					{
@@ -2552,7 +2539,7 @@ namespace LocationConnection
 						adapter = new UserSearchListAdapter(this, listProfiles);						
 						newListProfiles = null;
 
-						c.CW("normal list absoluteFirstIndex " + absoluteFirstIndex);
+						//c.CW("normal list absoluteFirstIndex " + absoluteFirstIndex);
 
 						RunOnUiThread(() =>
 						{
@@ -2604,8 +2591,7 @@ namespace LocationConnection
 			}
 			addResultsBefore = false;
 			addResultsAfter = false;
-			c.CW("LoadResults end");
-			c.LogActivity("LoadResults end");
+			c.Log("LoadResults end");
 		}
 
 		private void SetResultStatus()
@@ -2826,7 +2812,7 @@ namespace LocationConnection
 							circleOptions.InvokeStrokeColor(Color.Black);
 							circleOptions.InvokeFillColor(Color.Argb(18, 0, 205, 0));
 							circleOptions.InvokeStrokeWidth(2); // is in pixels, and floored to int. No anti-aliasing.
-							circle = thisMap.AddCircle(circleOptions);
+							thisMap.AddCircle(circleOptions);
 						}
 
 						CameraPosition.Builder builder = CameraPosition.InvokeBuilder();
@@ -2844,7 +2830,7 @@ namespace LocationConnection
 						circleOptions.InvokeStrokeColor(Color.Black);
 						circleOptions.InvokeFillColor(Color.Argb(18, 0, 205, 0));
 						circleOptions.InvokeStrokeWidth(2);
-						circle = thisMap.AddCircle(circleOptions);
+						thisMap.AddCircle(circleOptions);
 					}
 				});
 

@@ -129,15 +129,10 @@ namespace LocationConnection
 							((ChatListActivity)context).AddMatchItem(parser.returnCollection[0]);
 						}
 
+						AddUpdateMatch(senderID, true);
 						if (context is ProfileViewActivity)
 						{
-							string matchItem = meta;
-							ServerParser<MatchItem> parser = new ServerParser<MatchItem>(matchItem);
-							((ProfileViewActivity)context).AddNewMatch(senderID, parser.returnCollection[0]);
-						}
-						else
-						{
-							AddUpdateMatch(senderID, true);
+							((ProfileViewActivity)context).UpdateStatus(senderID, true);
 						}
 						break;
 
@@ -164,6 +159,7 @@ namespace LocationConnection
 							}
 						}
 
+						AddUpdateMatch(senderID, true);
 						if (context is ChatListActivity)
 						{
 							((ChatListActivity)context).UpdateMatchItem(matchID, active, null);
@@ -172,14 +168,9 @@ namespace LocationConnection
 						{
 							((ChatOneActivity)context).UpdateStatus(senderID, active, null);
 						}
-
-						if (context is ProfileViewActivity)
+						else if (context is ProfileViewActivity)
 						{
-							((ProfileViewActivity)context).UpdateStatus(senderID, true, matchID);
-						}
-						else
-						{
-							AddUpdateMatch(senderID, true);
+							((ProfileViewActivity)context).UpdateStatus(senderID, true);
 						}
 
 						break;
@@ -216,6 +207,7 @@ namespace LocationConnection
 							}
 						}
 
+						AddUpdateMatch(senderID, false);
 						if (context is ChatListActivity)
 						{
 							((ChatListActivity)context).UpdateMatchItem(matchID, false, unmatchDate);
@@ -224,15 +216,11 @@ namespace LocationConnection
 						{
 							((ChatOneActivity)context).UpdateStatus(senderID, false, unmatchDate);
 						}
-
-						if (context is ProfileViewActivity)
+						else if (context is ProfileViewActivity)
 						{
-							((ProfileViewActivity)context).UpdateStatus(senderID, false, null);
+							((ProfileViewActivity)context).UpdateStatus(senderID, false);
 						}
-						else
-						{
-							AddUpdateMatch(senderID, false);
-						}
+						
 						break;
 
 					case "locationUpdate":
@@ -340,7 +328,7 @@ namespace LocationConnection
 			Intent i = new Intent(context, typeof(ProfileViewActivity));
 			i.SetFlags(ActivityFlags.ReorderToFront);
 			IntentData.profileViewPageType = Constants.ProfileViewType_Standalone;
-			IntentData.targetID = targetID;
+			IntentData.targetID = targetID; 
 			context.StartActivity(i);
 		}
 
@@ -359,6 +347,25 @@ namespace LocationConnection
 						else
 						{
 							ListActivity.viewProfiles[i].UserRelation = 2;
+						}
+						break;
+					}
+				}
+			}
+
+			if (!(ListActivity.listProfiles is null))
+			{
+				for (int i = 0; i < ListActivity.listProfiles.Count; i++)
+				{
+					if (ListActivity.listProfiles[i].ID == senderID)
+					{
+						if (isMatch)
+						{
+							ListActivity.listProfiles[i].UserRelation = 3;
+						}
+						else
+						{
+							ListActivity.listProfiles[i].UserRelation = 2;
 						}
 						break;
 					}

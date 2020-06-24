@@ -45,7 +45,7 @@ namespace LocationConnection
 
 		public override void OnLocationAvailability(LocationAvailability locationAvailability)
 		{
-			//c.LogActivity("Location availability changed, avaliable: " + locationAvailability.IsLocationAvailable);
+			//c.Log("Location availability changed, avaliable: " + locationAvailability.IsLocationAvailable);
 		}
 
 		public override async void OnLocationResult(LocationResult result)
@@ -95,7 +95,7 @@ namespace LocationConnection
 			}
 			else
 			{
-				context.c.LogActivity("No location received.");
+				context.c.Log("No location received.");
 			}
 		}
 	}

@@ -147,7 +147,7 @@ namespace LocationConnection
 
 		public void SelectImage()
 		{
-			context.c.LogActivity("Opening file selector");	
+			context.c.Log("Opening file selector");	
 			context.Images.Enabled = false;
 			Intent i = new Intent();
 			i.SetType("image/*");
@@ -170,7 +170,7 @@ namespace LocationConnection
 					return;
 				}
 
-				context.c.LogActivity("ImageEditorOK not out of frame");
+				context.c.Log("ImageEditorOK not out of frame");
 				float w = context.ImageEditor.bm.Width;
 				float h = context.ImageEditor.bm.Height;
 
@@ -179,11 +179,11 @@ namespace LocationConnection
 				float cropW = context.ImageEditorFrameBorder.Width / context.ImageEditor.scaleFactor * w / context.ImageEditor.intrinsicWidth;
 				float cropH = cropW;
 
-				context.c.LogActivity("ImageEditorOK_Click w " + w + " h " + h + " intrinsicWidth " + context.ImageEditor.intrinsicWidth + " intrinsicHeight " + context.ImageEditor.intrinsicHeight + " x " + x + " y " + y + " cropW " + cropW + " cropH " + cropH + " totalX " + (x + cropW) + " totalY " + (y + cropH));
+				context.c.Log("ImageEditorOK_Click w " + w + " h " + h + " intrinsicWidth " + context.ImageEditor.intrinsicWidth + " intrinsicHeight " + context.ImageEditor.intrinsicHeight + " x " + x + " y " + y + " cropW " + cropW + " cropH " + cropH + " totalX " + (x + cropW) + " totalY " + (y + cropH));
 
 				Bitmap bm = Bitmap.CreateBitmap(context.ImageEditor.bm, (int)Math.Round(x), (int)Math.Round(y), (int)Math.Round(cropW), (int)Math.Round(cropH));
 
-				context.c.LogActivity("Bitmap created");
+				context.c.Log("Bitmap created");
 
 				string fileName = System.IO.Path.Combine(CommonMethods.cacheFolder, "image.jpg");
 				try
@@ -198,7 +198,7 @@ namespace LocationConnection
 					return;
 				}
 
-				context.c.LogActivity("Cropped image created, closing editor");
+				context.c.Log("Cropped image created, closing editor");
 
 				CloseEditor();
 
@@ -215,6 +215,8 @@ namespace LocationConnection
 
 		public void CloseEditor()
 		{
+			context.c.Log("CloseEditor");
+
 			ProfilePage.selectedFile = null;
 			context.ImageEditorFrame.Visibility = ViewStates.Invisible;
 			context.ImageEditor.Visibility = ViewStates.Invisible;

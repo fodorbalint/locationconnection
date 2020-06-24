@@ -41,7 +41,7 @@ namespace LocationConnection
 			try { 
 				base.OnCreate(savedInstanceState);
 
-				c.CW("OnCreate savedInstanceState is null " + (savedInstanceState is null));
+				//c.CW("OnCreate savedInstanceState is null " + (savedInstanceState is null));
 
 				//Test reset
 				/*
@@ -60,7 +60,7 @@ namespace LocationConnection
 
 				if (!ListActivity.initialized && !(savedInstanceState is null))
 				{
-					c.LogActivity("ProfileEditActivity not initialized, restoring");
+					c.Log("ProfileEditActivity not initialized, restoring");
 
 					ListActivity.initialized = true;
 					IntentData.profileViewPageType = Constants.ProfileViewType_Self;
@@ -71,7 +71,7 @@ namespace LocationConnection
 				}
 				else if (!ListActivity.initialized && savedInstanceState is null)
 				{
-					c.LogActivity(LocalClassName.Split(".")[1] + " Not initialized");
+					c.Log(LocalClassName.Split(".")[1] + " Not initialized");
 
 					c.ReportErrorSilent("Initialization error");
 
@@ -154,7 +154,6 @@ namespace LocationConnection
 				
 				c.view = MainLayout;
 				rc = new RegisterCommonMethods(this);
-				res = Resources;
 				imm = (InputMethodManager)GetSystemService(InputMethodService);
 
 				Women.Click += Women_Click;
@@ -247,7 +246,7 @@ namespace LocationConnection
 					OnResumeEnd();
 				}
 
-				c.LogActivity("OnResume end");
+				c.Log("OnResume end");
 			}
 			catch (Exception ex)
 			{
@@ -259,7 +258,6 @@ namespace LocationConnection
 		{
 			base.OnPause();
 
-			c.CW("ProfileEdit OnPause");
 			imm.HideSoftInputFromWindow(Description.WindowToken, 0);
 		}
 
@@ -665,6 +663,18 @@ namespace LocationConnection
 		private void Cancel_Click(object sender, EventArgs e)
 		{
 			OnBackPressed();
+		}
+
+		public override void OnBackPressed() //Permission Denial error would be shown otherwise next time I open this activity
+		{
+			if (ImageEditor.Visibility == ViewStates.Visible)
+			{
+				rc.CloseEditor();
+			}
+			else
+			{
+				base.OnBackPressed();
+			}
 		}
 
 		private async void DeactivateAccount_Click(object sender, EventArgs e)
