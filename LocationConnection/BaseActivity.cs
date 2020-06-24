@@ -88,7 +88,7 @@ namespace LocationConnection
 			isAppVisible = true;
 			if (!(this is ListActivity)) //we need to exclude ListActivity, because we need to show the GettingLocation label
 			{
-				if (!locationUpdating && Session.UseLocation == true && c.IsLocationEnabled())
+				if (!locationUpdating && c.IsLocationEnabled() && (c.IsLoggedIn() && Session.UseLocation == true || !c.IsLoggedIn()))
 				{
 					StartLocationUpdates();
 				}

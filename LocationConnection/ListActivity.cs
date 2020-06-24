@@ -1999,7 +1999,6 @@ namespace LocationConnection
 
 		private void DistanceLimit_ProgressChanged(object sender, SeekBar.ProgressChangedEventArgs e) //when autologin (after turning off location in Settings), this is called after OnCreate ends, but before OnResume
 		{
-			c.Log("DistanceLimit_ProgressChanged distanceLimitChangedByCode " + distanceLimitChangedByCode + " isappvisible " + isAppVisible);
 			if (!distanceLimitChangedByCode && isAppVisible)
 			{
 				DistanceLimitInput.Text = DistanceLimitProgressToVal(DistanceLimit.Progress).ToString();

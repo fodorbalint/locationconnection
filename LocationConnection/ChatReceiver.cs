@@ -331,6 +331,12 @@ namespace LocationConnection
 
 		private void GoToProfile(int targetID)
 		{
+			if (!(context is ChatOneActivity))
+			{
+				Session.CurrentMatch = null; //It must be set to null, otherwise when clicling the chat button, we are going back to the current activity if a chat was open before
+				//currentmatch should be kept even if standing another chat, because pressing the back button from profile view should take us back to the current chat.
+			}
+
 			Intent i = new Intent(context, typeof(ProfileViewActivity));
 			i.SetFlags(ActivityFlags.ReorderToFront);
 			IntentData.profileViewPageType = Constants.ProfileViewType_Standalone;

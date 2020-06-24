@@ -185,8 +185,11 @@ namespace LocationConnection
 				}
 				Invalidate();
 			}
-			catch (Exception ex)
+			catch (Exception ex) //Cannot access a disposed object error once on LG G5
 			{
+				context.rc.ImageEditorCancel_Click(null, null);
+
+				context.c.ErrorAlert(context.res.GetString(Resource.String.ImageMoveError).Replace("[error]", ex.Message));
 				context.c.ReportErrorSilent("OnTouchEvent error  action " + e.Action + " x " + e.GetX() + " y " + e.GetY() + " count " + e.PointerCount + " --- " + ex.Message + " " + ex.StackTrace);
 			}
 			

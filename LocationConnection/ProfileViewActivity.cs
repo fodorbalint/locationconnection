@@ -363,6 +363,8 @@ namespace LocationConnection
 			base.OnPause();
 			if (!ListActivity.initialized) { return; }
 
+			c.Log("ProfileViewActivity OnPause");
+
 			cancelImageLoading = true;
 
 			if (pageType == Constants.ProfileViewType_Self && (bool)Session.UseLocation && c.IsLocationEnabled())
@@ -2072,10 +2074,25 @@ namespace LocationConnection
 
 		private async void LikeButton_Click(object sender, EventArgs e)
 		{
+			/*cases:
+			- got here cliking on header in chat one, this is a match
+			- got here by clicking on a location update notification from another match or another activity
+			- while in standalone, we got unmatched; userrelation = 2			
+			*/
+
 			if (pageType == Constants.ProfileViewType_Standalone)
 			{
-				IntentData.senderID = displayUser.ID; //we could have gotten on this profile page from another chat by clicking on a notification.
-				OnBackPressed();
+				IntentData.senderID = displayUser.ID;
+
+				if (Session.CurrentMatch != null) //got here from chat one, whether by clicking on a header, or from a location update notification while being in another chat. Without onBackPressed, a back click from chat one would take us back here.
+				{
+					OnBackPressed();
+					return;
+				}				
+
+				Intent i = new Intent(this, typeof(ChatOneActivity));
+				i.SetFlags(ActivityFlags.ReorderToFront);
+				StartActivity(i);
 				return;
 			}
 
@@ -2142,42 +2159,43 @@ namespace LocationConnection
 			}
 			else // already a match, opening chat window
 			{
-				if (pageType == Constants.ProfileViewType_List) //a previously gotten match, we are coming from list, not chat
+				// pageType == Constants.ProfileViewType_List. A previously gotten match, we are coming from list, not chat
+
+				IntentData.senderID = displayUser.ID; 
+
+				Intent i = new Intent(this, typeof(ChatOneActivity));
+				i.SetFlags(ActivityFlags.ReorderToFront);
+				StartActivity(i);
+
+				c.Log("LikeButton_click, opening chat from list");
+				/*
+				LikeButton.Enabled = false;
+					
+				string responseString = await c.MakeRequest("action=requestmatchid&ID=" + Session.ID + "&SessionID=" + Session.SessionID + "&target=" + displayUser.ID);
+				if (responseString.Substring(0, 2) == "OK")
 				{
-					LikeButton.Enabled = false;
+					if (responseString.Substring(3) == "") //deleted user
+                    {
+						c.Snack(Resource.String.MatchNotFound);
+						return;
+                    }
+					Session.CurrentMatch = new MatchItem();
+					Session.CurrentMatch.MatchID = int.Parse(responseString.Substring(3));
+					Session.CurrentMatch.TargetID = displayUser.ID;
+					Session.CurrentMatch.TargetUsername = displayUser.Username;
+					Session.CurrentMatch.TargetName = displayUser.Name;
+					Session.CurrentMatch.TargetPicture = displayUser.Pictures[0];
 
-					string responseString = await c.MakeRequest("action=requestmatchid&ID=" + Session.ID + "&SessionID=" + Session.SessionID + "&target=" + displayUser.ID);
-					if (responseString.Substring(0, 2) == "OK")
-					{
-						if (responseString.Substring(3) == "") //deleted user
-                        {
-							c.Snack(Resource.String.MatchNotFound);
-							return;
-                        }
-						Session.CurrentMatch = new MatchItem();
-						Session.CurrentMatch.MatchID = int.Parse(responseString.Substring(3));
-						Session.CurrentMatch.TargetID = displayUser.ID;
-						Session.CurrentMatch.TargetUsername = displayUser.Username;
-						Session.CurrentMatch.TargetName = displayUser.Name;
-						Session.CurrentMatch.TargetPicture = displayUser.Pictures[0];
-
-						Intent i = new Intent(this, typeof(ChatOneActivity));
-						i.SetFlags(ActivityFlags.ReorderToFront);
-						StartActivity(i);
-					}
-					else
-					{
-						c.ReportError(responseString);
-					}
-
-					LikeButton.Enabled = true;
-				}
-				else
-				{
 					Intent i = new Intent(this, typeof(ChatOneActivity));
 					i.SetFlags(ActivityFlags.ReorderToFront);
 					StartActivity(i);
 				}
+				else
+				{
+					c.ReportError(responseString);
+				}
+
+				LikeButton.Enabled = true;*/
 			}
 		}
 

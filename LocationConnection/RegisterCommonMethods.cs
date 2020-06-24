@@ -316,7 +316,7 @@ namespace LocationConnection
 						context.SaveRegData();
 					}
 					context.ImagesUploaded.AddPicture(imgName, context.uploadedImages.Count - 1);
-
+					context.ImagesUploaded.RefitImagesContainer();
 				}
 				else if (responseString.Substring(0, 6) == "ERROR_")
 				{

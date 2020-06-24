@@ -333,6 +333,7 @@ namespace LocationConnection
 				context.RunOnUiThread(() => {
 					LayoutParameters.Width = (int)(BaseActivity.screenWidth - 20 * BaseActivity.pixelDensity);
 					LayoutParameters.Height = (int)((indexCount - indexCount % numColumns) / numColumns * (tileSize + tileSpacing * BaseActivity.pixelDensity) + tileSize);
+					Visibility = ViewStates.Visible;
 					RequestLayout();
 				});
 			}
@@ -340,7 +341,8 @@ namespace LocationConnection
 			{
 				context.RunOnUiThread(() => {
 					LayoutParameters.Width = (int)(BaseActivity.screenWidth - 20 * BaseActivity.pixelDensity);
-					LayoutParameters.Height = 0;
+					LayoutParameters.Height = 0; //0 would result in shadow tile height without setting the visibility to gone
+					Visibility = ViewStates.Gone; //10dp margin will be gone too, app:layout_goneMarginTop="10dp" would not keep it either
 					RequestLayout();
 				});
 			}

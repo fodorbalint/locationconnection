@@ -239,7 +239,6 @@ namespace LocationConnection
 					}
 
 					ImagesUploaded.RemoveAllViews();
-					ImagesUploaded.RefitImagesContainer();
 					ImagesUploaded.drawOrder = new List<int>();
 
 					ImageCache.imagesInProgress = new List<string>();
@@ -252,6 +251,7 @@ namespace LocationConnection
 						ImagesUploaded.AddPicture(image, i);
 						i++;
 					}
+					ImagesUploaded.RefitImagesContainer();
 
 					if (imagesUploading)
 					{
@@ -338,7 +338,7 @@ namespace LocationConnection
 			Name.Text = "";
 			Description.Text = "";
 			uploadedImages = new List<string>();
-			ImagesUploaded.RemoveAllViews();
+			ImagesUploaded.RemoveAllViews(); //shadow is removed too, but after selecting an image, it is added in OnResume.
 			ImagesUploaded.RefitImagesContainer();
 
 			Description.Text = "";

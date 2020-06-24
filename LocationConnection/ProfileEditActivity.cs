@@ -200,7 +200,6 @@ namespace LocationConnection
 				uploadedImages = new List<string>(Session.Pictures);
 
 				ImagesUploaded.RemoveAllViews();
-				ImagesUploaded.RefitImagesContainer();
 				ImagesUploaded.drawOrder = new List<int>();
 
 				ImageCache.imagesInProgress = new List<string>();
@@ -213,6 +212,7 @@ namespace LocationConnection
 					ImagesUploaded.AddPicture(image, i);
 					i++;
 				}
+				ImagesUploaded.RefitImagesContainer();
 
 				if (!imagesUploading)
 				{

@@ -2,7 +2,6 @@
  
  Location updates should stop when
 - disabling on Profile Edit page
-- entering registration/login page
 - entering background
 - user logs in with location off, but device location is enabled
 Start when
@@ -86,8 +85,7 @@ namespace LocationConnection
 
 					BaseActivity.firstLocationAcquired = true;
 
-					context.c.CW("LocationManager_LocationUpdated first location");
-					context.c.LogActivity("LocationManager_LocationUpdated first location");
+					context.c.Log("OnLocationResult first location");
 
 					if (BaseActivity.visibleContext is ListActivity)
 					{
