@@ -401,7 +401,12 @@ namespace LocationConnection
 					}
 				}
 			}
-			
+
+			if (menuCreated)
+			{
+				SetMenu(); //has to be set before blockedID is nulled
+			}
+
 			DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds((long)Session.CurrentMatch.MatchDate).ToLocalTime();
 			MatchDate.Text = res.GetString(Resource.String.Matched) + ": " + dt.ToString("dd MMMM yyyy HH:mm");
 
@@ -449,11 +454,6 @@ namespace LocationConnection
 			adapter = new ChatMessageWindowAdapter(this, messageItems);
 			ChatMessageWindow.Adapter = adapter; //Without using list, 213 item created in 646 ms / 385 ms on subsequent loading
 			ScrollToBottom(false);
-
-			if (menuCreated) //menu is not yet created after OnCreate.
-			{
-				SetMenu();
-			}
 		}
 
 		public void AddMessageItem(string messageItem)

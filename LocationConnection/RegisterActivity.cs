@@ -271,7 +271,7 @@ namespace LocationConnection
 
 				if (!eulaLoaded)
 				{
-					string responseString = await c.MakeRequest("action=eula"); //deleting images from server
+					string responseString = await c.MakeRequest("action=eula&ios=0"); //deleting images from server
 					if (responseString.Substring(0, 2) == "OK")
 					{
 						eulaLoaded = true;

@@ -1,4 +1,22 @@
 # Changelog - Location Connection Android
+1.6 - 25 June 2020
+
+Improvements:
+- When rearranging picture on the registration/profile edit page, a shadow will mark where the picture will be dropped.
+- When receiving notification of a new match/unmatch/rematch, the relation status will be updated in the list that is already loaded in tile view or profile view, even if you are seeing another profile.
+
+Bug fixes:
+- Large resolution images of some phones cannot be uploaded
+- When uploading square images and leaving the registration/profile edit page, upon returning the image uploads again.
+- When clicking on a location update notification, and then on the profile page clicking on the chat button, the previous page opens instead of the chat window.
+- When clicking on a message notification from a profile page that was opened from a chat, and then you get unmatched, the page you are going back to does not reflect the status change. The profile remains after unmatching or blocking too.
+- Background location updates do not work in all systems under all circumstances. This feature is now removed, just like in the iOS version of the app.
+- The list of users appears to load twice in some circumstances.
+- After switching location off on the profile edit page, upon returning to the main view, all people appear. If distance filtering was on with current location and map view, the map remains as it was instead of switching to the other location.
+- Clicking on current location when either location permission is not granted or profile location is off, results in the list not being refreshed after you enable the features.
+- Which device location permission off, but on in the profile, if you filter by other location with map view, and choose "No location filter", the map remains.
+- If you leave the app to turn off revoke location permission for the app, upon returning the app shows you are still filtering by current location.
+
 1.5 - 17 June 2020
 
 Bug fixes:

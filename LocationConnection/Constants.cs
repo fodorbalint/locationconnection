@@ -52,7 +52,7 @@ namespace LocationConnection
 		public const int SystemLogKeepTime = 60 * 5;
 		public const int CacheKeepTime = 60 * 60 * 24;
 
-		public const bool isTestDB = true;
+		public const bool isTestDB = false;
 		public const int MaxResultCount = 100;
 
 		public const string TestDB = "&testDB";
