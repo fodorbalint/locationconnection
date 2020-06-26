@@ -1,4 +1,8 @@
 # Changelog - Location Connection Android
+1.6.1 - 26 June 2020
+
+Bug fix: image on the registration page cannot be edited if you opened it after this sequence of events: registration page -> pressing home button -> opening app -> opening a profile -> back to main view --> registration page.
+
 1.6 - 25 June 2020
 
 Improvements:
@@ -6,7 +10,7 @@ Improvements:
 - When receiving notification of a new match/unmatch/rematch, the relation status will be updated in the list that is already loaded in tile view or profile view, even if you are seeing another profile.
 
 Bug fixes:
-- Large resolution images of some phones cannot be uploaded
+- Large resolution images of some phones cannot be uploaded.
 - When uploading square images and leaving the registration/profile edit page, upon returning the image uploads again.
 - When clicking on a location update notification, and then on the profile page clicking on the chat button, the previous page opens instead of the chat window.
 - When clicking on a message notification from a profile page that was opened from a chat, and then you get unmatched, the page you are going back to does not reflect the status change. The profile remains after unmatching or blocking too.

@@ -30,6 +30,8 @@ namespace LocationConnection
 		public float xDist, yDist;
 		bool outOfFrameX, outOfFrameY;
 		private bool moveAllowed;
+		private bool showScaleError;
+		private bool showMoveError;
 
 		public ScaleImageView(Context context, IAttributeSet attrs) : base(context, attrs)
 		{
@@ -44,7 +46,6 @@ namespace LocationConnection
 		public void Initialize(Context context)
 		{
 			this.context = (ProfilePage)context;
-			detector = new ScaleGestureDetector(Context, new ScaleListener(this));
 		}
 
 		public void SetContent(Bitmap bm)
@@ -52,6 +53,13 @@ namespace LocationConnection
 			this.bm = bm;
 			context.c.Log("SetContent bm " + bm + " this.bm " + this.bm);
 			Invalidate();
+			showScaleError = true;
+			showMoveError = true;
+			//it is important to set the detector here, not in Initialize.
+			//With this sequence: RegisterActivity -> Home button -> Open app (ListActivity) -> ProfileViewActivity -> Back -> RegisterActivity -> Open file selector, we would get and ObjectDisposedException
+			//Only happens when I install the app from apk or Play Store (not though VS Release), because pressing the home button and opening the app recreates the ListActivity, but not in latter case.
+			//a disposed object would throw exception on logging detector (converting it to string), and detector is null gives false 
+			detector = new ScaleGestureDetector(Context, new ScaleListener(this));
 		}
 
 		//out of frame image is allowed to come closer. Image in frame is not allowed to go out, only by pinching action.
@@ -59,7 +67,20 @@ namespace LocationConnection
 		{
 			try
 			{
-				detector.OnTouchEvent(e);
+				try
+				{
+					detector.OnTouchEvent(e);
+				}
+				catch (Exception ex)
+				{
+					if (showScaleError)
+					{ 
+						showScaleError = false;
+						context.c.ErrorAlert(context.res.GetString(Resource.String.ImageScaleError));
+						context.c.ReportErrorSilent("OnTouchEvent ImageScaleError " + ex);
+					}
+				}
+
 
 				if (e.PointerCount > 1)
 				{
@@ -186,20 +207,19 @@ namespace LocationConnection
 				}
 				Invalidate();
 			}
-			catch (Exception ex) //Cannot access a disposed object error once on LG G5
+			catch (Exception ex1)
 			{
-				if (ProfilePage.selectedFile != null) //to make sure, it is only called once
+				if (showMoveError) //to make sure, it is only called once
 				{
-					context.rc.CloseEditor();
-
-					context.c.ErrorAlert(context.res.GetString(Resource.String.ImageMoveError).Replace("[error]", ex.Message));
-					context.c.ReportErrorSilent("OnTouchEvent error  action " + e.Action + " x " + e.GetX() + " y " + e.GetY() + " count " + e.PointerCount + " --- " + ex.Message + " " + ex.StackTrace);
+					showMoveError = false;
+					context.c.ErrorAlert(context.res.GetString(Resource.String.ImageMoveError));
+					context.c.ReportErrorSilent("OnTouchEvent ImageMoveError: action " + e.Action + " x " + e.GetX() + " y " + e.GetY() + " count " + e.PointerCount + " --- " + ex1);
 				}
 			}
-			
+
 			return true;
 		}
-		
+
 		protected override async void OnDraw(Canvas canvas)
 		{
 			base.OnDraw(canvas); 
@@ -319,6 +339,7 @@ namespace LocationConnection
 			{
 				this.view = view;
 			}
+
 			public override bool OnScale(ScaleGestureDetector detector)
 			{
 				view.scaleFactor *= detector.ScaleFactor;

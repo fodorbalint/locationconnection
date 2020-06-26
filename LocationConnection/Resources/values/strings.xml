@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Location Connection</string>
 	<string name="app_name_short">Connection</string>
-    <string name="versionInfo">Version: 1.6 - 25 June 2020\n\nCreated by Balint Fodor\n\nContact: fodorbalint@gmail.com\n\nWebsite: locationconnection.me\n\nPrivacy policy:\nlocationconnection.me/?page=legal#privacy\n\nSource code:\ngithub.com/fodorbalint?tab=repositories</string>
+    <string name="versionInfo">Version: 1.6.1 - 26 June 2020\n\nCreated by Balint Fodor\n\nContact: fodorbalint@gmail.com\n\nWebsite: locationconnection.me\n\nPrivacy policy:\nlocationconnection.me/?page=legal#privacy\n\nSource code:\ngithub.com/fodorbalint?tab=repositories</string>
 
 	<!-- General -->
 
@@ -106,10 +106,9 @@
 	<string name="OutOfMemoryError">The image could not be loaded due to the system running out of memory. The application will restart now.</string>
 	<string name="ImageLoadingError">The image could not be loaded. Please try again.\nMessage:</string>
 	<string name="CopyImageError">Image processing failed:</string>
-	<string name="TooLargeBitmap">The image is too large to display: [width] x [height] px.\nReduce the resolution, or crop the image to square to upload it directly.</string>
-	<string name="TooLargeBitmapNoBm">The image is too large to display.\nReduce the resolution, or crop the image to square to upload it directly.</string>
-	<string name="OtherBitmapError">The image cannot be displayed: [error]\nCrop the image to sqare to upload it directly.</string>
-	<string name="ImageMoveError">Moving the image failed: [error]\nTry again, or crop the image to sqare to upload it directly.</string>
+	<string name="OtherBitmapError">The image cannot be displayed: [error]\nCrop the image to square to upload it directly.</string>
+	<string name="ImageMoveError">Moving the image failed.\nClose and reopen the registration page, or crop the image to square to upload it directly.</string>
+	<string name="ImageScaleError">Scaling the image failed.\nClose and reopen the registration page, or crop the image to square to upload it directly.</string>
 	<string name="CropImageError">Image cropping failed:</string>
 	<string name="ImagesProgressText">Uploading... (This may take up to a minute.)</string>
     <string name="ImagesProgressTextPercent">Uploading:</string>    
