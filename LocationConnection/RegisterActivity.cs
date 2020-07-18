@@ -275,7 +275,15 @@ namespace LocationConnection
 					if (responseString.Substring(0, 2) == "OK")
 					{
 						eulaLoaded = true;
-						EulaText.TextFormatted = Html.FromHtml(responseString.Substring(3), FromHtmlOptions.ModeLegacy);
+						if (Build.VERSION.SdkInt >= BuildVersionCodes.N)
+						{
+							EulaText.TextFormatted = Html.FromHtml(responseString.Substring(3), FromHtmlOptions.ModeLegacy);
+						}
+						else {
+#pragma warning disable CS0618 // Type or member is obsolete
+							EulaText.TextFormatted = Html.FromHtml(responseString.Substring(3));
+#pragma warning restore CS0618 // Type or member is obsolete
+						}
 					}
 					else
 					{

@@ -747,6 +747,29 @@ namespace LocationConnection
             Toast.MakeText(context, message, ToastLength.Long).Show();
         }
 
+		public void Log(string message)
+		{
+			LogActivity(message);
+			CW(message);
+		}
+
+		public static void LogStatic(string message)
+		{
+			LogActivityStatic(message);
+			CWStatic(message);
+		}
+
+		public void CW(string message)
+		{
+			//Console.WriteLine writes duplicate lines
+			System.Diagnostics.Debug.WriteLine(DateTime.UtcNow.ToString(@"yyyy-MM-dd HH\:mm\:ss.fff") + " ----------" + message + "----------" + System.Environment.NewLine);
+		}
+
+		public static void CWStatic(string message)
+		{
+			System.Diagnostics.Debug.WriteLine(DateTime.UtcNow.ToString(@"yyyy-MM-dd HH\:mm\:ss.fff") + " ----------" + message + "----------" + System.Environment.NewLine);
+		}
+
         public void LogActivity(string message)
         {
             try
@@ -882,29 +905,6 @@ namespace LocationConnection
 		public string AndroidInfo()
 		{
 			return Build.VERSION.SdkInt + " - " + Build.VERSION.Sdk + " - "+ Build.Manufacturer + " - " + Build.Model + " - " + Build.Product;
-		}
-
-		public void CW(string message)
-		{
-			//Console.WriteLine writes duplicate lines
-			System.Diagnostics.Debug.WriteLine(DateTime.UtcNow.ToString(@"yyyy-MM-dd HH\:mm\:ss.fff") + " ----------" + message + "----------" + System.Environment.NewLine);
-		}
-
-		public static void CWStatic(string message)
-		{
-			System.Diagnostics.Debug.WriteLine(DateTime.UtcNow.ToString(@"yyyy-MM-dd HH\:mm\:ss.fff") + " ----------" + message + "----------" + System.Environment.NewLine);
-		}
-
-		public void Log(string message)
-		{
-			LogActivity(message);
-			CW(message);
-		}
-
-		public static void LogStatic(string message)
-		{
-			LogActivityStatic(message);
-			CWStatic(message);
 		}
 
 		public string ShowClass<T>()

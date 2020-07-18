@@ -205,7 +205,7 @@ namespace LocationConnection
 						}
 
 						RunOnUiThread(() => {
-							//will be applied after OnResume exits on the await call.
+							//will be applied after OnResume
 							if (!(RefreshDistance is null) && !(ReloadPulldown is null) && !(LoaderCircle is null))
 							{
 								StartLoaderAnim();
@@ -213,7 +213,11 @@ namespace LocationConnection
 							if (!(ResultSet is null))
 							{
 								ResultSet.Visibility = ViewStates.Visible;
-								ResultSet.Text = res.GetString(Resource.String.LoggingIn);
+								c.Log("Autologin ResultSet.Text " + ResultSet.Text);
+								if (ResultSet.Text == "") //only set it if "Getting location" is not being displayed already.
+								{
+									ResultSet.Text = res.GetString(Resource.String.LoggingIn);
+								}
 							}
 						});
 
@@ -799,7 +803,9 @@ namespace LocationConnection
 		{
 			((Timer)sender).Stop();
 			c.Log("Location timeout");
-			LoadListStartup();
+			RunOnUiThread(() => {
+				LoadListStartup();
+			});
 		}
 
 		public void LoadListStartup()
@@ -1375,7 +1381,6 @@ namespace LocationConnection
 						{
 							c.Log("PM not logged in granted distanceSourceCurrentClicked");
 							//it resets to address by itself
-							Session.LocationTime = null; //making sure, last location will be requested in OnResume (even if PM was off, a last location value could have existed, if PM was on before.) 
 							DistanceSourceCurrent.Checked = true;
 							Settings.GeoSourceOther = false; //LoggedOutLayout will load it into Session on OnResume
 							Session.LastDataRefresh = null;
@@ -2390,6 +2395,11 @@ namespace LocationConnection
 					return;
 				}
 
+				if (Session.GeoFilter is null) //in case user logged out before location timeout
+                {
+                    return;
+                }
+
 				//last check
 				if ((bool)Session.GeoFilter && (!(bool)Session.GeoSourceOther && !c.IsOwnLocationAvailable() || (bool)Session.GeoSourceOther && !c.IsOtherLocationAvailable()))
 				{
@@ -2565,9 +2575,13 @@ namespace LocationConnection
 				listLoading = false;
 
 				mapSet = false;
-				if (mapLoaded && ((bool)Settings.IsMapView || mapToSet) && !(addResultsBefore || addResultsAfter))
+				if (mapLoaded && ((bool)Settings.IsMapView || mapToSet) && !(addResultsBefore || addResultsAfter)) 
 				{
 					SetMap();
+				}
+				else if (((bool)Settings.IsMapView || mapToSet) && !(addResultsBefore || addResultsAfter)) //in case OnMapReady is not called yet
+				{
+					mapToSet = true;
 				}
 				else if (!(bool)Settings.IsMapView && !mapToSet)
 				{

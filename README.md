@@ -1,4 +1,9 @@
 # Changelog - Location Connection Android
+1.6.2 - 18 July 2020
+
+A display glitch was fixed, where the introduction on the profile page may reach the right side of the screen without space.
+Bug fix: pressing back button after deleting account shows the profile page again, crashing the app eventually.
+
 1.6.1 - 26 June 2020
 
 Bug fix: image on the registration page cannot be edited if you opened it after this sequence of events: registration page -> pressing home button -> opening app -> opening a profile -> back to main view --> registration page.
@@ -6,7 +11,7 @@ Bug fix: image on the registration page cannot be edited if you opened it after 
 1.6 - 25 June 2020
 
 Improvements:
-- When rearranging picture on the registration/profile edit page, a shadow will mark where the picture will be dropped.
+- When rearranging pictures on the registration/profile edit page, a shadow will mark where the picture will be dropped.
 - When receiving notification of a new match/unmatch/rematch, the relation status will be updated in the list that is already loaded in tile view or profile view, even if you are seeing another profile.
 
 Bug fixes:
@@ -18,7 +23,7 @@ Bug fixes:
 - The list of users appears to load twice in some circumstances.
 - After switching location off on the profile edit page, upon returning to the main view, all people appear. If distance filtering was on with current location and map view, the map remains as it was instead of switching to the other location.
 - Clicking on current location when either location permission is not granted or profile location is off, results in the list not being refreshed after you enable the features.
-- Which device location permission off, but on in the profile, if you filter by other location with map view, and choose "No location filter", the map remains.
+- With device location permission off, but on in the profile, if you filter by other location with map view, and choose "No location filter", the map remains.
 - If you leave the app to turn off revoke location permission for the app, upon returning the app shows you are still filtering by current location.
 
 1.5 - 17 June 2020

@@ -287,7 +287,7 @@ namespace LocationConnection
             {
                 try
                 {
-                    context.c.Log(" Error saving image: " + ex.Message);
+                    context.c.Log("Error saving image: " + ex.Message);
                 }
                 catch
                 {

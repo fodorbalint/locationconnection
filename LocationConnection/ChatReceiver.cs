@@ -321,7 +321,7 @@ namespace LocationConnection
 		{
 			if (!(context is ChatOneActivity))
 			{
-				Session.CurrentMatch = null; //It must be set to null, otherwise when clicling the chat button, we are going back to the current activity if a chat was open before
+				Session.CurrentMatch = null; //It must be set to null, otherwise when clicking the chat button, we are going back to the current activity if a chat was open before
 				//currentmatch should be kept even if standing another chat, because pressing the back button from profile view should take us back to the current chat.
 			}
 

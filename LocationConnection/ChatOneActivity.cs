@@ -848,6 +848,7 @@ namespace LocationConnection
 						}
 					}
 					IntentData.targetID = Session.CurrentMatch.TargetID; //if in standalone we click on a chat notification, and block the user, the profile needs to vanish
+					Session.CurrentMatch = null;
 					OnBackPressed();
 				}
 				else

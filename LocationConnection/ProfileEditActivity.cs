@@ -182,6 +182,14 @@ namespace LocationConnection
 
 				if (!ListActivity.initialized) { return; }
 
+				if (!c.IsLoggedIn()) //pressing back button after deleting account
+				{
+					Intent intent = new Intent(this, typeof(ListActivity));
+					intent.SetFlags(ActivityFlags.ReorderToFront);
+					StartActivity(intent);
+					return;
+				}
+
 				EditAccountDataSection.Visibility = ViewStates.Gone;
 				EditChangePasswordSection.Visibility = ViewStates.Gone;
 				EditLocationSettingsSection.Visibility = ViewStates.Gone;

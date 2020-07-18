@@ -272,7 +272,6 @@ namespace LocationConnection
 						NextButton.Visibility = ViewStates.Gone;
 
 						Session.CurrentMatch = null;
-						userLoaded = true;
 
 						LoadSelf();
 						HideNavigationSpacer();
@@ -322,7 +321,7 @@ namespace LocationConnection
 						displayUser = ListActivity.viewProfiles[ListActivity.viewIndex];
 						
 						Session.CurrentMatch = null;
-						userLoaded = true;
+
 						LoadUser();
 						break;
 
@@ -558,7 +557,6 @@ namespace LocationConnection
 					}
 				}
 				
-				userLoaded = true;
 				LoadUser();
 			}
 			else if (responseString.Substring(0, 6) == "ERROR_") // UserPassive, MatchNotFound or UserNotAvailable 
@@ -856,6 +854,8 @@ namespace LocationConnection
 		private void LoadSelf()
 		{
 			try {
+				userLoaded = true;
+
 				ProfileImageScroll.RemoveAllViews();
 				if (!(counterCircles is null))
 				{
@@ -925,6 +925,9 @@ namespace LocationConnection
 		{
 			try
 			{
+				c.Log("Loaduser " + displayUser.Username);
+				userLoaded = true;
+
 				if (c.IsLoggedIn())
 				{
 					switch (displayUser.UserRelation)
@@ -993,8 +996,6 @@ namespace LocationConnection
 				}
 
 				counterCircles = new List<View>();
-
-				c.Log("LoadUser " + displayUser.Username);
 
 				Username.Text = displayUser.Username;
 				Name.Text = displayUser.Name;
@@ -1141,15 +1142,14 @@ namespace LocationConnection
 					}
 					else
 					{
+						LocationTime.Visibility = ViewStates.Gone;
 						if (!(displayUser.Distance is null))
 						{
-							LocationTime.Visibility = ViewStates.Gone;
 							DistanceText.Visibility = ViewStates.Visible;
 							DistanceText.Text = res.GetString(Resource.String.ProfileViewDistance) + " " + c.GetTimeDiffStr(displayUser.LocationTime, false) + ": " + displayUser.Distance + " km";
 						}
 						else
 						{
-							LocationTime.Visibility = ViewStates.Gone;
 							DistanceText.Visibility = ViewStates.Gone;
 						}
 						HideMap();
@@ -2154,15 +2154,13 @@ namespace LocationConnection
 			}
 			else // already a match, opening chat window
 			{
-				// pageType == Constants.ProfileViewType_List. A previously gotten match, we are coming from list, not chat
-
 				IntentData.senderID = displayUser.ID; 
 
 				Intent i = new Intent(this, typeof(ChatOneActivity));
 				i.SetFlags(ActivityFlags.ReorderToFront);
 				StartActivity(i);
 
-				c.Log("LikeButton_click, opening chat from list");
+				c.Log("LikeButton_click, opening chat");
 			}
 		}
 

@@ -200,6 +200,7 @@
     			android:layout_height="wrap_content"
     			app:layout_constraintTop_toTopOf="parent"
     			android:paddingLeft="8.57dp"
+				android:paddingRight="8.57dp"
     			android:theme="@style/BlackTextSmallSmall"
     			android:id="@+id/Description" />
             <TextView
