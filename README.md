@@ -3,6 +3,7 @@
 
 A display glitch was fixed, where the introduction on the profile page may reach the right side of the screen without space.
 Bug fix: pressing back button after deleting account shows the profile page again, crashing the app eventually.
+On Android 6, the terms on the registration page is not displayed. This is fixed, but could not be tested.
 
 1.6.1 - 26 June 2020
 
