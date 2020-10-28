@@ -998,7 +998,7 @@ namespace LocationConnection
 				counterCircles = new List<View>();
 
 				Username.Text = displayUser.Username;
-				Name.Text = displayUser.Name;
+				Name.Text = displayUser.Name;		
 				Description.Text = displayUser.Description;
 				SetPercentProgress(displayUser.ResponseRate);
 				ResponseRate.Text = Math.Round(displayUser.ResponseRate * 100).ToString() + "%";
@@ -1202,7 +1202,17 @@ namespace LocationConnection
 
 		private void SetPercentProgress(float responseRate)
 		{
-			PercentProgress.LayoutParameters.Width = (int)Math.Round(percentProgressWidth * pixelDensity * responseRate);
+			if (responseRate == 0) // giving 0 for layoutparameters stretches the whole thing.
+			{
+				PercentProgress.LayoutParameters.Width = 1;
+				PercentProgress.Visibility = ViewStates.Gone;
+			}
+			else
+			{
+				PercentProgress.LayoutParameters.Width = (int)Math.Round(percentProgressWidth * pixelDensity * responseRate);
+				PercentProgress.Visibility = ViewStates.Visible;
+			}			
+
 			byte red = (byte)(192 - (byte)Math.Round(192 * responseRate));
 			byte green = (byte)Math.Round(192 * responseRate);
 			byte blue = 0;

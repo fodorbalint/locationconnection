@@ -1,4 +1,8 @@
 # Changelog - Location Connection Android
+1.6.3 - 28 October 2020
+
+Bug fixed: A user with 0% response rate is not displayed correctly.
+
 1.6.2 - 18 July 2020
 
 A display glitch was fixed, where the introduction on the profile page may reach the right side of the screen without space.
